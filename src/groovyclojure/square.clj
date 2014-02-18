@@ -17,6 +17,15 @@
 (defn create [row col]
   {:row row :col col :synth synths/oksaw :synthnode nil})
 
+(defn get-x [square]
+  (* SQUARE_SIZE (:col square)))
+
+(defn get-y [square]
+  (* SQUARE_SIZE (:row square)))
+
+(defn fill-color [square]
+  (get COLUMN_COLORS (:col square)))
+
 (defn is-selected? [square]
   (let [mouse-pos {:x (q/mouse-x) :y (q/mouse-y)}]
     (and
@@ -31,21 +40,12 @@
         pos-x (:x position)
         pos-y (:y position)]
     (and
-     (>= pos-x x) (>= pos-y y )
+     (>= pos-x x) (>= pos-y y)
      (<= pos-x end-x) (<= pos-y end-y))))
-
-(defn get-x [square]
-  (* SQUARE_SIZE (:col square)))
-
-(defn get-y [square]
-  (* SQUARE_SIZE (:row square)))
-
-(defn fill-color [square]
-  (get COLUMN_COLORS (:col square)))
 
 (defn update [square]
   (if (is-selected? square)
-    (select-square square)
+    (select square)
     square))
 
 (defn play [square]
