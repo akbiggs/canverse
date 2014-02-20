@@ -1,5 +1,5 @@
-(ns groovyclojure.square
-  (:require [groovyclojure.synths :as synths]
+(ns canverse.square
+  (:require [canverse.synths :as synths]
             [overtone.live :as o]
             [quil.core :as q]))
 
@@ -26,27 +26,25 @@
 (defn fill-color [square]
   (get COLUMN_COLORS (:col square)))
 
+(defn inside-bounds? [square position]
+  (let [start-x (get-x square)
+        end-x (+ start-x SQUARE_SIZE)
+        start-y (get-y square)
+        end-y (+ start-y SQUARE_SIZE)
+        pos-x (:x position)
+        pos-y (:y position)]
+    (and
+     (>= pos-x start-x) (>= pos-y start-y)
+     (<= pos-x end-x) (<= pos-y end-y))))
+
 (defn is-selected? [square]
   (let [mouse-pos {:x (q/mouse-x) :y (q/mouse-y)}]
     (and
      (q/mouse-state)
      (inside-bounds? square mouse-pos))))
 
-(defn inside-bounds? [square position]
-  (let [x (get-x square)
-        end-x (+ x SQUARE_SIZE)
-        y (get-y square)
-        end-y (+ y SQUARE_SIZE)
-        pos-x (:x position)
-        pos-y (:y position)]
-    (and
-     (>= pos-x x) (>= pos-y y)
-     (<= pos-x end-x) (<= pos-y end-y))))
-
-(defn update [square]
-  (if (is-selected? square)
-    (select square)
-    square))
+(defn is-playing? [square]
+  (o/node-live? (:synthnode square)))
 
 (defn play [square]
   (if (is-playing? square)
@@ -59,8 +57,10 @@
 (defn select [square]
   (assoc (play square) :selected true))
 
-(defn is-playing? [square]
-  (o/node-live? (:synthnode square)))
+(defn update [square]
+  (if (is-selected? square)
+    (select square)
+    square))
 
 (defn draw [square]
   (q/stroke 255)

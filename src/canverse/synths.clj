@@ -1,4 +1,4 @@
-(ns groovyclojure.synths
+(ns canverse.synths
   (:use [overtone.live]))
 
 (definst plucked-string [note 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
