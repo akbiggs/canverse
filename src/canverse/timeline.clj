@@ -16,8 +16,8 @@
           width (:width timeline)
           movement (* delta-ratio width)
           history (:history timeline)]
-      (for [note history]
-        (assoc note :x (- (:x note) movement))))))
+      (vec (for [note history]
+        (assoc note :x (- (:x note) movement)))))))
 
 (defn add-note [relative-pitch timeline]
   (assoc timeline :history
@@ -29,6 +29,11 @@
 
 (defn draw [timeline]
   (q/fill 255)
-  (doseq [note timeline]
-    (let [[w h] (:size note)]
-      (q/rect (:x note) (:y note) w h))))
+  (doseq [note (:history timeline)]
+    (let [x (:x note)
+          y (:y note)
+          [w h] (:size note)]
+      (print (str "X position: " x))
+      (print (str "Y position: " y))
+      (print (str "Size: " w ", " h))
+      (q/rect x y w h))))

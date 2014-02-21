@@ -1,5 +1,6 @@
 (ns canverse.square
   (:require [canverse.synths :as synths]
+            [canverse.timeline :as timeline]
             [overtone.live :as o]
             [quil.core :as q]))
 
@@ -50,8 +51,12 @@
   (if (is-playing? square)
     square
     (let [synth (:synth square)
-          freq (+ 50 (* 2 (:col square)))
-          node (synth freq)]
+          col (:col square)
+          freq (+ 50 (* 2 col))
+          amp (* 0.2 (:row square))
+          node (synth :freq freq :amp amp)
+          add-note (partial timeline/add-note col)]
+      (swap! (q/state :timeline) add-note)
       (assoc square :synthnode node))))
 
 (defn select [square]

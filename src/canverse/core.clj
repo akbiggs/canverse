@@ -32,6 +32,7 @@
                 :time-delta (atom 0)
                 :last-update-time (atom (o/now))))
 
+(o/stop)
 (defn update []
   (let [current-time (o/now)
         last-update-time @(q/state :last-update-time)]
@@ -41,6 +42,8 @@
   (swap! (q/state :grid) grid/update)
   (swap! (q/state :timeline) timeline/update))
 
+(o/stop)
+
 (defn draw []
   ; Quil has no update function that we can pass into
   ; the sketch, so we have to do it at the top of the
@@ -48,9 +51,10 @@
   (update)
 
   (q/background 125)
-  (grid/draw @(q/state :grid)))
+  (grid/draw @(q/state :grid))
+  (timeline/draw @(q/state :timeline)))
 
-(q/defsketch test
+(q/defsketch groovy
   :title "Groovy"
   :setup setup
   :draw draw
