@@ -30,19 +30,32 @@
   (q/set-state! :grid (atom (grid/create 7 7))
                 :timeline (atom (timeline/create 60000 WINDOW_WIDTH))
                 :time-delta (atom 0)
-                :last-update-time (atom (o/now))))
+                :last-update-time (atom (o/now))
+                :active (atom nil)
 
-(o/stop)
+                :is-mouse-down? (atom false)
+                :mouse-down-duration (atom 0)))
+
+(defn on-mouse-pressed []
+  (reset! (q/state :is-mouse-down?) true)
+  (reset! (q/state :mouse-down-duration) 0))
+
+(defn on-mouse-released []
+  (reset! (q/state :is-mouse-down?) false))
+
 (defn update []
   (let [current-time (o/now)
-        last-update-time @(q/state :last-update-time)]
-    (reset! (q/state :time-delta) (- current-time last-update-time))
-    (reset! (q/state :last-update-time) current-time))
+        last-update-time @(q/state :last-update-time)
+        mouse-down-duration @(q/state :mouse-down-duration)
+        elapsed-time (- current-time last-update-time)]
+    (reset! (q/state :time-delta) elapsed-time)
+    (reset! (q/state :last-update-time) current-time)
+    (when @(q/state :is-mouse-down?)
+      (reset! (q/state :mouse-down-duration) (+ mouse-down-duration elapsed-time))
+      (println (str "Mouse has been held down for: " @(q/state :mouse-down-duration)))))
 
   (swap! (q/state :grid) grid/update)
   (swap! (q/state :timeline) timeline/update))
-
-(o/stop)
 
 (defn draw []
   ; Quil has no update function that we can pass into
@@ -58,4 +71,6 @@
   :title "Groovy"
   :setup setup
   :draw draw
+  :mouse-pressed on-mouse-pressed
+  :mouse-released on-mouse-released
   :size [WINDOW_WIDTH 400])
