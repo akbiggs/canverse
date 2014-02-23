@@ -1,6 +1,8 @@
 (ns canverse.core
   (:require [canverse.grid :as grid]
             [canverse.timeline :as timeline]
+            [canverse.input :as input]
+            [canverse.square :as square]
             [quil.core :as q]
             [overtone.live :as o]))
 
@@ -31,31 +33,46 @@
                 :timeline (atom (timeline/create 60000 WINDOW_WIDTH))
                 :time-delta (atom 0)
                 :last-update-time (atom (o/now))
+
                 :active (atom nil)
+                :releasing (atom [])
 
                 :is-mouse-down? (atom false)
                 :mouse-down-duration (atom 0)))
 
 (defn on-mouse-pressed []
   (reset! (q/state :is-mouse-down?) true)
-  (reset! (q/state :mouse-down-duration) 0))
+  (reset! (q/state :mouse-down-duration) 0)
+  (let [grid @(q/state :grid)
+        square-to-play (grid/get-square-for (input/mouse-pos) grid)
+        node (square/play square-to-play)]
+    (reset! (q/state :active) node)))
 
 (defn on-mouse-released []
-  (reset! (q/state :is-mouse-down?) false))
+  (reset! (q/state :is-mouse-down?) false)
+  (reset! (q/state :releasing) (vec (conj @(q/state :releasing) @(q/state :active))))
+  (reset! (q/state :active) nil))
 
 (defn update []
   (let [current-time (o/now)
         last-update-time @(q/state :last-update-time)
         mouse-down-duration @(q/state :mouse-down-duration)
-        elapsed-time (- current-time last-update-time)]
+        elapsed-time (- current-time last-update-time)
+        time-held-ratio (/ (min mouse-down-duration 1000) 1000)]
     (reset! (q/state :time-delta) elapsed-time)
     (reset! (q/state :last-update-time) current-time)
+
     (when @(q/state :is-mouse-down?)
       (reset! (q/state :mouse-down-duration) (+ mouse-down-duration elapsed-time))
-      (println (str "Mouse has been held down for: " @(q/state :mouse-down-duration)))))
+      (o/ctl @(q/state :active) :amp time-held-ratio))
 
-  (swap! (q/state :grid) grid/update)
-  (swap! (q/state :timeline) timeline/update))
+    (reset! (q/state :releasing) (vec (filter o/node-live? @(q/state :releasing))))
+    (doseq [node @(q/state :releasing)]
+      (when (o/node-live? node)
+        (def current-amp (o/node-get-control node :amp))
+        (o/ctl node :amp (max 0 (- current-amp (/ elapsed-time 1000)))))))
+
+  (swap! (q/state :grid) grid/update))
 
 (defn draw []
   ; Quil has no update function that we can pass into

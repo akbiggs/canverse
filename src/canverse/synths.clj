@@ -13,26 +13,46 @@
         reverb (free-verb clp 0.4 0.8 0.2)]
     (* amp (env-gen (perc 0.0001 dur) FREE) reverb)))
 
-(definst oksaw [note 60 velocity 100 gate 1 bass-presence 0]
-  (let [freq (midicps note)
-        amp 0.33
-        snd (sin-osc freq)
-        env (env-gen (perc 0.0001 gate) gate :action FREE)
-        del (* (/ 1 (* 2 freq)) (+ 0.25 (* 0.25 (sin-osc 1))))
-        dfreq1 (* freq (Math/pow 2 (/ 40 1000)))
-        dfreq2 (* freq (Math/pow 2 (/ 22 1000)))
-        cutoff-env (env-gen (adsr 0.25 1 1 2) gate)
-        snd (lpf
-              (+
-                (* bass-presence amp (sin-osc (/ freq 2)))
-                (* amp (saw freq))
-                (delay-l (* amp (saw dfreq1)) 1 (/ del 2))
-                (delay-l (* amp (saw dfreq2)) 1 (/ del 3)))
-              (* 16000 cutoff-env))
+(definst oksaw [freq 60 velocity 100 gate 1 amp 1]
+  (let [
+        ; Set up a normal amplitude and amp envelope.
+        amp-env (env-gen (adsr 0 0.6 0.75 0.9) gate :action FREE)
+
+        ; Get three frequencies (primary freq and detunes at 40 and 22 cents higher)
+        freq (midicps freq)
+        dfreq1 (* freq (Math/pow 2 0.040))
+        dfreq2 (* freq (Math/pow 2 0.022))
+
+        ; Set up delay oscillator from zero to a quarter period away
+        quarter-period (/ 1 (* 4 freq))
+        delay-osc (* quarter-period (+ 0.5 (* 0.5 (sin-osc 1))))
+
+        ; Make three saws from the frequencies and offset them a bit
+        ; against the delay oscillator
+        saw1 (* (/ amp 3) (saw freq))
+        saw2 (delay-l (* (/ amp 3) (saw dfreq1)) 1 (/ delay-osc 2))
+        saw3 (delay-l (* (/ amp 3) (saw dfreq2)) 1 (/ delay-osc 3))
+
+        ; Set a cut-off envelope.  We'll use this with an LPF to give the
+        ; sound a bit of a stabby attack
+        cutoff-env (env-gen (adsr 0.25 1 1 9999) gate)
+
+        ; Combine the saws
+        snd (+ saw1 saw2 saw3)
+
+        ; Add the stabby attack part
+        snd (lpf snd (* 16000 cutoff-env))
+
+        ; Apply some EQ (Up the bass, drop the mids)
+
         snd (b-low-shelf snd 80 1 10)
-        snd (b-peak-eq snd 800 1 0)
-        snd (b-hi-shelf snd 2000 1 5)]
-    (* env snd)))
+        snd (b-peak-eq snd 800 1 -10)
+
+        snd (b-hi-shelf snd 2000 1 5)
+
+        ; Apply the amp envelope
+        snd (* amp-env snd)]
+      snd))
 
 (definst monotron
   "Korg Monotron from website diagram:

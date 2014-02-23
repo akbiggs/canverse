@@ -16,7 +16,7 @@
                     ])
 
 (defn create [row col]
-  {:row row :col col :synth synths/oksaw :synthnode nil})
+  {:row row :col col :synth synths/oksaw})
 
 (defn get-x [square]
   (* SQUARE_SIZE (:col square)))
@@ -44,28 +44,20 @@
      (q/mouse-state)
      (inside-bounds? square mouse-pos))))
 
-(defn is-playing? [square]
-  (o/node-live? (:synthnode square)))
-
 (defn play [square]
-  (if (is-playing? square)
-    square
-    (let [synth (:synth square)
-          col (:col square)
-          freq (+ 50 (* 2 col))
-          amp (* 0.2 (:row square))
-          node (synth :freq freq :amp amp)
-          add-note (partial timeline/add-note col)]
-      (swap! (q/state :timeline) add-note)
-      (assoc square :synthnode node))))
+  (let [synth (:synth square)
+        col (:col square)
+        freq (+ 50 (* 2 col))
+        node (synth :freq freq :amp 0)
+        add-note (partial timeline/add-note col)]
+    ;(swap! (q/state :timeline) add-note)
+    node))
 
 (defn select [square]
   (assoc (play square) :selected true))
 
 (defn update [square]
-  (if (is-selected? square)
-    (select square)
-    square))
+  square)
 
 (defn draw [square]
   (q/stroke 255)
