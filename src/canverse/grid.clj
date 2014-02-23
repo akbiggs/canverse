@@ -42,5 +42,5 @@
   (nth (:squares grid) (get-index-for pos grid)))
 
 (defn draw [grid]
-  (doseq [square (:squares g rid)]
+  (doseq [square (:squares grid)]
     (square/draw square)))
