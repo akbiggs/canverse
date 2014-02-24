@@ -31,48 +31,71 @@
 
   (q/set-state! :grid (atom (grid/create 7 7))
                 :timeline (atom (timeline/create 60000 WINDOW_WIDTH))
+
+                ; keep track of the amount of time that passes between
+                ; frames for properly handling animations/tweens
                 :time-delta (atom 0)
                 :last-update-time (atom (o/now))
 
+                ; active node is the node currently being controlled by
+                ; the user's mouse
                 :active (atom nil)
-                :releasing (atom [])
 
-                :is-mouse-down? (atom false)
-                :mouse-down-duration (atom 0)))
+                ; releasing nodes are all nodes that are no longer controlled
+                ; by the user (e.g. nodes that are fading out)
+                :releasing (atom nil)
 
-(defn on-mouse-pressed []
-  (reset! (q/state :is-mouse-down?) true)
-  (reset! (q/state :mouse-down-duration) 0)
-  (let [grid @(q/state :grid)
-        square-to-play (grid/get-square-for (input/mouse-pos) grid)
-        node (square/play square-to-play)]
-    (reset! (q/state :active) node)))
+                :input (atom (input/initialize))))
 
-(defn on-mouse-released []
-  (reset! (q/state :is-mouse-down?) false)
-  (reset! (q/state :releasing) (vec (conj @(q/state :releasing) @(q/state :active))))
+(defn update-time! [current-time elapsed-time]
+  (reset! (q/state :time-delta) elapsed-time)
+  (reset! (q/state :last-update-time) current-time))
+
+(defn update-input! [elapsed-time]
+  (swap! (q/state :input) (partial input/update elapsed-time))
+  @(q/state :input))
+
+(defn activate-node-at! [position]
+  (reset! (q/state :active) {:node (grid/play-at position @(q/state :grid))
+                             :base-pos position}))
+
+(defn get-active-node []
+  (:node @(q/state :active)))
+
+(defn update-active-node! [elapsed-time mouse-down-duration]
+  (let [time-held-ratio (/ mouse-down-duration 1000)]
+    (o/ctl (get-active-node) :amp time-held-ratio)))
+
+(defn release-active-node! []
+  (swap! (q/state :releasing) #(conj % (get-active-node)))
   (reset! (q/state :active) nil))
+
+(defn update-releasing-nodes! [elapsed-time]
+  (doseq [node @(q/state :releasing)]
+    (let [current-amp (o/node-get-control node :amp)
+          amp-decrease (/ elapsed-time 1000)
+          new-amp (max 0 (- current-amp amp-decrease))]
+      (if (= current-amp 0)
+        (o/kill node)
+        (o/ctl node :amp new-amp))))
+
+  (swap! (q/state :releasing) #(filter o/node-live? %)))
 
 (defn update []
   (let [current-time (o/now)
         last-update-time @(q/state :last-update-time)
-        mouse-down-duration @(q/state :mouse-down-duration)
         elapsed-time (- current-time last-update-time)
-        time-held-ratio (/ (min mouse-down-duration 1000) 1000)]
-    (reset! (q/state :time-delta) elapsed-time)
-    (reset! (q/state :last-update-time) current-time)
+        user-input (update-input! elapsed-time)]
 
-    (when @(q/state :is-mouse-down?)
-      (reset! (q/state :mouse-down-duration) (+ mouse-down-duration elapsed-time))
-      (o/ctl @(q/state :active) :amp time-held-ratio))
+    (update-time! current-time elapsed-time)
 
-    (reset! (q/state :releasing) (vec (filter o/node-live? @(q/state :releasing))))
-    (doseq [node @(q/state :releasing)]
-      (when (o/node-live? node)
-        (def current-amp (o/node-get-control node :amp))
-        (o/ctl node :amp (max 0 (- current-amp (/ elapsed-time 1000)))))))
+    (cond (:mouse-tapped? user-input) (activate-node-at! (:mouse-pos user-input))
+          (:mouse-just-released? user-input) (release-active-node!))
 
-  (swap! (q/state :grid) grid/update))
+    (when-not (nil? @(q/state :active))
+      (update-active-node! elapsed-time (:mouse-down-duration user-input)))
+
+    (update-releasing-nodes! elapsed-time)))
 
 (defn draw []
   ; Quil has no update function that we can pass into
@@ -88,6 +111,4 @@
   :title "Groovy"
   :setup setup
   :draw draw
-  :mouse-pressed on-mouse-pressed
-  :mouse-released on-mouse-released
   :size [WINDOW_WIDTH 400])

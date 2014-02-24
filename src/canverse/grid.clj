@@ -41,6 +41,9 @@
 (defn get-square-for [pos grid]
   (nth (:squares grid) (get-index-for pos grid)))
 
+(defn play-at [pos grid]
+  (square/play (get-square-for pos grid)))
+
 (defn draw [grid]
   (doseq [square (:squares grid)]
     (square/draw square)))

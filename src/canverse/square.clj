@@ -48,13 +48,10 @@
   (let [synth (:synth square)
         col (:col square)
         freq (+ 50 (* 2 col))
-        node (synth :freq freq :amp 0)
+        node (synth :freq freq :amp 0.01)
         add-note (partial timeline/add-note col)]
     ;(swap! (q/state :timeline) add-note)
     node))
-
-(defn select [square]
-  (assoc (play square) :selected true))
 
 (defn update [square]
   square)
