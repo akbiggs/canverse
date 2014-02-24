@@ -62,8 +62,9 @@
 (defn get-active-node []
   (:node @(q/state :active)))
 
-(defn update-active-node! [elapsed-time mouse-down-duration]
-  (let [time-held-ratio (/ mouse-down-duration 1000)]
+(defn update-active-node! [elapsed-time user-input]
+  (let [mouse-down-duration (:mouse-down-duration user-input)
+        time-held-ratio (/ mouse-down-duration 1000)]
     (o/ctl (get-active-node) :amp time-held-ratio)))
 
 (defn release-active-node! []
@@ -71,17 +72,17 @@
   (reset! (q/state :active) nil))
 
 (defn update-releasing-nodes! [elapsed-time]
+  (swap! (q/state :releasing) #(filter o/node-live? %))
+
   (doseq [node @(q/state :releasing)]
     (let [current-amp (o/node-get-control node :amp)
           amp-decrease (/ elapsed-time 1000)
           new-amp (max 0 (- current-amp amp-decrease))]
-      (if (= current-amp 0)
+      (if (<= new-amp 0)
         (o/kill node)
-        (o/ctl node :amp new-amp))))
+        (o/ctl node :amp new-amp)))))
 
-  (swap! (q/state :releasing) #(filter o/node-live? %)))
-
-(defn update []
+(defn update! []
   (let [current-time (o/now)
         last-update-time @(q/state :last-update-time)
         elapsed-time (- current-time last-update-time)
@@ -93,7 +94,7 @@
           (:mouse-just-released? user-input) (release-active-node!))
 
     (when-not (nil? @(q/state :active))
-      (update-active-node! elapsed-time (:mouse-down-duration user-input)))
+      (update-active-node! elapsed-time user-input))
 
     (update-releasing-nodes! elapsed-time)))
 
@@ -101,7 +102,7 @@
   ; Quil has no update function that we can pass into
   ; the sketch, so we have to do it at the top of the
   ; draw call.
-  (update)
+  (update!)
 
   (q/background 125)
   (grid/draw @(q/state :grid))
