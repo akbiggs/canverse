@@ -59,7 +59,8 @@
 (defn activate-node-at! [position grid]
   (let [node (grid/play-at position grid)
         initial-freq (o/node-get-control node :freq)
-        base-props {:position position :freq initial-freq}]
+        initial-climb (o/node-get-control node :climb)
+        base-props {:position position :freq initial-freq :climb initial-climb}]
     (reset! (q/state :active) {:node node :base base-props})))
 
 (defn get-active-node []
@@ -68,10 +69,12 @@
 (defn update-active-node! [elapsed-time user-input]
   (let [mouse-down-duration (:mouse-down-duration user-input)
         active @(q/state :active)
+        node (:node active)
         deviation (point/minus (:mouse-pos user-input) (get-in active [:base :position]))
-        new-freq (- (get-in active [:base :freq]) (/ (:x deviation) 25))
-        time-held-ratio (/ mouse-down-duration 1000)]
-    (o/ctl (:node active) :amp time-held-ratio :freq new-freq)))
+        new-freq (+ (get-in active [:base :freq]) (/ (:x deviation) 25))
+        new-climb (+ (get-in active [:base :climb]) (/ (:y deviation) 0.5))
+        time-held-ratio (/ mouse-down-duration new-climb)]
+    (o/ctl node :amp (min 1 time-held-ratio) :freq new-freq :climb new-climb)))
 
 (defn release-active-node! []
   (swap! (q/state :releasing) #(conj % (get-active-node)))

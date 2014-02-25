@@ -47,8 +47,10 @@
 (defn play [square]
   (let [synth (:synth square)
         col (:col square)
+        row (:row square)
         freq (+ 50 (* 2 col))
-        node (synth :freq freq :amp 0.01)
+        climb (+ 100 (* 100 row))
+        node (synth :freq freq :amp 0.01 :climb climb)
         add-note (partial timeline/add-note col)]
     ;(swap! (q/state :timeline) add-note)
     node))
