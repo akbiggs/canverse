@@ -33,7 +33,4 @@
     (let [x (:x note)
           y (:y note)
           [w h] (:size note)]
-      (print (str "X position: " x))
-      (print (str "Y position: " y))
-      (print (str "Size: " w ", " h))
       (q/rect x y w h))))
