@@ -3,6 +3,7 @@
             [canverse.timeline :as timeline]
             [canverse.input :as input]
             [canverse.square :as square]
+            [canverse.point :as point]
             [quil.core :as q]
             [overtone.live :as o]))
 
@@ -55,17 +56,22 @@
   (swap! (q/state :input) (partial input/update elapsed-time))
   @(q/state :input))
 
-(defn activate-node-at! [position]
-  (reset! (q/state :active) {:node (grid/play-at position @(q/state :grid))
-                             :base-pos position}))
+(defn activate-node-at! [position grid]
+  (let [node (grid/play-at position grid)
+        initial-freq (o/node-get-control node :freq)
+        base-props {:position position :freq initial-freq}]
+    (reset! (q/state :active) {:node node :base base-props})))
 
 (defn get-active-node []
   (:node @(q/state :active)))
 
 (defn update-active-node! [elapsed-time user-input]
   (let [mouse-down-duration (:mouse-down-duration user-input)
+        active @(q/state :active)
+        deviation (point/minus (:mouse-pos user-input) (get-in active [:base :position]))
+        new-freq (- (get-in active [:base :freq]) (/ (:x deviation) 25))
         time-held-ratio (/ mouse-down-duration 1000)]
-    (o/ctl (get-active-node) :amp time-held-ratio)))
+    (o/ctl (:node active) :amp time-held-ratio :freq new-freq)))
 
 (defn release-active-node! []
   (swap! (q/state :releasing) #(conj % (get-active-node)))
@@ -90,8 +96,11 @@
 
     (update-time! current-time elapsed-time)
 
-    (cond (:mouse-tapped? user-input) (activate-node-at! (:mouse-pos user-input))
-          (:mouse-just-released? user-input) (release-active-node!))
+    (cond (:mouse-tapped? user-input)
+          (activate-node-at! (:mouse-pos user-input) @(q/state :grid))
+
+          (:mouse-just-released? user-input)
+          (release-active-node!))
 
     (when-not (nil? @(q/state :active))
       (update-active-node! elapsed-time user-input))
