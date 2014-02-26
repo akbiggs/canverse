@@ -4,6 +4,7 @@
             [canverse.input :as input]
             [canverse.square :as square]
             [canverse.point :as point]
+            [canverse.helpers :as helpers]
             [quil.core :as q]
             [overtone.live :as o]))
 
@@ -57,10 +58,11 @@
   @(q/state :input))
 
 (defn activate-node-at! [position grid]
-  (let [node (grid/play-at position grid)
+  (let [square (grid/get-square-for position grid)
+        node (square/play square)
         initial-freq (o/node-get-control node :freq)
-        initial-climb (o/node-get-control node :climb)
-        base-props {:position position :freq initial-freq :climb initial-climb}]
+        max-amp (- 1 (* 0.1 (:row square)))
+        base-props {:position position :freq initial-freq :max-amp max-amp}]
     (reset! (q/state :active) {:node node :base base-props})))
 
 (defn get-active-node []
@@ -68,16 +70,31 @@
 
 (defn update-active-node! [elapsed-time user-input]
   (let [mouse-down-duration (:mouse-down-duration user-input)
+        mouse-pos (:mouse-pos user-input)
         active @(q/state :active)
         node (:node active)
 
         ; deviation is the amount of distance between the point at which
         ; the node started and the current position of the mouse
-        deviation (point/minus (:mouse-pos user-input) (get-in active [:base :position]))
-        new-freq (+ (get-in active [:base :freq]) (/ (:x deviation) 25))
-        new-climb (+ (get-in active [:base :climb]) (/ (:y deviation) 0.5))
-        time-held-ratio (/ mouse-down-duration new-climb)]
-    (o/ctl node :amp (min 1 time-held-ratio) :freq new-freq :climb new-climb)))
+        deviation (point/minus mouse-pos (get-in active [:base :position]))
+
+        ; to keep the transition smooth but the note still sounding nice,
+        ; as the user's mouse moves push the current frequency towards the nearest
+        ; note of the scale we're working on
+        target-freq (nth square/scale (/ (:x mouse-pos) square/SQUARE_SIZE))
+        freq-climb 0.2
+        current-freq (o/node-get-control node :freq)
+        next-freq (helpers/push-towards current-freq target-freq freq-climb)
+
+        amp-climb 0.05
+        next-amp (+ (o/node-get-control node :amp) amp-climb)
+
+        ; max amplitude a note can reach is determined by the y position
+        ; of the mouse, need to divide by a sufficiently large number to get
+        ; small increments as mouse moves around
+        intended-max-amp (- (get-in active [:base :max-amp]) (/ (:y deviation) 325))
+        max-amp (helpers/clamp intended-max-amp 0 1)]
+    (o/ctl node :amp (min max-amp next-amp) :freq next-freq)))
 
 (defn release-active-node! []
   (swap! (q/state :releasing) #(conj % (get-active-node)))
@@ -88,7 +105,7 @@
 
   (doseq [node @(q/state :releasing)]
     (let [current-amp (o/node-get-control node :amp)
-          amp-decrease (/ elapsed-time 1000)
+          amp-decrease (/ elapsed-time 2000)
           new-amp (max 0 (- current-amp amp-decrease))]
       (if (<= new-amp 0)
         (o/kill node)
