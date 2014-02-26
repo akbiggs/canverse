@@ -39,7 +39,7 @@ differentiate itself from other audio editors:
   3. The artist then continues playing sounds and looping them as necessary,
   eventually building up a song filled with many different synths and sounds.
 
- This approach provides a few advantages.
+This approach provides a few advantages.
 
   1. The artist can switch between freely improvising and looping back sounds.
   2. Visuals are automatically generated as the artist builds up the song.
