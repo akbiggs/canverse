@@ -14,7 +14,7 @@
                     [255 165 0]
                     [255 0 0]
                     ])
-(def pitches (o/scale :c4 :major))
+(def scale (o/scale :c4 :major))
 
 (defn create [row col]
   {:row row :col col :synth synths/oksaw})
@@ -49,9 +49,8 @@
   (let [synth (:synth square)
         col (:col square)
         row (:row square)
-        freq (nth pitches col)
-        climb (+ 20 (* 200 row))
-        node (synth :freq freq :amp 0.01 :climb climb)
+        freq (nth scale col)
+        node (synth :freq freq :amp 0.01)
         add-note (partial timeline/add-note col)]
     ;(swap! (q/state :timeline) add-note)
     node))
