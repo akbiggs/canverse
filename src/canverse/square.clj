@@ -1,6 +1,5 @@
 (ns canverse.square
   (:require [canverse.synths :as synths]
-            [canverse.timeline :as timeline]
             [overtone.live :as o]
             [quil.core :as q]))
 
@@ -17,7 +16,7 @@
 (def scale (o/scale :c4 :major))
 
 (defn create [row col]
-  {:row row :col col :synth synths/oksaw})
+  {:row row :col col :synth synths/dark-sea-horns})
 
 (defn get-x [square]
   (* SQUARE_SIZE (:col square)))
@@ -50,8 +49,7 @@
         col (:col square)
         row (:row square)
         freq (nth scale col)
-        node (synth :freq freq :amp 0.01)
-        add-note (partial timeline/add-note col)]
+        node (synth :freq freq :amp 0.01)]
     ;(swap! (q/state :timeline) add-note)
     node))
 
@@ -59,6 +57,7 @@
   square)
 
 (defn draw [square]
+  (q/push-style)
   (q/stroke 255)
   (q/stroke-weight 2)
   (if (is-selected? square)
@@ -66,4 +65,5 @@
     (q/no-fill))
   (let [x (get-x square)
         y (get-y square)]
-    (q/rect x y SQUARE_SIZE SQUARE_SIZE)))
+    (q/rect x y SQUARE_SIZE SQUARE_SIZE))
+  (q/pop-style))

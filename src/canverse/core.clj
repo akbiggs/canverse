@@ -32,7 +32,7 @@
   (q/frame-rate 30)
 
   (q/set-state! :grid (atom (grid/create 7 7))
-                :timeline (atom (timeline/create 60000 WINDOW_WIDTH))
+                :timeline (atom (timeline/create 30000 WINDOW_WIDTH))
 
                 ; keep track of the amount of time that passes between
                 ; frames for properly handling animations/tweens
@@ -63,10 +63,20 @@
         initial-freq (o/node-get-control node :freq)
         max-amp (- 1 (* 0.1 (:row square)))
         base-props {:position position :freq initial-freq :max-amp max-amp}]
+
     (reset! (q/state :active) {:node node :base base-props})))
 
 (defn get-active-node []
-  (:node @(q/state :active)))
+  (let [active @(q/state :active)]
+    (if-not (nil? active) (:node active) nil)))
+
+(defn get-all-nodes []
+  (let [active-node (get-active-node)
+        releasing-nodes @(q/state :releasing)]
+    (filter o/node-live?
+            (if-not (nil? active-node)
+              (conj releasing-nodes active-node)
+              releasing-nodes))))
 
 (defn update-active-node! [elapsed-time user-input]
   (let [mouse-down-duration (:mouse-down-duration user-input)
@@ -101,15 +111,34 @@
   (reset! (q/state :active) nil))
 
 (defn update-releasing-nodes! [elapsed-time]
-  (swap! (q/state :releasing) #(filter o/node-live? %))
+  (def live-nodes (filter o/node-live? @(q/state :releasing)))
 
-  (doseq [node @(q/state :releasing)]
+  (doseq [node live-nodes]
     (let [current-amp (o/node-get-control node :amp)
           amp-decrease (/ elapsed-time 2000)
           new-amp (max 0 (- current-amp amp-decrease))]
       (if (<= new-amp 0)
         (o/kill node)
-        (o/ctl node :amp new-amp)))))
+        (o/ctl node :amp new-amp))))
+
+  (reset! (q/state :releasing) live-nodes))
+
+(defn update-nodes! [elapsed-time user-input]
+  (cond (:mouse-tapped? user-input)
+        (activate-node-at! (:mouse-pos user-input) @(q/state :grid))
+
+        (:mouse-just-released? user-input)
+        (release-active-node!))
+  (when-not (nil? @(q/state :active))
+    (update-active-node! elapsed-time user-input))
+
+  (update-releasing-nodes! elapsed-time))
+
+(defn update-timeline! [elapsed-time nodes]
+  (swap! (q/state :timeline)
+         #(->> %
+               (timeline/add-notes-from-nodes nodes)
+               (timeline/update elapsed-time))))
 
 (defn update! []
   (let [current-time (o/now)
@@ -118,17 +147,8 @@
         user-input (update-input! elapsed-time)]
 
     (update-time! current-time elapsed-time)
-
-    (cond (:mouse-tapped? user-input)
-          (activate-node-at! (:mouse-pos user-input) @(q/state :grid))
-
-          (:mouse-just-released? user-input)
-          (release-active-node!))
-
-    (when-not (nil? @(q/state :active))
-      (update-active-node! elapsed-time user-input))
-
-    (update-releasing-nodes! elapsed-time)))
+    (update-timeline! elapsed-time (get-all-nodes))
+    (update-nodes! elapsed-time user-input)))
 
 (defn draw []
   ; Quil has no update function that we can pass into
