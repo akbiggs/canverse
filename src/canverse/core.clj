@@ -70,6 +70,9 @@
   (let [mouse-down-duration (:mouse-down-duration user-input)
         active @(q/state :active)
         node (:node active)
+
+        ; deviation is the amount of distance between the point at which
+        ; the node started and the current position of the mouse
         deviation (point/minus (:mouse-pos user-input) (get-in active [:base :position]))
         new-freq (+ (get-in active [:base :freq]) (/ (:x deviation) 25))
         new-climb (+ (get-in active [:base :climb]) (/ (:y deviation) 0.5))
