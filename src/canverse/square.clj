@@ -25,7 +25,7 @@
   (* SQUARE_SIZE (:row square)))
 
 (defn fill-color [square]
-  (conj (get COLUMN_COLORS (:col square)) 50))
+  (get COLUMN_COLORS (:col square)))
 
 (defn inside-bounds? [square position]
   (let [start-x (get-x square)
@@ -58,10 +58,10 @@
 
 (defn draw [square]
   (q/push-style)
-  (q/stroke 0)
+  (q/stroke 125 25)
   (q/stroke-weight 2)
   (if (is-selected? square)
-    (apply q/fill (fill-color square))
+    (apply q/fill (conj (fill-color square) 50))
     (q/no-fill))
   (let [x (get-x square)
         y (get-y square)]
