@@ -156,7 +156,7 @@
   ; draw call.
   (update!)
 
-  (q/background 125)
+  (q/background 0)
   (grid/draw @(q/state :grid))
   (timeline/draw @(q/state :timeline)))
 
