@@ -47,8 +47,6 @@
                 ; by the user (e.g. nodes that are fading out)
                 :releasing (atom nil)
 
-                :alpha-value (atom 10)
-
                 :input (atom (input/initialize))))
 
 (defn update-time! [current-time elapsed-time]
@@ -94,7 +92,7 @@
         ; as the user's mouse moves push the current frequency towards the nearest
         ; note of the scale we're working on
         target-freq (nth square/scale (/ (:x mouse-pos) square/SQUARE_SIZE))
-        freq-climb 0.2
+        freq-climb 0.5
         current-freq (o/node-get-control node :freq)
         next-freq (helpers/push-towards current-freq target-freq freq-climb)
 
@@ -142,9 +140,6 @@
                (timeline/add-notes-from-nodes nodes)
                (timeline/update elapsed-time))))
 
-(defn update-alpha! [active-node]
-  (square/update-alpha active-node))
-
 (defn update! []
   (let [current-time (o/now)
         last-update-time @(q/state :last-update-time)
@@ -152,8 +147,9 @@
         user-input (update-input! elapsed-time)]
 
     (update-time! current-time elapsed-time)
-    (update-alpha! (get-active-node))
+    (swap! (q/state :grid) (partial grid/update (get-active-node)))
     (update-timeline! elapsed-time (get-all-nodes))
+
     (update-nodes! elapsed-time user-input)))
 
 (defn draw []

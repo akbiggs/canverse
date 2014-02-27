@@ -16,14 +16,8 @@
                     ])
 (def scale (o/scale :c4 :major))
 
-(defn update-alpha [active-node]
-  (reset! (q/state :alpha-value)
-          (if-not (nil? active-node)
-            (* 100 (o/node-get-control active-node :amp))
-            (helpers/push-towards @(q/state :alpha-value) 0 0.0001))))
-
 (defn create [row col]
-  {:row row :col col :synth synths/dark-sea-horns})
+  {:row row :col col :synth synths/oksaw :alpha 0})
 
 (defn get-x [square]
   (* SQUARE_SIZE (:col square)))
@@ -51,6 +45,13 @@
      (q/mouse-state)
      (inside-bounds? square mouse-pos))))
 
+(defn update-alpha [active-node square]
+  (assoc square
+    :alpha
+    (if (and (not (nil? active-node)) (is-selected? square))
+      (* 100 (o/node-get-control active-node :amp))
+      (helpers/push-towards (:alpha square) 0 2))))
+
 (defn play [square]
   (let [synth (:synth square)
         col (:col square)
@@ -60,16 +61,14 @@
     ;(swap! (q/state :timeline) add-note)
     node))
 
-(defn update [square]
-  square)
+(defn update [active-node square]
+  (update-alpha active-node square))
 
 (defn draw [square]
   (q/push-style)
   (q/stroke 125 25)
   (q/stroke-weight 2)
-  (if (is-selected? square)
-    (apply q/fill (conj (fill-color square) @(q/state :alpha-value)))
-    (q/no-fill))
+  (apply q/fill (conj (fill-color square) (:alpha square)))
   (let [x (get-x square)
         y (get-y square)]
     (q/rect x y SQUARE_SIZE SQUARE_SIZE))

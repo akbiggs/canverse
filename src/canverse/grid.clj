@@ -8,11 +8,10 @@
                   col (range w)]
               (square/create row col))})
 
-(defn update [grid]
+(defn update [active-node grid]
   (assoc grid
     :squares
-    (for [square (:squares grid)]
-      (square/update square))))
+    (map #(square/update active-node %) (:squares grid))))
 
 (defn pixel-size [grid]
   (let [square-size (square/SQUARE_SIZE)
