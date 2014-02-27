@@ -47,6 +47,8 @@
                 ; by the user (e.g. nodes that are fading out)
                 :releasing (atom nil)
 
+                :alpha-value (atom 10)
+
                 :input (atom (input/initialize))))
 
 (defn update-time! [current-time elapsed-time]
@@ -140,6 +142,9 @@
                (timeline/add-notes-from-nodes nodes)
                (timeline/update elapsed-time))))
 
+(defn update-alpha! [active-node]
+  (square/update-alpha active-node))
+
 (defn update! []
   (let [current-time (o/now)
         last-update-time @(q/state :last-update-time)
@@ -147,6 +152,7 @@
         user-input (update-input! elapsed-time)]
 
     (update-time! current-time elapsed-time)
+    (update-alpha! (get-active-node))
     (update-timeline! elapsed-time (get-all-nodes))
     (update-nodes! elapsed-time user-input)))
 

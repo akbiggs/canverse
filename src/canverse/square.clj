@@ -1,5 +1,6 @@
 (ns canverse.square
   (:require [canverse.synths :as synths]
+            [canverse.helpers :as helpers]
             [overtone.live :as o]
             [quil.core :as q]))
 
@@ -14,6 +15,12 @@
                     [255 0 0]
                     ])
 (def scale (o/scale :c4 :major))
+
+(defn update-alpha [active-node]
+  (reset! (q/state :alpha-value)
+          (if-not (nil? active-node)
+            (* 100 (o/node-get-control active-node :amp))
+            (helpers/push-towards @(q/state :alpha-value) 0 0.0001))))
 
 (defn create [row col]
   {:row row :col col :synth synths/dark-sea-horns})
@@ -61,7 +68,7 @@
   (q/stroke 125 25)
   (q/stroke-weight 2)
   (if (is-selected? square)
-    (apply q/fill (conj (fill-color square) 50))
+    (apply q/fill (conj (fill-color square) @(q/state :alpha-value)))
     (q/no-fill))
   (let [x (get-x square)
         y (get-y square)]

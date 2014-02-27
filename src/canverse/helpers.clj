@@ -8,6 +8,8 @@
     (min target (+ n amount))
     (max target (- n amount))))
 
+(push-towards 100 0 0.5)
+
 (defn relative [n min max]
   "Get a value from 0 to 1 indicating the position of
   n relative to the min and max."
