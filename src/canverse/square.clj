@@ -1,7 +1,7 @@
 (ns canverse.square
   (:require [canverse.synths :as synths]
             [canverse.helpers :as helpers]
-            [overtone.live :as o]
+            [overtone.core :as o]
             [quil.core :as q]))
 
 (def SQUARE_SIZE 50)
@@ -14,6 +14,7 @@
                     [255 165 0]
                     [255 0 0]
                     ])
+
 (def scale (o/scale :c4 :major))
 
 (defn create [row col]

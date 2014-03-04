@@ -2,7 +2,7 @@
   (:require [canverse.helpers :as helpers]
             [canverse.square :as square]
             [canverse.synths :as synths]
-            [overtone.live :as o]
+            [overtone.core :as o]
             [quil.core :as q]))
 
 (defn create [history-length width]

@@ -6,26 +6,24 @@
             [canverse.point :as point]
             [canverse.helpers :as helpers]
             [quil.core :as q]
-            [overtone.live :as o]))
+            [overtone.core :as o])
+  (:gen-class :main true))
 
 (def WINDOW_WIDTH 352)
 
-(def my-kick (o/freesound 777))
-(def my-hat (o/freesound 802))
-(def my-clap (o/freesound 48310))
+;; (def my-kick (o/freesound 777))
+;; (def my-hat (o/freesound 802))
+;; (def my-clap (o/freesound 48310))
 
-(defn drum-loop []
-  (let [time (o/now)]
-    (doseq [interval [0 1000 2000 3000 3600]]
-      (o/apply-at (+ time interval) my-kick))
-    (doseq [interval [500 1500 2500 3350 3500]]
-      (o/apply-at (+ time interval) my-hat))
-    (doseq [interval [1000 3000 3750]]
-      (o/apply-at (+ time interval) my-clap))
-    (o/apply-at (+ time 4000) drum-loop)))
-
-(drum-loop)
-(o/stop)
+;; (defn drum-loop []
+;;   (let [time (o/now)]
+;;     (doseq [interval [0 1000 2000 3000 3600]]
+;;       (o/apply-at (+ time interval) my-kick))
+;;     (doseq [interval [500 1500 2500 3350 3500]]
+;;       (o/apply-at (+ time interval) my-hat))
+;;     (doseq [interval [1000 3000 3750]]
+;;       (o/apply-at (+ time interval) my-clap))
+;;     (o/apply-at (+ time 4000) drum-loop)))
 
 (defn setup []
   (q/smooth)
@@ -162,8 +160,9 @@
   (grid/draw @(q/state :grid))
   (timeline/draw @(q/state :timeline)))
 
-(q/defsketch groovy
-  :title "Groovy"
-  :setup setup
-  :draw draw
-  :size [WINDOW_WIDTH 400])
+(defn -main [& args]
+  (q/defsketch groovy
+               :title "Canverse"
+               :setup setup
+               :draw draw
+               :size [WINDOW_WIDTH 400]))

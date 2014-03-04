@@ -1,7 +1,8 @@
 (ns canverse.synths
-  (:use [overtone.live])
+  (:use [overtone.core])
   (:require [quil.core :as q]))
 
+(boot-external-server)
 (definst plucked-string [note 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
   (let [freq (midicps note)
         noize (* 0.8 ( white-noise))
