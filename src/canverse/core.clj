@@ -115,7 +115,7 @@
     (let [current-amp (o/node-get-control node :amp)
           amp-decrease (/ elapsed-time 2000)
           new-amp (max 0 (- current-amp amp-decrease))]
-      (if (<= new-amp 0)
+      (if (<= new-amp 0.05)
         (o/kill node)
         (o/ctl node :amp new-amp))))
 
