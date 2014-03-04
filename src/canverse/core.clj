@@ -166,3 +166,4 @@
                :setup setup
                :draw draw
                :size [WINDOW_WIDTH 400]))
+; (-main)
