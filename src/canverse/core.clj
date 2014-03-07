@@ -9,8 +9,7 @@
             [canverse.helpers :as helpers]
 
             [quil.core :as q]
-            [overtone.core :as o]
-            [clojure.template :as template])
+            [overtone.core :as o])
   (:gen-class :main true))
 
 (def WINDOW_WIDTH 352)
