@@ -102,12 +102,12 @@
         next-amplitudes (map (partial get-next-amplitude elapsed-time) live-nodes)
         nodes-and-amplitudes (map vector live-nodes next-amplitudes)
         kill-threshold 0.05
-        surviving-nodes (map first (filter #(> (second %) 0.05) nodes-and-amplitudes))]
+        surviving-nodes (map first (filter #(> (second %) kill-threshold) nodes-and-amplitudes))]
 
     (doseq [[node new-amp] nodes-and-amplitudes]
       ; kill the node once it falls below a small amplitude
       ; to free up memory
-      (if (<= new-amp 0.05)
+      (if (<= new-amp kill-threshold)
         (o/kill node)
         (o/ctl node :amp new-amp)))
 
