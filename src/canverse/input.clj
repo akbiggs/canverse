@@ -1,7 +1,7 @@
 (ns canverse.input
   (:require [quil.core :as q]))
 
-(defn initialize []
+(defn create []
   {:mouse-pos {:x 0 :y 0}
    :mouse-down? false
    :mouse-down-duration 0

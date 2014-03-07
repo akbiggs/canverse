@@ -42,7 +42,6 @@
     (update-in nodes [:active] #(conj % new-active-node))))
 
 (defn release-active [nodes]
-  (prn "Releasing all active nodes")
   (assoc nodes
     :active nil
     :releasing (concat (:releasing nodes) (get-active-nodes nodes))))
