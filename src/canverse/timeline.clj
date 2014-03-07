@@ -26,7 +26,7 @@
   (reduce #(add-note-from-node %2 %1) timeline
           (filter o/node-live? nodes)))
 
-(defn update [elapsed-time timeline]
+(defn progress-history [elapsed-time timeline]
   (assoc timeline
     :history
     (let [movement-ratio (/ elapsed-time (:history-length timeline))
@@ -35,6 +35,11 @@
           history (:history timeline)]
       (vec (for [note history]
         (assoc note :x (- (:x note) movement)))))))
+
+(defn update [elapsed-time nodes timeline]
+  (->> timeline
+       (add-notes-from-nodes nodes)
+       (progress-history elapsed-time)))
 
 (defn draw [timeline]
   (q/push-style)
