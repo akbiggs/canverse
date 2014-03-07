@@ -46,11 +46,11 @@
      (q/mouse-state)
      (inside-bounds? square mouse-pos))))
 
-(defn update-alpha [active-node square]
+(defn update-alpha [actives square]
   (assoc square
     :alpha
-    (if (and (not (nil? active-node)) (is-selected? square))
-      (* 100 (o/node-get-control active-node :amp))
+    (if (and (seq? actives) (is-selected? square))
+      (* 100 (o/node-get-control (:node (first actives)) :amp))
       (helpers/push-towards (:alpha square) 0 2))))
 
 (defn play [square]
@@ -59,11 +59,10 @@
         row (:row square)
         freq (nth scale col)
         node (synth :freq freq :amp 0.01)]
-    ;(swap! (q/state :timeline) add-note)
     node))
 
-(defn update [active-node square]
-  (update-alpha active-node square))
+(defn update [actives square]
+  (update-alpha actives square))
 
 (defn draw [square]
   (q/push-style)

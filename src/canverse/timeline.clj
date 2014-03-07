@@ -14,7 +14,7 @@
 
 (defn add-note-from-node [node timeline]
   (assoc timeline :history
-    (let [{freq :freq amp :amp} (o/node-get-controls node [:freq :amp])
+    (let [{:keys [freq amp]} (o/node-get-controls node [:freq :amp])
           new-x (:width timeline)
           relative-frequency (helpers/relative-in-scale freq square/scale)
           new-y (- 395 (* 45 relative-frequency))
