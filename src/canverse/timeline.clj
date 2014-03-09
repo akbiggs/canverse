@@ -2,22 +2,40 @@
   (:require [canverse.helpers :as helpers]
             [canverse.square :as square]
             [canverse.synths :as synths]
+            [canverse.point :as point]
             [overtone.core :as o]
             [quil.core :as q]))
 
-(defn create [history-length width]
+(defn create [position size history-length]
   "Creates a new timeline retaining history-length
   milliseconds worth of information."
-  {:history []
-   :history-length history-length
-   :width width})
+  {:position position
+   :size size
+   :history nil
+   :history-length history-length})
+
+(defn get-width [timeline]
+  (get-in timeline [:size :x]))
+
+(defn get-height [timeline]
+  (get-in timeline [:size :y]))
+
+(defn get-bottom [timeline]
+  (let [{:keys [position size]} timeline]
+    (+ (:y position) (:y size))))
 
 (defn add-note-from-node [node timeline]
   (assoc timeline :history
     (let [{:keys [freq amp]} (o/node-get-controls node [:freq :amp])
-          new-x (:width timeline)
+          width (get-width timeline)
+          new-x (+ (get-in timeline [:position :x]) width)
+
+          ; place the line for the note so higher frequencies go higher,
+          ; lower frequencies go lower
           relative-frequency (helpers/relative-in-scale freq square/scale)
-          new-y (- 395 (* 45 relative-frequency))
+          y-offset (* (get-height timeline) relative-frequency)
+          new-y (- (get-bottom timeline) y-offset)
+
           new-note {:x new-x :y new-y :size [1 2] :amp amp :relative-freq relative-frequency}
           history (:history timeline)]
       (conj history new-note))))
@@ -30,11 +48,10 @@
   (assoc timeline
     :history
     (let [movement-ratio (/ elapsed-time (:history-length timeline))
-          width (:width timeline)
-          movement (* movement-ratio width)
+          movement (* movement-ratio (get-width timeline))
           history (:history timeline)]
-      (vec (for [note history]
-        (assoc note :x (- (:x note) movement)))))))
+      (for [note history]
+        (assoc note :x (- (:x note) movement))))))
 
 (defn update [elapsed-time nodes timeline]
   (->> timeline
@@ -59,3 +76,5 @@
       (q/rect x y w h)))
 
   (q/pop-style))
+
+(def test-timeline (create (point/create 0 350) (point/create 352 45) 30000))

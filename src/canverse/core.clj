@@ -32,7 +32,9 @@
   (q/frame-rate 30)
 
   (q/set-state! :grid (atom (grid/create 7 7))
-                :timeline (atom (timeline/create 30000 WINDOW_WIDTH))
+                :timeline (atom (timeline/create (point/create 0 350)
+                                                 (point/create WINDOW_WIDTH 45)
+                                                 30000))
                 :nodes (atom (nodes/create))
                 :time (atom (time/create (o/now)))
                 :input (atom (input/create))))
