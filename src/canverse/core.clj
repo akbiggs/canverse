@@ -23,7 +23,7 @@
   (q/smooth)
   (q/frame-rate 30)
 
-  (q/set-state! :grid (atom (grid/create 7 7))
+  (q/set-state! :grid (atom (grid/create 35 35))
                 :timeline (atom (timeline/create 30000 WINDOW_WIDTH))
                 :nodes (atom (nodes/create))
 
@@ -86,3 +86,6 @@
                :draw draw
                :size [WINDOW_WIDTH 400]))
 (-main)
+
+
+(o/stop)
