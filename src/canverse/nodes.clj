@@ -3,6 +3,8 @@
             [canverse.square :as square]
             [canverse.point :as point]
             [canverse.helpers :as helpers]
+            [canverse.timeline :as timeline]
+
             [overtone.core :as o]
             [quil.core :as q]))
 
@@ -17,7 +19,10 @@
 
    ; releasing nodes are all nodes that are no longer controlled
    ; by the user (e.g. nodes that are fading out)
-   :releasing nil})
+   :releasing nil
+
+   ; loop nodes are replaying the history of a section of the timeline
+   :loops nil})
 
 (defn get-active-nodes [nodes]
   (map #(:node %) (:active nodes)))
@@ -47,6 +52,13 @@
   (assoc nodes
     :active nil
     :releasing (concat (:releasing nodes) (get-active-nodes nodes))))
+
+(defn create-loop-when-ready [timeline nodes]
+  (if (timeline/is-loop-selected? timeline)
+    (do
+      (prn "Adding loop with history " (timeline/get-history-to-loop timeline))
+      nodes)
+    nodes))
 
 (defn update-with-input [user-input grid nodes]
   (if (grid/in-bounds? (:mouse-pos user-input) grid)
@@ -87,6 +99,7 @@
     active))
 
 (defn update-all-active [elapsed-time user-input nodes]
+  (if )
   (assoc nodes :active
     (map #(update-single-active elapsed-time user-input %)
          (:active nodes))))
@@ -116,8 +129,9 @@
 
     (assoc nodes :releasing surviving-nodes)))
 
-(defn update [elapsed-time user-input grid nodes]
+(defn update [elapsed-time user-input grid timeline nodes]
   (->> nodes
+       (create-loop-when-ready timeline)
        (update-with-input user-input grid)
        (update-all-active elapsed-time user-input)
        (update-releasing elapsed-time)))

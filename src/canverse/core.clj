@@ -46,7 +46,7 @@
   (update-state! :input elapsed-time)
   (def user-input @(q/state :input))
 
-  (update-state! :nodes elapsed-time user-input @(q/state :grid))
+  (update-state! :nodes elapsed-time user-input @(q/state :grid) @(q/state :timeline))
   (def current-nodes @(q/state :nodes))
 
   (update-state! :grid (:active current-nodes))
