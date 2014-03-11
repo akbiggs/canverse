@@ -62,7 +62,7 @@
              #(conj % {:x (:x position)})))
 
 (defn add-loop-marquees-on-click [user-input timeline]
-  (if (and (:mouse-tapped user-input)
+  (if (and (:mouse-tapped? user-input)
            (in-bounds? (:mouse-pos user-input) timeline))
     (add-loop-marquee-at-position (:mouse-pos user-input) timeline)
     timeline))
@@ -91,16 +91,14 @@
       (q/rect x y w h)))
 
   (doseq [marquee (:loop-marquees timeline)]
+    (prn "Marquee: " marquee)
     (let [x (:x marquee)
           top (get-in timeline [:position :y])
           bottom (get-bottom timeline)
           alpha 0.5]
       (q/stroke 255)
+      (q/stroke-weight 5)
       (q/line x top x bottom)))
 
   (q/pop-style))
 
-(def test-timeline (create (point/create 0 350) (point/create 352 45) 30000))
-(get-in test-timeline [:position :y])
-(:loop-marquees test-timeline)
-(add-loop-marquee-at-position (point/create 50 50) test-timeline)

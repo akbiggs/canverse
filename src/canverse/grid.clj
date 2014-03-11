@@ -42,8 +42,7 @@
   (nth (:squares grid) (get-index-for pos grid) nil))
 
 (defn in-bounds? [pos grid]
-  (not (nil? (get-square-for (point/quotient pos (point/create square/SQUARE_SIZE square/SQUARE_SIZE))
-                             grid))))
+  (not (nil? (get-square-for pos grid))))
 
 (defn play-at [pos grid]
   (if (in-bounds? pos grid)
@@ -53,5 +52,3 @@
 (defn draw [grid]
   (doseq [square (:squares grid)]
     (square/draw square)))
-
-(def test-grid (create 5 5))
