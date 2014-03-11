@@ -50,7 +50,7 @@
   (def current-nodes @(q/state :nodes))
 
   (update-state! :grid (:active current-nodes))
-  (update-state! :timeline elapsed-time (nodes/get-all current-nodes)))
+  (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes)))
 
 (defn draw []
   ; Quil has no update function that we can pass into
@@ -68,4 +68,5 @@
                :setup setup
                :draw draw
                :size [WINDOW_WIDTH 400]))
+
 (-main)

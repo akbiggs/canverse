@@ -11,3 +11,4 @@
 (def minus (make-component-operation -))
 (def times (make-component-operation *))
 (def divide (make-component-operation /))
+(def quotient (make-component-operation quot))

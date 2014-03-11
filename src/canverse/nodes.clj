@@ -26,20 +26,22 @@
   (concat (get-active-nodes nodes) (:releasing nodes)))
 
 (defn activate-at [position grid nodes]
-  (let [square (grid/get-square-for position grid)
-        node (square/play square)
+  (if-not (grid/in-bounds? position grid)
+    nodes
+    (let [square (grid/get-square-for position grid)
+          node (square/play square)
 
-        initial-freq (o/node-get-control node :freq)
+          initial-freq (o/node-get-control node :freq)
 
-        ; control the max amplitude using the y-position
-        ; of the mouse
-        max-amp (- 1 (* 0.1 (:row square)))
+          ; control the max amplitude using the y-position
+          ; of the mouse
+          max-amp (- 1 (* 0.1 (:row square)))
 
-        ; base properties are the initial properties from which new
-        ; properties will be derived as the mouse moves around
-        base-props {:position position :freq initial-freq :max-amp max-amp}
-        new-active-node {:node node :base base-props}]
-    (update-in nodes [:active] #(conj % new-active-node))))
+          ; base properties are the initial properties from which new
+          ; properties will be derived as the mouse moves around
+          base-props {:position position :freq initial-freq :max-amp max-amp}
+          new-active-node {:node node :base base-props}]
+      (update-in nodes [:active] #(conj % new-active-node)))))
 
 (defn release-active [nodes]
   (assoc nodes
@@ -47,14 +49,16 @@
     :releasing (concat (:releasing nodes) (get-active-nodes nodes))))
 
 (defn update-with-input [user-input grid nodes]
-  (cond->> nodes
-           (:mouse-tapped? user-input)
-           (activate-at (:mouse-pos user-input) grid)
+  (if (grid/in-bounds? (:mouse-pos user-input) grid)
+    (cond->> nodes
+             (:mouse-tapped? user-input)
+             (activate-at (:mouse-pos user-input) grid)
 
-           (:mouse-just-released? user-input)
-           (release-active)
+             (:mouse-just-released? user-input)
+             (release-active)
 
-           :else (identity)))
+             :else (identity))
+    (release-active nodes)))
 
 (defn update-single-active [elapsed-time user-input active]
   (let [{:keys [mouse-down-duration mouse-pos]} user-input

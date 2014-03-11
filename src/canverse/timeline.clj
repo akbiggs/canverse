@@ -12,7 +12,8 @@
   {:position position
    :size size
    :history nil
-   :history-length history-length})
+   :history-length history-length
+   :loop-marquees nil})
 
 (defn get-width [timeline]
   (get-in timeline [:size :x]))
@@ -53,10 +54,24 @@
       (for [note history]
         (assoc note :x (- (:x note) movement))))))
 
-(defn update [elapsed-time nodes timeline]
+(defn in-bounds? [position timeline]
+  (helpers/is-point-in-rect? position (:position timeline) (:size timeline)))
+
+(defn add-loop-marquee-at-position [position timeline]
+  (update-in timeline [:loop-marquees]
+             #(conj % {:x (:x position)})))
+
+(defn add-loop-marquees-on-click [user-input timeline]
+  (if (and (:mouse-tapped user-input)
+           (in-bounds? (:mouse-pos user-input) timeline))
+    (add-loop-marquee-at-position (:mouse-pos user-input) timeline)
+    timeline))
+
+(defn update [user-input elapsed-time nodes timeline]
   (->> timeline
        (add-notes-from-nodes nodes)
-       (progress-history elapsed-time)))
+       (progress-history elapsed-time)
+       (add-loop-marquees-on-click user-input)))
 
 (defn draw [timeline]
   (q/push-style)
@@ -75,6 +90,17 @@
       (q/fill color alpha)
       (q/rect x y w h)))
 
+  (doseq [marquee (:loop-marquees timeline)]
+    (let [x (:x marquee)
+          top (get-in timeline [:position :y])
+          bottom (get-bottom timeline)
+          alpha 0.5]
+      (q/stroke 255)
+      (q/line x top x bottom)))
+
   (q/pop-style))
 
 (def test-timeline (create (point/create 0 350) (point/create 352 45) 30000))
+(get-in test-timeline [:position :y])
+(:loop-marquees test-timeline)
+(add-loop-marquee-at-position (point/create 50 50) test-timeline)
