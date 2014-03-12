@@ -4,6 +4,7 @@
             [canverse.point :as point]
             [canverse.helpers :as helpers]
             [canverse.timeline :as timeline]
+            [canverse.loop :as loop]
 
             [overtone.core :as o]
             [quil.core :as q]))
@@ -55,9 +56,8 @@
 
 (defn create-loop-when-ready [timeline nodes]
   (if (timeline/is-loop-selected? timeline)
-    (do
-      (prn "Adding loop with history " (timeline/get-history-to-loop timeline))
-      nodes)
+    (update-in nodes [:loops]
+      #(conj % (loop/create-from-history (timeline/get-history-to-loop timeline))))
     nodes))
 
 (defn update-with-input [user-input grid nodes]
@@ -99,7 +99,6 @@
     active))
 
 (defn update-all-active [elapsed-time user-input nodes]
-  (if )
   (assoc nodes :active
     (map #(update-single-active elapsed-time user-input %)
          (:active nodes))))

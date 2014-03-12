@@ -3,6 +3,8 @@
             [canverse.square :as square]
             [canverse.synths :as synths]
             [canverse.point :as point]
+            [canverse.loop :as loop]
+
             [overtone.core :as o]
             [quil.core :as q]))
 
@@ -47,7 +49,8 @@
           y-offset (* (get-height timeline) relative-frequency)
           new-y (- (get-bottom timeline) y-offset)
 
-          new-note {:x new-x :y new-y :size [1 2] :amp amp :relative-freq relative-frequency}
+          new-note {:x new-x :y new-y :relative-time (:history-length timeline)
+                    :size [1 (* 5 amp)] :amp amp :freq relative-frequency}
           history (:history timeline)]
       (conj history new-note))
 
@@ -69,7 +72,9 @@
             movement (* movement-ratio (get-width timeline))
             history (:history timeline)]
         (for [note history]
-          (assoc note :x (- (:x note) movement)))))
+          (let [new-x (- (:x note) movement)
+                relative-time (get-relative-time-of new-x)]
+            (assoc note :x new-x :relative-time relative-time)))))
     timeline))
 
 (defn in-bounds? [position timeline]
@@ -98,13 +103,18 @@
 
           start-loop-time (get-relative-time-of (:x (first marquees)) timeline)
           end-loop-time (get-relative-time-of (:x (last marquees)) timeline)]
-      (filter #(and (>= (get-relative-time-of (:x %) timeline) start-loop-time)
-                    (<= (get-relative-time-of (:x %) timeline) end-loop-time))
-              (:history timeline)))
+      {:start-time start-loop-time
+       :notes (filter #(and (>= (:relative-time %) start-loop-time)
+                            (<= (:relative-time %) end-loop-time))
+                      (:history timeline))
+       :end-time end-loop-time
+
+       ; TODO: Don't hardcode instrument
+       :instrument synths/oksaw})
     nil))
 
 (defn update-loop-selected [timeline]
-  (assoc timeline  :loop-selected? (is-loop-selected? timeline)))
+  (assoc timeline :loop-selected? (is-loop-selected? timeline)))
 
 (defn update [user-input elapsed-time nodes timeline]
   (->> timeline
@@ -121,7 +131,7 @@
     (let [x (:x note)
           y (:y note)
           alpha (* 255 (:amp note))
-          relative-freq (:relative-freq note)
+          relative-freq (helpers/relative-in-scale (:freq note) square/scale)
           color (q/lerp-color (apply q/color (second square/COLUMN_COLORS))
                               (apply q/color (last square/COLUMN_COLORS))
                               relative-freq)
