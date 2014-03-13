@@ -128,9 +128,15 @@
 
     (assoc nodes :releasing surviving-nodes)))
 
+(defn update-loops [elapsed-time nodes]
+  (assoc nodes
+    :loops
+    (doall (map #(loop/update! elapsed-time %) (:loops nodes)))))
+
 (defn update [elapsed-time user-input grid timeline nodes]
   (->> nodes
        (create-loop-when-ready timeline)
        (update-with-input user-input grid)
        (update-all-active elapsed-time user-input)
-       (update-releasing elapsed-time)))
+       (update-releasing elapsed-time)
+       (update-loops elapsed-time)))

@@ -50,7 +50,7 @@
           new-y (- (get-bottom timeline) y-offset)
 
           new-note {:x new-x :y new-y :relative-time (:history-length timeline)
-                    :size [1 (* 5 amp)] :amp amp :freq relative-frequency}
+                    :size [1 (* 5 amp)] :amp amp :freq freq}
           history (:history timeline)]
       (conj history new-note))
 
@@ -64,6 +64,10 @@
 (defn should-be-frozen? [timeline]
   (seq? (:loop-marquees timeline)))
 
+(defn get-relative-time-of [x-pos timeline]
+  (let [x-ratio (/ x-pos (get-width timeline))]
+    (Math/floor (* x-ratio (:history-length timeline)))))
+
 (defn progress-history [elapsed-time timeline]
   (if-not (should-be-frozen? timeline)
     (assoc timeline
@@ -73,7 +77,7 @@
             history (:history timeline)]
         (for [note history]
           (let [new-x (- (:x note) movement)
-                relative-time (get-relative-time-of new-x)]
+                relative-time (get-relative-time-of new-x timeline)]
             (assoc note :x new-x :relative-time relative-time)))))
     timeline))
 
@@ -92,10 +96,6 @@
 
 (defn is-loop-selected? [timeline]
   (>= (count (:loop-marquees timeline)) 2))
-
-(defn get-relative-time-of [x-pos timeline]
-  (let [x-ratio (/ x-pos (get-width timeline))]
-    (Math/floor (* x-ratio (:history-length timeline)))))
 
 (defn get-history-to-loop [timeline]
   (if (is-loop-selected? timeline)

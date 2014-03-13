@@ -1,5 +1,6 @@
 (ns canverse.loop
   (:require [canverse.synths :as synths]
+            [canverse.helpers :as helpers]
             [overtone.core :as o]))
 
 (defn initialize-node [instrument]
@@ -7,7 +8,11 @@
 
 (defn create-from-history [history]
   (let [{:keys [notes start-time end-time instrument]} history]
-    {:notes (map #(assoc % :relative-time (- (:relative-time %) start-time)) notes)
+    {
+     ; since we no longer care about the time when the loop started, just
+     ; the relative offsets of the notes from the start, subtract
+     ; the start time from each note's time
+     :notes (map #(assoc % :relative-time (- (:relative-time %) start-time)) notes)
      :end-time (- end-time start-time)
      :node (initialize-node instrument)
      :current-time 0
@@ -35,19 +40,24 @@
           (:notes loop)))
 
 (defn get-current-note [loop]
-  (let [notes-before-current-time (filter )]))
-(defn play-current-note [loop]
-  (let [current-note (get-current-note loop)]
-    (if )))
+  (first (get-notes-before-current-time loop)))
 
-(defn update [elapsed-time loop]
+(defn play-current-note! [loop]
+  (let [current-note (get-current-note loop)]
+    (when-not (nil? current-note)
+      (o/ctl (:node loop) :amp (:amp current-note) :freq (:freq current-note))))
+  loop)
+
+(defn update! [elapsed-time loop]
   (->> loop
        (update-current-time elapsed-time)
-       (play-current-note)))
+       (play-current-note!)))
 
-(def test-loop (create-from-history {:start-time 500 :notes [{:relative-time 800} {:relative-time 1000} {:relative-time 1200}]
+; TESTING
+(def test-loop (create-from-history {:start-time 500 :notes [{:relative-time 800 :amp 0.5 :freq 60} {:relative-time 1000} {:relative-time 1200}]
                                       :end-time 1500
                                      :instrument synths/oksaw}))
-(def after-time-update (update-current-time 400 test-loop))
+(def after-time-update (update-current-time 800 test-loop))
 after-time-update
 (get-notes-before-current-time after-time-update)
+(get-current-note after-time-update)

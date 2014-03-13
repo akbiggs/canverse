@@ -28,3 +28,6 @@
     (and
      (>= pos-x start-x) (>= pos-y start-y)
      (<= pos-x end-x) (<= pos-y end-y))))
+
+;;debugging parts of expressions
+(defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
