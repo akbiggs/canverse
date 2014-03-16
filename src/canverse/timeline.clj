@@ -68,16 +68,18 @@
   (let [x-ratio (/ x-pos (get-width timeline))]
     (Math/floor (* x-ratio (:history-length timeline)))))
 
+(defn get-movement [elapsed-time timeline]
+  (* (/ elapsed-time (:history-length timeline)) (get-width timeline)))
+
 (defn progress-history [elapsed-time timeline]
   (if-not (should-be-frozen? timeline)
     (assoc timeline
       :history
-      (let [movement-ratio (/ elapsed-time (:history-length timeline))
-            movement (* movement-ratio (get-width timeline))
+      (let [movement (get-movement elapsed-time timeline)
             history (:history timeline)]
         (for [note history]
           (let [new-x (- (:x note) movement)
-                relative-time (get-relative-time-of new-x timeline)]
+                relative-time (- (:relative-time note) elapsed-time)]
             (assoc note :x new-x :relative-time relative-time)))))
     timeline))
 
