@@ -5,7 +5,7 @@
             [overtone.core :as o]
             [quil.core :as q]))
 
-(def SQUARE_SIZE 25)
+(def SQUARE_SIZE 50)
 (def COLUMN_COLORS [
                     [128 0 128]
                     [0 0 255]
@@ -15,12 +15,6 @@
                     [255 165 0]
                     [255 0 0]
                     ])
-
-(def NEW_COLOR [
-                [0 0 255]
-                [255 0 0]
-                ])
-
 
 
 (def scale (concat (o/scale :c4 :major) (o/scale :Bb4 :minor)))
@@ -39,9 +33,7 @@
   (point/create (get-x square) (get-y square)))
 
 (defn fill-color [square]
-  (q/lerp-color (apply q/color (conj (first NEW_COLOR) (:alpha square)))
-                (apply q/color (conj (last NEW_COLOR) (:alpha square)))
-                (/ (:col square) 35)))
+  (get COLUMN_COLORS (:col square)))
 
 (defn inside-bounds? [square point]
   (let [square-pos (get-position square)
@@ -76,7 +68,7 @@
   (q/push-style)
   (q/stroke 125 25)
   (q/stroke-weight 2)
-  (q/fill (fill-color square))
+  (apply q/fill (conj (fill-color square) (:alpha square)))
   (let [x (get-x square)
         y (get-y square)]
     (q/rect x y SQUARE_SIZE SQUARE_SIZE))
