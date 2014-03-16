@@ -14,9 +14,7 @@
         reverb (free-verb clp 0.4 0.8 0.2)]
     (* amp (env-gen (perc 0.0001 dur) FREE) reverb)))
 
-; climb is a hack parameter that isn't used here, but is instead
-; controlled in the main update loop based on the mouse movement
-(definst oksaw [freq 60 velocity 100 gate 1 amp 1 climb 100]
+(defsynth oksaw [freq 60 velocity 100 gate 1 amp 1]
   (let [
         ; Set up a normal amplitude and amp envelope.
         amp-env (env-gen (adsr 0 0.6 0.75 0.9) gate :action FREE)
