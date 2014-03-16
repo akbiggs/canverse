@@ -50,7 +50,7 @@
           new-y (- (get-bottom timeline) y-offset)
 
           new-note {:x new-x :y new-y :relative-time (:history-length timeline)
-                    :size [1 (* 5 amp)] :amp amp :freq freq}
+                    :size [1 (* 5 amp)] :amp amp :freq freq :node-id (o/to-sc-id node)}
           history (:history timeline)]
       (conj history new-note))
 
