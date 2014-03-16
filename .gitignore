@@ -12,3 +12,14 @@ pom.xml.asc
 .lein-repl-history
 .nrepl-*
 hs_err_*
+.DS_Store
+ShapeMusic/.settings/
+ShapeMusic/logs/
+ShapeMusic/project/project/
+ShapeMusic/project/target/
+ShapeMusic/target/
+ShapeMusic/test/groovyclojure/
+src/.DS_Store
+src/canverse/time.clj
+test/.DS_Store
+test/groovyclojure/test.clj

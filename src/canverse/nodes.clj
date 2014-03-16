@@ -3,6 +3,9 @@
             [canverse.square :as square]
             [canverse.point :as point]
             [canverse.helpers :as helpers]
+            [canverse.timeline :as timeline]
+            [canverse.loop :as loop]
+
             [overtone.core :as o]
             [quil.core :as q]))
 
@@ -17,7 +20,10 @@
 
    ; releasing nodes are all nodes that are no longer controlled
    ; by the user (e.g. nodes that are fading out)
-   :releasing nil})
+   :releasing nil
+
+   ; loop nodes are replaying the history of a section of the timeline
+   :loops nil})
 
 (defn get-active-nodes [nodes]
   (map #(:node %) (:active nodes)))
@@ -26,36 +32,45 @@
   (concat (get-active-nodes nodes) (:releasing nodes)))
 
 (defn activate-at [position grid nodes]
-  (let [square (grid/get-square-for position grid)
-        node (square/play square)
+  (if-not (grid/in-bounds? position grid)
+    nodes
+    (let [square (grid/get-square-for position grid)
+          node (square/play square)
 
-        initial-freq (o/node-get-control node :freq)
+          initial-freq (o/node-get-control node :freq)
 
-        ; control the max amplitude using the y-position
-        ; of the mouse
-        max-amp (- 1 (* 0.1 (:row square)))
+          ; control the max amplitude using the y-position
+          ; of the mouse
+          max-amp (- 1 (* 0.1 (:row square)))
 
-        ; base properties are the initial properties from which new
-        ; properties will be derived as the mouse moves around
-        base-props {:position position :freq initial-freq :max-amp max-amp}
-        new-active-node {:node node :base base-props}]
-    (update-in nodes [:active] #(conj % new-active-node))))
+          ; base properties are the initial properties from which new
+          ; properties will be derived as the mouse moves around
+          base-props {:position position :freq initial-freq :max-amp max-amp}
+          new-active-node {:node node :base base-props}]
+      (update-in nodes [:active] #(conj % new-active-node)))))
 
 (defn release-active [nodes]
-  (prn "Releasing all active nodes")
   (assoc nodes
     :active nil
     :releasing (concat (:releasing nodes) (get-active-nodes nodes))))
 
+(defn create-loop-when-ready [timeline nodes]
+  (if (timeline/is-loop-selected? timeline)
+    (update-in nodes [:loops]
+      #(conj % (loop/create-from-history (timeline/get-history-to-loop timeline))))
+    nodes))
+
 (defn update-with-input [user-input grid nodes]
-  (cond->> nodes
-           (:mouse-tapped? user-input)
-           (activate-at (:mouse-pos user-input) grid)
+  (if (grid/in-bounds? (:mouse-pos user-input) grid)
+    (cond->> nodes
+             (:mouse-tapped? user-input)
+             (activate-at (:mouse-pos user-input) grid)
 
-           (:mouse-just-released? user-input)
-           (release-active)
+             (:mouse-just-released? user-input)
+             (release-active)
 
-           :else (identity)))
+             :else (identity))
+    (release-active nodes)))
 
 (defn update-single-active [elapsed-time user-input active]
   (let [{:keys [mouse-down-duration mouse-pos]} user-input
@@ -113,8 +128,15 @@
 
     (assoc nodes :releasing surviving-nodes)))
 
-(defn update [elapsed-time user-input grid nodes]
+(defn update-loops [elapsed-time nodes]
+  (assoc nodes
+    :loops
+    (doall (map #(loop/update! elapsed-time %) (:loops nodes)))))
+
+(defn update [elapsed-time user-input grid timeline nodes]
   (->> nodes
+       (create-loop-when-ready timeline)
        (update-with-input user-input grid)
        (update-all-active elapsed-time user-input)
-       (update-releasing elapsed-time)))
+       (update-releasing elapsed-time)
+       (update-loops elapsed-time)))

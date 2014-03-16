@@ -17,3 +17,17 @@
 
 (defn relative-in-scale [note scale]
   (relative note (first scale) (last scale)))
+
+(defn is-point-in-rect? [point rect-start rect-size]
+  (let [start-x (:x rect-start)
+        end-x (+ start-x (:x rect-size))
+        start-y (:y rect-start)
+        end-y (+ start-y (:x rect-size))
+        pos-x (:x point)
+        pos-y (:y point)]
+    (and
+     (>= pos-x start-x) (>= pos-y start-y)
+     (<= pos-x end-x) (<= pos-y end-y))))
+
+;;debugging parts of expressions
+(defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))

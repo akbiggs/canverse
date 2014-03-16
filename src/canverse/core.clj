@@ -5,6 +5,7 @@
             [canverse.square :as square]
             [canverse.point :as point]
             [canverse.nodes :as nodes]
+            [canverse.time :as time]
             [canverse.helpers :as helpers]
 
             [quil.core :as q]
@@ -13,61 +14,43 @@
 
 (def WINDOW_WIDTH 352)
 
-(defmacro swap-state! [state function]
-  `(swap! (q/state ~state) ~function))
+(defn swap-state! [state function]
+  (swap! (q/state state) function))
 
-(defmacro reset-state! [state value]
-  `(reset! (q/state ~state) ~value))
+(defn reset-state! [state value]
+  (reset! (q/state state) value))
+
+(defn update-state! [state & args]
+  (let [namespace-symbol (symbol (str "canverse." (name state)))
+        update-fn (intern `~namespace-symbol 'update)
+        partial-args (concat [update-fn] args)]
+    (swap-state! state (apply partial partial-args))
+    @(q/state state)))
 
 (defn setup []
   (q/smooth)
   (q/frame-rate 30)
 
-  (q/set-state! :grid (atom (grid/create 35 35))
-                :timeline (atom (timeline/create 30000 WINDOW_WIDTH))
+  (q/set-state! :grid (atom (grid/create 7 7))
+                :timeline (atom (timeline/create (point/create 0 350)
+                                                 (point/create WINDOW_WIDTH 45)
+                                                 30000))
                 :nodes (atom (nodes/create))
-
-                ; keep track of the amount of time that passes between
-                ; frames for properly handling animations/tweens
-                :time-delta (atom 0)
-                :last-update-time (atom (o/now))
-
-                :input (atom (input/initialize))))
-
-(defn update-time! [current-time elapsed-time]
-  (reset-state! :time-delta elapsed-time)
-  (reset-state! :last-update-time current-time))
-
-(defn update-input! [elapsed-time]
-  (swap-state! :input (partial input/update elapsed-time)))
-
-(defn update-nodes! [elapsed-time user-input grid]
-  (swap-state! :nodes (partial nodes/update elapsed-time user-input grid)))
-
-(defn update-grid! [active-nodes]
-  (swap-state! :grid (partial grid/update active-nodes)))
-
-(defn update-timeline! [elapsed-time nodes]
-  (swap-state! :timeline
-               #(->> %
-                     (timeline/add-notes-from-nodes nodes)
-                     (timeline/update elapsed-time))))
+                :time (atom (time/create (o/now)))
+                :input (atom (input/create))))
 
 (defn update! []
-  (let [current-time (o/now)
-        last-update-time @(q/state :last-update-time)
-        elapsed-time (- current-time last-update-time)]
+  (update-state! :time (o/now))
+  (def elapsed-time (:elapsed-time @(q/state :time)))
 
-    (update-time! current-time elapsed-time)
+  (update-state! :input elapsed-time)
+  (def user-input @(q/state :input))
 
-    (update-input! elapsed-time)
-    (def user-input @(q/state :input))
+  (update-state! :nodes elapsed-time user-input @(q/state :grid) @(q/state :timeline))
+  (def current-nodes @(q/state :nodes))
 
-    (update-nodes! elapsed-time user-input @(q/state :grid))
-    (def current-nodes @(q/state :nodes))
-
-    (update-grid! (:active current-nodes))
-    (update-timeline! elapsed-time (nodes/get-all current-nodes))))
+  (update-state! :grid (:active current-nodes))
+  (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes)))
 
 (defn draw []
   ; Quil has no update function that we can pass into
@@ -85,6 +68,7 @@
                :setup setup
                :draw draw
                :size [WINDOW_WIDTH 400]))
+
 (-main)
 
 

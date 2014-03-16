@@ -1,5 +1,6 @@
 (ns canverse.grid
-  (:require [canverse.square :as square]))
+  (:require [canverse.square :as square]
+            [canverse.point :as point]))
 
 (defn create [w h]
   {:width w
@@ -38,10 +39,15 @@
     (+ col (* width-in-squares row))))
 
 (defn get-square-for [pos grid]
-  (nth (:squares grid) (get-index-for pos grid)))
+  (nth (:squares grid) (get-index-for pos grid) nil))
+
+(defn in-bounds? [pos grid]
+  (not (nil? (get-square-for pos grid))))
 
 (defn play-at [pos grid]
-  (square/play (get-square-for pos grid)))
+  (if (in-bounds? pos grid)
+    (square/play (get-square-for pos grid))
+    nil))
 
 (defn draw [grid]
   (doseq [square (:squares grid)]

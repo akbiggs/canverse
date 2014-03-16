@@ -1,6 +1,7 @@
 (ns canverse.square
   (:require [canverse.synths :as synths]
             [canverse.helpers :as helpers]
+            [canverse.point :as point]
             [overtone.core :as o]
             [quil.core :as q]))
 
@@ -34,21 +35,18 @@
 (defn get-y [square]
   (* SQUARE_SIZE (:row square)))
 
+(defn get-position [square]
+  (point/create (get-x square) (get-y square)))
+
 (defn fill-color [square]
   (q/lerp-color (apply q/color (conj (first NEW_COLOR) (:alpha square)))
                 (apply q/color (conj (last NEW_COLOR) (:alpha square)))
                 (/ (:col square) 35)))
 
-(defn inside-bounds? [square position]
-  (let [start-x (get-x square)
-        end-x (+ start-x SQUARE_SIZE)
-        start-y (get-y square)
-        end-y (+ start-y SQUARE_SIZE)
-        pos-x (:x position)
-        pos-y (:y position)]
-    (and
-     (>= pos-x start-x) (>= pos-y start-y)
-     (<= pos-x end-x) (<= pos-y end-y))))
+(defn inside-bounds? [square point]
+  (let [square-pos (get-position square)
+        square-size (point/create SQUARE_SIZE SQUARE_SIZE)]
+    (helpers/is-point-in-rect? point square-pos square-size)))
 
 (defn is-selected? [square]
   (let [mouse-pos {:x (q/mouse-x) :y (q/mouse-y)}]
