@@ -23,7 +23,7 @@
   (atom (str "Enter " (get INPUT_TYPE input))))
 
 
-(def params {:big-text-size 12
+(def params {:big-text-size 20
 	:background-color 25
 	:foreground-color 200})
 
@@ -57,7 +57,9 @@
   (text (str (:value input)) 200 (+ 60 (* 20 (:input input))))
   (text @(get-input (:input input)) 20 (+ 60 (* 20 (:input input))))
   (def mousepointer (point/create (mouse-x) (mouse-y)))
-  (text (str (:x mousepointer) (:y mousepointer)) 10 10)
+  (text-size (:big-text-size params))
+  (text (str "Filter Adjustment Window") 10 20)
+  (text-size @current-text-size)
   (def last-key-pressed (:last-key-pressed user-input))
   (if (and (key-pressed?)
            (not (nil? last-key-pressed))
