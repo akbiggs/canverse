@@ -7,6 +7,8 @@
             [canverse.nodes :as nodes]
             [canverse.time :as time]
             [canverse.helpers :as helpers]
+            [canverse.instrumentwindow.keycapture :as key-capture]
+            [canverse.instrumentwindow.envelopeinput :as envelope-input]
 
             [quil.core :as q]
             [overtone.core :as o])
@@ -39,6 +41,26 @@
                 :time (atom (time/create (o/now)))
                 :input (atom (input/create))))
 
+(defn setup-instrument-window []
+  (q/smooth)
+  (q/no-stroke)
+  (q/frame-rate 30)
+
+
+  (q/set-state! :message (atom "Value")
+                :envelope-input (atom (envelope-input/create 7))
+                :time (atom (time/create (o/now)))
+                :input (atom (input/create))))
+
+(defn draw-instrument []
+  ; Quil has no update function that we can pass into
+  ; the sketch, so we have to do it at the top of the
+  ; draw call.
+  (update-state! :input 20)
+
+  (q/background 0)
+  (envelope-input/draw @(q/state :envelope-input) @(q/state :input)))
+
 (defn update! []
   (update-state! :time (o/now))
   (def elapsed-time (:elapsed-time @(q/state :time)))
@@ -67,7 +89,12 @@
                :title "Canverse"
                :setup setup
                :draw draw
-               :size [WINDOW_WIDTH 400]))
+               :size [WINDOW_WIDTH 400])
+  (q/defsketch instrgroovy
+               :title "Canverse Instrument"
+               :setup setup-instrument-window
+               :draw draw-instrument
+               :size [WINDOW_WIDTH 300]))
 
 (-main)
 
