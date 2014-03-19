@@ -3,8 +3,8 @@
   (:require [quil.core :as q]))
 
 (boot-external-server)
-(definst plucked-string [note 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
-  (let [freq (midicps note)
+(definst plucked-string [freq 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
+  (let [freq (midicps freq)
         noize (* 0.8 ( white-noise))
         dly (/ 1.0 freq)
         plk (pluck noize gate dly dly decay coef)
@@ -14,7 +14,9 @@
         reverb (free-verb clp 0.4 0.8 0.2)]
     (* amp (env-gen (perc 0.0001 dur) FREE) reverb)))
 
-(defsynth oksaw [freq 60 velocity 100 gate 1 amp 1]
+; climb is a hack parameter that isn't used here, but is instead
+; controlled in the main update loop based on the mouse movement
+(definst oksaw [freq 60 velocity 100 gate 1 amp 1 climb 100]
   (let [
         ; Set up a normal amplitude and amp envelope.
         amp-env (env-gen (adsr 0 0.6 0.75 0.9) gate :action FREE)

@@ -15,7 +15,7 @@
    :size size
    :history nil
    :history-length history-length
-   :loop-marquees nil
+   :loop-notes nil
    :loop-selected? false})
 
 (defn get-width [timeline]
@@ -29,7 +29,7 @@
     (+ (:y position) (:y size))))
 
 (defn clear [timeline]
-  (assoc timeline :history nil :loop-marquees nil :loop-selected? false))
+  (assoc timeline :history nil :loop-notes nil :loop-selected? false))
 
 (defn clear-after-loop-selected [timeline]
   (if (:loop-selected? timeline)
@@ -55,14 +55,14 @@
       (conj history new-note))
 
     ; clear loop selection on note added
-    :loop-marquees nil))
+    :loop-notes nil))
 
 (defn add-notes-from-nodes [nodes timeline]
   (reduce #(add-note-from-node %2 %1) timeline
           (filter o/node-live? nodes)))
 
 (defn should-be-frozen? [timeline]
-  (seq? (:loop-marquees timeline)))
+  (seq? (:loop-notes timeline)))
 
 (defn get-relative-time-of [x-pos timeline]
   (let [x-ratio (/ x-pos (get-width timeline))]
@@ -86,29 +86,44 @@
 (defn in-bounds? [position timeline]
   (helpers/is-point-in-rect? position (:position timeline) (:size timeline)))
 
-(defn add-loop-marquee-at-position [position timeline]
-  (update-in timeline [:loop-marquees]
-             #(sort-by :x (conj % {:x (:x position)}))))
+(defn get-note-distance-from [x-pos note timeline]
+  (Math/abs (- (int (:x note)) x-pos)))
 
-(defn add-loop-marquees-on-click [user-input timeline]
+(defn get-node-at [x-pos timeline]
+  (let [is-note-close? #(<= (get-note-distance-from x-pos % timeline) 0.5)
+        notes (:history timeline)
+        closest-note (helpers/find-where is-note-close? notes)]
+    closest-note))
+
+(defn select-node [id timeline]
+  (assoc timeline :loop-notes
+    (let [old-loop-notes (:loop-notes timeline)
+          all-node-notes (filter #(= (:node-id %) id) (:history timeline))]
+      (sort-by :x (concat old-loop-notes all-node-notes)))))
+
+(defn select-node-at-position [position timeline]
+  (let [node-to-select (get-node-at (:x position) timeline)]
+    (select-node (:node-id node-to-select) timeline)))
+
+(defn select-node-on-click [user-input timeline]
   (if (and (:mouse-tapped? user-input)
            (in-bounds? (:mouse-pos user-input) timeline))
-    (add-loop-marquee-at-position (:mouse-pos user-input) timeline)
+    (select-node-at-position (:mouse-pos user-input) timeline)
     timeline))
 
 (defn is-loop-selected? [timeline]
-  (>= (count (:loop-marquees timeline)) 2))
+  (not (nil? (:loop-notes timeline))))
+
+(defn is-note-selected? [note timeline]
+  (some #(= (:node-id note) (:node-id %)) (:loop-notes timeline)))
 
 (defn get-history-to-loop [timeline]
   (if (is-loop-selected? timeline)
-    (let [marquees (:loop-marquees timeline)
-
-          start-loop-time (get-relative-time-of (:x (first marquees)) timeline)
-          end-loop-time (get-relative-time-of (:x (last marquees)) timeline)]
+    (let [loop-notes (:loop-notes timeline)
+          start-loop-time (:relative-time (first loop-notes))
+          end-loop-time (:relative-time (last loop-notes))]
       {:start-time start-loop-time
-       :notes (filter #(and (>= (:relative-time %) start-loop-time)
-                            (<= (:relative-time %) end-loop-time))
-                      (:history timeline))
+       :notes (:loop-notes timeline)
        :end-time end-loop-time
 
        ; TODO: Don't hardcode instrument
@@ -123,7 +138,7 @@
        (clear-after-loop-selected)
        (add-notes-from-nodes nodes)
        (progress-history elapsed-time)
-       (add-loop-marquees-on-click user-input)
+       (select-node-on-click user-input)
        (update-loop-selected)))
 
 (defn draw [timeline]
@@ -139,7 +154,10 @@
                               relative-freq)
           [w h] (:size note)]
 
-      (q/no-stroke)
+      (if (is-note-selected? note timeline)
+        (q/stroke 200)
+        (q/no-stroke))
+
       (q/fill color alpha)
       (q/rect x y w h)))
 
@@ -153,4 +171,3 @@
       (q/line x top x bottom)))
 
   (q/pop-style))
-

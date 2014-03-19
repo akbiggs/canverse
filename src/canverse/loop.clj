@@ -40,7 +40,7 @@
           (:notes loop)))
 
 (defn get-current-note [loop]
-  (first (get-notes-before-current-time loop)))
+  (last (get-notes-before-current-time loop)))
 
 (defn play-current-note! [loop]
   (let [current-note (get-current-note loop)]
@@ -57,7 +57,7 @@
 (def test-loop (create-from-history {:start-time 500 :notes [{:relative-time 800 :amp 0.5 :freq 60} {:relative-time 1000} {:relative-time 1200}]
                                       :end-time 1500
                                      :instrument synths/oksaw}))
-(def after-time-update (update-current-time 800 test-loop))
+(def after-time-update (update-current-time 400 test-loop))
 after-time-update
 (get-notes-before-current-time after-time-update)
 (get-current-note after-time-update)
