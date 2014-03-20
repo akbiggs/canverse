@@ -17,7 +17,8 @@
 
 (def WINDOW_WIDTH 352)
 
-(def synth-defintion (atom nil))
+(def synth-definition (atom nil))
+(def frame-counter (atom 0))
 
 (defn swap-state! [state function]
   (swap! (q/state state) function))
@@ -63,7 +64,7 @@
 
   (q/background 0)
   (envelope-input/draw @(q/state :envelope-input) @(q/state :input))
-  (reset! synth-defintion (map #(:value %) (:params @(q/state :envelope-input)))))
+  (reset! synth-definition (map #(:value %) (:params @(q/state :envelope-input)))))
 
 (defn update! []
   (update-state! :time (o/now))
@@ -77,7 +78,9 @@
 
   (update-state! :grid (:active current-nodes))
   (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes))
-  (synths/update @synth-defintion))
+  (if (= 30 @frame-counter)
+    (do (reset! frame-counter 0) (synths/update @synth-definition))
+    (swap! frame-counter inc)))
 
 (defn draw []
   ; Quil has no update function that we can pass into

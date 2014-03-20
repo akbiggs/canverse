@@ -5,87 +5,6 @@
 
 ;(boot-external-server)
 
-
-(definst generic-synth [freq 60 amp 0 attack 0 decay 0 sustain 0 release 0 level 0 curve 0 bias 0]
-  (let [
-
-        ; Default synth values
-        freq 60
-        velocity 100
-        gate 1
-        amp 1
-        climb 100
-
-        ; Set up a normal amplitude and amp envelope.
-        amp-env (env-gen
-                 (apply adsr (map #(/ % 9) (list attack decay sustain release level curve bias)))
-                 gate :action FREE)
-
-        ; Get three frequencies (primary freq and detunes at 40 and 22 cents higher)
-        freq (midicps freq)
-        dfreq1 (* freq (Math/pow 2 0.040))
-        dfreq2 (* freq (Math/pow 2 0.022))
-
-        ; Set up delay oscillator from zero to a quarter period away
-        quarter-period (/ 1 (* 4 freq))
-        delay-osc (* quarter-period (+ 0.5 (* 0.5 (sin-osc 1))))
-
-        ; Make three saws from the frequencies and offset them a bit
-        ; against the delay oscillator
-        saw1 (* (/ amp 3) (saw freq))
-        saw2 (delay-l (* (/ amp 3) (saw dfreq1)) 1 (/ delay-osc 2))
-        saw3 (delay-l (* (/ amp 3) (saw dfreq2)) 1 (/ delay-osc 3))
-
-        ; Set a cut-off envelope.  We'll use this with an LPF to give the
-        ; sound a bit of a stabby attack
-        cutoff-env (env-gen (adsr 0.25 1 1 9999) gate)
-
-        ; Combine the saws
-        snd (+ saw1 saw2 saw3)
-
-        ; Add the stabby attack part
-        snd (lpf snd (* 16000 cutoff-env))
-
-        ; Apply some EQ (Up the bass, drop the mids)
-
-        snd (b-low-shelf snd 80 1 10)
-        snd (b-peak-eq snd 800 1 -10)
-
-        snd (b-hi-shelf snd 2000 1 5)
-
-        ; Apply the amp envelope
-        snd (* amp-env snd)]
-      snd))
-
-(defn update-instrument [instrument]
-  (reset! current-instrument instrument))
-
-(defn create-synth [input]
-  (if (not (nil? input))
-    (do ;(dbg input)
-    (apply generic-synth input))
-    @current-instrument))
-
-(defn update [input]
-  (if (not (nil? input))
-    (update-instrument (create-synth input))
-    (update-instrument (create-synth {:1 1 :2 2 :3 3 :4 4 :5 5 :6 6 :7 7}))))
-
-(generic-synth 9 9 9 9 9 9 9)
-(stop)
-
-;(definst generic-synth [])
-(definst plucked-string [note 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
-  (let [freq (midicps note)
-        noize (* 0.8 ( white-noise))
-        dly (/ 1.0 freq)
-        plk (pluck noize gate dly dly decay coef)
-        dist (distort plk)
-        filt (rlpf dist (* 12 freq) 0.6)
-        clp (clip2 filt 0.8)
-        reverb (free-verb clp 0.4 0.8 0.2)]
-    (* amp (env-gen (perc 0.0001 dur) FREE) reverb)))
-
 ; climb is a hack parameter that isn't used here, but is instead
 ; controlled in the main update loop based on the mouse movement
 (definst oksaw [freq 60 velocity 100 gate 1 amp 1 climb 100]
@@ -130,6 +49,94 @@
       snd))
 
 (def current-instrument (atom oksaw))
+
+(@current-instrument :freq 40)
+(stop)
+
+(defn generic-player [attack decay sustain release level curve bias]
+  (definst generic-synth [freq 60 amp 1]
+    (let [
+
+          ; Default synth values
+          velocity 100
+          gate 1
+          climb 100
+          level (max level 0.5)
+
+
+          ; Update envelope values
+
+          ; Set up a normal amplitude and amp envelope.
+          amp-env (env-gen
+                   (apply adsr (map #(/ % 9) (list attack decay sustain release level curve bias)))
+                   gate :action FREE)
+
+          ; Get three frequencies (primary freq and detunes at 40 and 22 cents higher)
+          freq (midicps freq)
+          dfreq1 (* freq (Math/pow curve (* 0.040 (/ decay 9))))
+          dfreq2 (* freq (Math/pow curve (* 0.022 (/ decay 9))))
+
+          ; Set up delay oscillator from zero to a quarter period away
+          quarter-period (/ 1 (* 4 freq))
+          delay-osc (* quarter-period (+ 0.5 (* 0.5 (sin-osc 1))))
+
+          ; Make three saws from the frequencies and offset them a bit
+          ; against the delay oscillator
+          saw1 (* (/ amp 3) (saw freq))
+          saw2 (delay-l (* (/ amp 3) (saw dfreq1)) 1 (/ delay-osc 2))
+          saw3 (delay-l (* (/ amp 3) (saw dfreq2)) 1 (/ delay-osc 3))
+
+          ; Set a cut-off envelope.  We'll use this with an LPF to give the
+          ; sound a bit of a stabby attack
+          cutoff-env (env-gen (adsr 0.25 1 1 9999) gate)
+
+          ; Combine the saws
+          snd (+ saw1 saw2 saw3)
+
+          ; Add the stabby attack part
+          snd (lpf snd (* (* attack 1000) cutoff-env))
+
+          ; Apply some EQ (Up the bass, drop the mids)
+
+          snd (b-low-shelf snd 800 1 attack)
+          snd (b-peak-eq snd (* 800  (/ attack 9)) 1 (- attack))
+
+          snd (b-hi-shelf snd (* 2000 (/ attack 9)) 1 5)
+
+          ; Apply the amp envelope
+          snd (* amp-env snd)]
+        snd)))
+
+(defn update-instrument [instrument]
+;  (dbg instrument)
+  (reset! current-instrument instrument))
+
+(def a (apply generic-player [1 2 3 4 5 6 7]))
+(a :freq 60)
+(update-instrument (apply generic-player [9 9 9 9 9 9 9]))
+ (update-instrument (create-synth [1 1 1 1 1 1 1]))
+(stop)
+
+(defn create-synth [input]
+  (if (not (nil? input))
+    (apply generic-player input)
+    @current-instrument))
+
+(defn update [input]
+  (if (not (nil? input))
+    (update-instrument (create-synth input))
+    (update-instrument (create-synth nil))))
+
+(definst plucked-string [note 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
+  (let [freq (midicps note)
+        noize (* 0.8 ( white-noise))
+        dly (/ 1.0 freq)
+        plk (pluck noize gate dly dly decay coef)
+        dist (distort plk)
+        filt (rlpf dist (* 12 freq) 0.6)
+        clp (clip2 filt 0.8)
+        reverb (free-verb clp 0.4 0.8 0.2)]
+    (* amp (env-gen (perc 0.0001 dur) FREE) reverb)))
 
 
 (definst monotron
@@ -298,5 +305,5 @@
         a (tanh a)]
     (out out-bus (* amp [ a a]))))
 
-;(dark-sea-horns :freq 75)
+(dark-sea-horns :freq 75)
 (stop)

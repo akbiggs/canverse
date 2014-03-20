@@ -16,7 +16,7 @@
                     [255 0 0]
                     ])
 
-(def scale (concat (o/scale :c4 :major) (o/scale :Bb4 :minor)))
+(def scale (concat (o/scale :Cb4 :minor) (o/scale :Ab4 :minor)))
 
 (defn create [row col]
   {:row row :col col :synth @synths/current-instrument :alpha 0})
@@ -52,12 +52,14 @@
       (helpers/push-towards (:alpha square) 0 2))))
 
 (defn play [square]
+  ;(helpers/dbg (:synth square))
   (let [synth (:synth square)
         col (:col square)
         row (:row square)
         freq (nth scale col)
         node (synth :freq freq :amp 0.01)]
     node))
+
 
 (defn update [actives square]
   (update-alpha actives square))
