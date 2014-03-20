@@ -12,10 +12,10 @@
 (defn update [active-nodes grid]
   (assoc grid
     :squares
-    (map #(square/update active-nodes %) (:squares grid)))
-  (assoc grid
-    :squares
-    (map #(square/update-square-synth %) (:squares grid))))
+    (map #(->> %
+               (square/update active-nodes)
+               (square/update-square-synth))
+         (:squares grid))))
 
 (defn pixel-size [grid]
   (let [square-size (square/SQUARE_SIZE)

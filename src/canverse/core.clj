@@ -63,7 +63,7 @@
 
   (q/background 0)
   (envelope-input/draw @(q/state :envelope-input) @(q/state :input))
-  (swap! synth-defintion #(identity (:params @(q/state :envelope-input)))))
+  (reset! synth-defintion (map #(:value %) (:params @(q/state :envelope-input)))))
 
 (defn update! []
   (update-state! :time (o/now))

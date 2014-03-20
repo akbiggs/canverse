@@ -1,25 +1,12 @@
 (ns canverse.synths
-  (:use [overtone.core])
+  (:use [overtone.core]
+        [canverse.helpers])
   (:require [quil.core :as q]))
 
 ;(boot-external-server)
 
-(def current-instrument (atom oksaw))
 
-(defn update [input]
-  (if (not (nil? input))
-    (update-instrument (create-synth input))
-    (update-instrument (create-synth {:1 1 :2 2 :3 3 :4 4 :5 5 :6 6 :7 7}))))
-
-(defn update-instrument [instrument]
-  (swap! current-instrument #(identity instrument)))
-
-(defn create-synth [input]
-  (if (not (nil? input))
-    (apply generic-synth (vals input))
-    (@current-instrument)))
-
-(definst generic-synth [attack 0 decay 0 sustain 0 release 0 level 0 curve 0 bias 0]
+(definst generic-synth [freq 60 amp 0 attack 0 decay 0 sustain 0 release 0 level 0 curve 0 bias 0]
   (let [
 
         ; Default synth values
@@ -69,6 +56,20 @@
         ; Apply the amp envelope
         snd (* amp-env snd)]
       snd))
+
+(defn update-instrument [instrument]
+  (reset! current-instrument instrument))
+
+(defn create-synth [input]
+  (if (not (nil? input))
+    (do ;(dbg input)
+    (apply generic-synth input))
+    @current-instrument))
+
+(defn update [input]
+  (if (not (nil? input))
+    (update-instrument (create-synth input))
+    (update-instrument (create-synth {:1 1 :2 2 :3 3 :4 4 :5 5 :6 6 :7 7}))))
 
 (generic-synth 9 9 9 9 9 9 9)
 (stop)
@@ -127,6 +128,9 @@
         ; Apply the amp envelope
         snd (* amp-env snd)]
       snd))
+
+(def current-instrument (atom oksaw))
+
 
 (definst monotron
   "Korg Monotron from website diagram:
