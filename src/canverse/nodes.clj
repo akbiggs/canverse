@@ -55,7 +55,7 @@
     :releasing (concat (:releasing nodes) (get-active-nodes nodes))))
 
 (defn create-loop-when-ready [timeline nodes]
-  (if (timeline/is-loop-selected? timeline)
+  (if (:loop-selected? timeline)
     (update-in nodes [:loops]
       #(conj % (loop/create-from-history (timeline/get-history-to-loop timeline))))
     nodes))

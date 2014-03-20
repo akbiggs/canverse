@@ -130,8 +130,9 @@
        :instrument synths/oksaw})
     nil))
 
-(defn update-loop-selected [timeline]
-  (assoc timeline :loop-selected? (is-loop-selected? timeline)))
+(defn update-loop-selected [user-input timeline]
+  (assoc timeline :loop-selected? (and (= \space (:last-key-tapped user-input))
+                                       (is-loop-selected? timeline))))
 
 (defn update [user-input elapsed-time nodes timeline]
   (->> timeline
@@ -139,7 +140,7 @@
        (add-notes-from-nodes nodes)
        (progress-history elapsed-time)
        (select-node-on-click user-input)
-       (update-loop-selected)))
+       (update-loop-selected user-input)))
 
 (defn draw [timeline]
   (q/push-style)
