@@ -16,12 +16,10 @@
                     [255 0 0]
                     ])
 
-
 (def scale (concat (o/scale :c4 :major) (o/scale :Bb4 :minor)))
 
-
 (defn create [row col]
-  {:row row :col col :synth synths/oksaw :alpha 0})
+  {:row row :col col :synth @synths/current-instrument :alpha 0})
 
 (defn get-x [square]
   (* SQUARE_SIZE (:col square)))
@@ -63,6 +61,9 @@
 
 (defn update [actives square]
   (update-alpha actives square))
+
+(defn update-square-synth [square]
+  (assoc square :synth @synths/current-instrument))
 
 (defn draw [square]
   (q/push-style)

@@ -6,6 +6,7 @@
             [canverse.point :as point]
             [canverse.nodes :as nodes]
             [canverse.time :as time]
+            [canverse.synths :as synths]
             [canverse.helpers :as helpers]
             [canverse.instrumentwindow.keycapture :as key-capture]
             [canverse.instrumentwindow.envelopeinput :as envelope-input]
@@ -15,6 +16,8 @@
   (:gen-class :main true))
 
 (def WINDOW_WIDTH 352)
+
+(def synth-defintion (atom nil))
 
 (defn swap-state! [state function]
   (swap! (q/state state) function))
@@ -59,7 +62,8 @@
   (update-state! :input 20)
 
   (q/background 0)
-  (envelope-input/draw @(q/state :envelope-input) @(q/state :input)))
+  (envelope-input/draw @(q/state :envelope-input) @(q/state :input))
+  (swap! synth-defintion #(identity (:params @(q/state :envelope-input)))))
 
 (defn update! []
   (update-state! :time (o/now))
@@ -72,7 +76,8 @@
   (def current-nodes @(q/state :nodes))
 
   (update-state! :grid (:active current-nodes))
-  (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes)))
+  (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes))
+  (synths/update @synth-defintion))
 
 (defn draw []
   ; Quil has no update function that we can pass into
@@ -97,6 +102,5 @@
                :size [WINDOW_WIDTH 300]))
 
 (-main)
-
 
 (o/stop)

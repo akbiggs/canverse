@@ -2,7 +2,78 @@
   (:use [overtone.core])
   (:require [quil.core :as q]))
 
-(boot-external-server)
+;(boot-external-server)
+
+(def current-instrument (atom oksaw))
+
+(defn update [input]
+  (if (not (nil? input))
+    (update-instrument (create-synth input))
+    (update-instrument (create-synth {:1 1 :2 2 :3 3 :4 4 :5 5 :6 6 :7 7}))))
+
+(defn update-instrument [instrument]
+  (swap! current-instrument #(identity instrument)))
+
+(defn create-synth [input]
+  (if (not (nil? input))
+    (apply generic-synth (vals input))
+    (@current-instrument)))
+
+(definst generic-synth [attack 0 decay 0 sustain 0 release 0 level 0 curve 0 bias 0]
+  (let [
+
+        ; Default synth values
+        freq 60
+        velocity 100
+        gate 1
+        amp 1
+        climb 100
+
+        ; Set up a normal amplitude and amp envelope.
+        amp-env (env-gen
+                 (apply adsr (map #(/ % 9) (list attack decay sustain release level curve bias)))
+                 gate :action FREE)
+
+        ; Get three frequencies (primary freq and detunes at 40 and 22 cents higher)
+        freq (midicps freq)
+        dfreq1 (* freq (Math/pow 2 0.040))
+        dfreq2 (* freq (Math/pow 2 0.022))
+
+        ; Set up delay oscillator from zero to a quarter period away
+        quarter-period (/ 1 (* 4 freq))
+        delay-osc (* quarter-period (+ 0.5 (* 0.5 (sin-osc 1))))
+
+        ; Make three saws from the frequencies and offset them a bit
+        ; against the delay oscillator
+        saw1 (* (/ amp 3) (saw freq))
+        saw2 (delay-l (* (/ amp 3) (saw dfreq1)) 1 (/ delay-osc 2))
+        saw3 (delay-l (* (/ amp 3) (saw dfreq2)) 1 (/ delay-osc 3))
+
+        ; Set a cut-off envelope.  We'll use this with an LPF to give the
+        ; sound a bit of a stabby attack
+        cutoff-env (env-gen (adsr 0.25 1 1 9999) gate)
+
+        ; Combine the saws
+        snd (+ saw1 saw2 saw3)
+
+        ; Add the stabby attack part
+        snd (lpf snd (* 16000 cutoff-env))
+
+        ; Apply some EQ (Up the bass, drop the mids)
+
+        snd (b-low-shelf snd 80 1 10)
+        snd (b-peak-eq snd 800 1 -10)
+
+        snd (b-hi-shelf snd 2000 1 5)
+
+        ; Apply the amp envelope
+        snd (* amp-env snd)]
+      snd))
+
+(generic-synth 9 9 9 9 9 9 9)
+(stop)
+
+;(definst generic-synth [])
 (definst plucked-string [note 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
   (let [freq (midicps note)
         noize (* 0.8 ( white-noise))
@@ -223,5 +294,5 @@
         a (tanh a)]
     (out out-bus (* amp [ a a]))))
 
-(dark-sea-horns :freq 75)
+;(dark-sea-horns :freq 75)
 (stop)
