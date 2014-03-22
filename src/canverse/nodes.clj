@@ -57,7 +57,8 @@
 (defn create-loop-when-ready [timeline nodes]
   (if (:loop-selected? timeline)
     (update-in nodes [:loops]
-      #(conj % (loop/create-from-history (timeline/get-history-to-loop timeline))))
+      #(let [history-to-loop (timeline/get-history-to-loop % timeline)]
+         (conj % (loop/create history-to-loop))))
     nodes))
 
 (defn update-with-input [user-input grid nodes]

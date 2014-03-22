@@ -36,11 +36,10 @@
     (clear timeline)
     timeline))
 
-(defn add-note-from-node [node timeline]
+(defn add-note [freq amp id timeline]
   (assoc timeline
     :history
-    (let [{:keys [freq amp]} (o/node-get-controls node [:freq :amp])
-          width (get-width timeline)
+    (let [width (get-width timeline)
           new-x (+ (get-in timeline [:position :x]) width)
 
           ; place the line for the note so higher frequencies go higher,
@@ -50,12 +49,17 @@
           new-y (- (get-bottom timeline) y-offset)
 
           new-note {:x new-x :y new-y :relative-time (:history-length timeline)
-                    :size [1 (* 5 amp)] :amp amp :freq freq :node-id (o/to-sc-id node)}
+                    :size [1 (* 5 amp)] :amp amp :freq freq :node-id id
+                    :alpha 1}
           history (:history timeline)]
-      (conj history new-note))
+      (sort-by :relative-time (conj history new-note)))
 
     ; clear loop selection on note added
     :loop-notes nil))
+
+(defn add-note-from-node [node timeline]
+  (let [{:keys [freq amp]} (o/node-get-controls node [:freq :amp])]
+    (add-note freq amp (o/to-sc-id node) timeline)))
 
 (defn add-notes-from-nodes [nodes timeline]
   (reduce #(add-note-from-node %2 %1) timeline
@@ -117,20 +121,33 @@
 (defn is-note-selected? [note timeline]
   (some #(= (:node-id note) (:node-id %)) (:loop-notes timeline)))
 
-(defn get-history-to-loop [timeline]
+(defn get-history-to-loop [loops timeline]
   (if (is-loop-selected? timeline)
     (let [loop-notes (:loop-notes timeline)
-          start-loop-time (:relative-time (first loop-notes))
-          end-loop-time (:relative-time (last loop-notes))]
+          first-loop-length (if-not (empty? loops) (loop/get-length (first loops)) 0)
+
+          first-note-relative-time (:relative-time (first loop-notes))
+          last-note-relative-time (:relative-time (last loop-notes))
+
+          _ (prn "First loop's length is " first-loop-length)
+          _ (when-not (= first-loop-length 0) (prn "start offset " (mod first-note-relative-time first-loop-length)))
+          start-offset (if-not (empty? loops) (mod first-note-relative-time first-loop-length) 0)
+          _ (when-not (= first-loop-length 0) (prn "end offset" (- first-loop-length (mod last-note-relative-time first-loop-length))))
+          end-offset (if-not (empty? loops) (- first-loop-length (mod last-note-relative-time first-loop-length)) 0)
+
+          time-before-start end-offset
+          start-loop-time (+ time-before-start (- first-note-relative-time start-offset))
+          end-loop-time (+ time-before-start end-offset last-note-relative-time)]
       {:start-time start-loop-time
        :notes (:loop-notes timeline)
        :end-time end-loop-time
+       :time-before-start end-offset
 
        ; TODO: Don't hardcode instrument
        :instrument synths/oksaw})
     nil))
 
-(defn update-loop-selected [user-input timeline]
+(defn select-loop-on-request [user-input timeline]
   (assoc timeline :loop-selected? (and (= \space (:last-key-tapped user-input))
                                        (is-loop-selected? timeline))))
 
@@ -140,7 +157,7 @@
        (add-notes-from-nodes nodes)
        (progress-history elapsed-time)
        (select-node-on-click user-input)
-       (update-loop-selected user-input)))
+       (select-loop-on-request user-input)))
 
 (defn draw [timeline]
   (q/push-style)
