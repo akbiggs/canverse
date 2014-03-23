@@ -124,16 +124,17 @@
 (defn get-history-to-loop [loops timeline]
   (if (is-loop-selected? timeline)
     (let [loop-notes (:loop-notes timeline)
+
+          first-loop-start-time (if-not (empty? loops) (:last-start-time (first loops)) 0)
+          first-loop-end-time (if-not (empty? loops) (loop/next-end-time (first loops)) 0)
+
           first-loop-length (if-not (empty? loops) (loop/get-length (first loops)) 0)
 
-          first-note-relative-time (:relative-time (first loop-notes))
-          last-note-relative-time (:relative-time (last loop-notes))
+          first-note-relative-time (helpers/dbg (:relative-time (first loop-notes)))
+          last-note-relative-time (helpers/dbg (:relative-time (last loop-notes)))
 
-          _ (prn "First loop's length is " first-loop-length)
-          _ (when-not (= first-loop-length 0) (prn "start offset " (mod first-note-relative-time first-loop-length)))
-          start-offset (if-not (empty? loops) (mod first-note-relative-time first-loop-length) 0)
-          _ (when-not (= first-loop-length 0) (prn "end offset" (- first-loop-length (mod last-note-relative-time first-loop-length))))
-          end-offset (if-not (empty? loops) (- first-loop-length (mod last-note-relative-time first-loop-length)) 0)
+          start-offset (if-not (empty? loops) (- first-note-relative-time first-loop-start-time) 0)
+          end-offset (if-not (empty? loops) (- first-loop-end-time last-note-relative-time) 0)
 
           time-before-start end-offset
           start-loop-time (+ time-before-start (- first-note-relative-time start-offset))

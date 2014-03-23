@@ -27,6 +27,9 @@
 (defn get-length [loop]
   (:end-time loop))
 
+(defn next-end-time [loop]
+  (+ (:last-start-time loop) (get-length loop)))
+
 (defn started? [loop]
   (<= (:time-before-start loop) 0))
 
@@ -40,7 +43,7 @@
     :last-start-time (+ (:last-start-time loop) (get-length loop))))
 
 (defn progress [elapsed-time loop]
-  (let [{:keys [current-time end-time time-before-start]} loop
+  (let [{:keys [current-time end-time time-before-start last-start-time]} loop
         new-time (+ current-time elapsed-time)]
     (cond (not (started? loop))
           (assoc loop :time-before-start (- time-before-start elapsed-time))
@@ -49,7 +52,9 @@
           (restart (- new-time end-time) loop)
 
           :else
-          (assoc loop :current-time new-time))))
+          (assoc loop
+            :current-time new-time
+            :last-start-time (- last-start-time elapsed-time)))))
 
 (defn get-notes-before-current-time [loop]
   (filter #(<= (:relative-time %) (:current-time loop))
@@ -62,9 +67,6 @@
   (let [current-note (get-current-note loop)
         time-before-start (:time-before-start loop)]
     (when-not (or (> time-before-start 0) (nil? current-note))
-      (when (nil? (:freq current-note))
-        (prn "Current note is " current-note)
-        (prn "Loop is " loop))
       (o/ctl (:node loop) :amp (:amp current-note) :freq (:freq current-note))))
   loop)
 
@@ -78,7 +80,7 @@
                         :end-time 1500
                         :time-before-start 20
                         :instrument synths/oksaw}))
-(def after-time-update (update-current-time 400 test-loop))
+(def after-time-update (progress 400 test-loop))
 (:time-before-start after-time-update)
 (get-notes-before-current-time after-time-update)
 (get-current-note after-time-update)

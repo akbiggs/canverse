@@ -29,7 +29,7 @@
                                      (timeline/progress-history 50)
                                      (timeline/add-note 52 0.6 56)
                                      (timeline/select-node 56)))
-(loop/get-length test-loop)
+(def test-loop-progressed (loop/progress 1250 test-loop))
 
 (deftest adding-note
   (let [new-note (first (:history with-note-added))]
@@ -61,11 +61,17 @@
          :notes (:loop-notes with-note-selected)
          :end-time 25000)))
 
+(deftest create-loop
+  (are [x y] (= (x test-loop) y)
+       loop/get-length 2500
+       loop/next-end-time 32500))
+
 (deftest create-loop-relative-to-another
-  (let [relative-loop (loop/create (timeline/get-history-to-loop [test-loop] with-another-note-selected))
+  (let [relative-loop (loop/create (timeline/get-history-to-loop [test-loop-progressed] with-another-note-selected))
         after-some-progress (loop/update! 500 relative-loop)]
-    (is (= (:time-before-start relative-loop) 2500))
-    (is (= (:time-before-start after-some-progress) 2000))))
+    (is (= (:time-before-start relative-loop) 1250))
+    (is (= (:time-before-start after-some-progress) 750))
+    (is (= (:last-start-time relative-loop) 31250))))
 
 (run-all-tests #"canverse.test.timeline-test")
 
