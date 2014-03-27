@@ -16,10 +16,10 @@
                     [255 0 0]
                     ])
 
-(def scale (o/scale :c4 :major))
+(def scale (concat (o/scale :Cb4 :minor) (o/scale :Ab4 :minor)))
 
 (defn create [row col]
-  {:row row :col col :synth synths/oksaw :alpha 0})
+  {:row row :col col :synth @synths/current-instrument :alpha 0})
 
 (defn get-x [square]
   (* SQUARE_SIZE (:col square)))
@@ -52,6 +52,7 @@
       (helpers/push-towards (:alpha square) 0 2))))
 
 (defn play [square]
+  ;(helpers/dbg (:synth square))
   (let [synth (:synth square)
         col (:col square)
         row (:row square)
@@ -59,8 +60,12 @@
         node (synth :freq freq :amp 0.01)]
     node))
 
+
 (defn update [actives square]
   (update-alpha actives square))
+
+(defn update-square-synth [square]
+  (assoc square :synth @synths/current-instrument))
 
 (defn draw [square]
   (q/push-style)
