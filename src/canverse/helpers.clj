@@ -29,5 +29,11 @@
      (>= pos-x start-x) (>= pos-y start-y)
      (<= pos-x end-x) (<= pos-y end-y))))
 
+(defn find-where [pred coll]
+  (first (filter pred coll)))
+
+(defn in-range? [n min max]
+  (and (<= min n) (>= max n)))
+
 ;;debugging parts of expressions
 (defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))

@@ -3,7 +3,17 @@
         [canverse.helpers])
   (:require [quil.core :as q]))
 
-;(boot-external-server)
+(boot-external-server)
+(definst plucked-string [freq 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
+  (let [freq (midicps freq)
+        noize (* 0.8 ( white-noise))
+        dly (/ 1.0 freq)
+        plk (pluck noize gate dly dly decay coef)
+        dist (distort plk)
+        filt (rlpf dist (* 12 freq) 0.6)
+        clp (clip2 filt 0.8)
+        reverb (free-verb clp 0.4 0.8 0.2)]
+    (* amp (env-gen (perc 0.0001 dur) FREE) reverb)))
 
 ; climb is a hack parameter that isn't used here, but is instead
 ; controlled in the main update loop based on the mouse movement

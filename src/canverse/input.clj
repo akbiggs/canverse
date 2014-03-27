@@ -7,7 +7,8 @@
    :mouse-down-duration 0
    :mouse-tapped? false
    :mouse-just-released? false
-   :last-key-pressed nil})
+   :last-key-pressed nil
+   :last-key-tapped nil})
 
 (defn update [elapsed-time previous-input]
   (let [mouse-down? (q/mouse-state)
@@ -26,5 +27,9 @@
      (if mouse-down?
        (+ old-down-duration elapsed-time)
        0)
+
      :last-key-pressed
-     (if (q/key-pressed?) (q/raw-key) (:last-key-pressed previous-input))}))
+     (if (q/key-pressed?) (q/raw-key) (:last-key-pressed previous-input))
+
+     :last-key-tapped
+     (if (q/key-pressed?) (q/raw-key) nil)}))
