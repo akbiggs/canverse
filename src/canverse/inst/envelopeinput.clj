@@ -1,6 +1,5 @@
 (ns canverse.inst.envelopeinput
-  (:require [canverse.inst.keycapture :as key-capture]
-            [canverse.inst.control-points :as control-points]))
+  (:require [canverse.inst.control-points :as control-points]))
 
 (defn create []
   {:control-points (control-points/create 0.5)})
