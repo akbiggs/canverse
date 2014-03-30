@@ -33,18 +33,6 @@
     (swap-state! state (apply partial partial-args))
     @(q/state state)))
 
-(defn setup []
-  (q/smooth)
-  (q/frame-rate 30)
-
-  (q/set-state! :grid (atom (grid/create 7 7))
-                :timeline (atom (timeline/create (point/create 0 350)
-                                                 (point/create WINDOW_WIDTH 45)
-                                                 30000))
-                :nodes (atom (nodes/create))
-                :time (atom (time/create (o/now)))
-                :input (atom (input/create))))
-
 (defn setup-instrument-window []
   (q/smooth)
   (q/no-stroke)
@@ -73,6 +61,18 @@
   (q/background 0)
   (envelope-input/draw @(q/state :envelope-input)))
   ;(reset! synth-definition (map :value (:params @(q/state :envelope-input)))))
+
+(defn setup []
+  (q/smooth)
+  (q/frame-rate 30)
+
+  (q/set-state! :grid (atom (grid/create 7 7))
+                :timeline (atom (timeline/create (point/create 0 350)
+                                                 (point/create WINDOW_WIDTH 45)
+                                                 30000))
+                :nodes (atom (nodes/create))
+                :time (atom (time/create (o/now)))
+                :input (atom (input/create))))
 
 (defn update! []
   (update-state! :time (o/now))

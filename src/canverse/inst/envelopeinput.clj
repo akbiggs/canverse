@@ -3,7 +3,7 @@
             [canverse.inst.control-points :as control-points]))
 
 (defn create []
-  {:control-points (control-points/create)})
+  {:control-points (control-points/create 0.5)})
 
 (defn update [user-input elapsed-time envelope]
   (update-in envelope [:control-points]

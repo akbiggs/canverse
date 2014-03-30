@@ -1,5 +1,7 @@
 (ns canverse.inst.control-points
   (:require [canverse.helpers :as helpers]
+            [canverse.input :as input]
+            [canverse.point :as point]
             [quil.core :as q]))
 
 (def WINDOW_WIDTH 400)
@@ -19,7 +21,7 @@
    ; each other's values
    })
 
-(defn create-point [param]
+(defn create-point [level param]
   {:param param
 
    ; ADR measure timespan, S measures amplitude,
@@ -27,10 +29,15 @@
    :control-axis
    (if (some #{param} [:attack :decay :release]) :x :y)
 
-   :level 0.5})
+   :level level
+   :size (point/create 25 25)
 
-(defn create []
-  (map create-point [:attack :decay :sustain :release]))
+   :selected? false
+   :selection-point nil})
+
+(defn create [default-level]
+  (map (partial create-point default-level)
+       [:attack :decay :sustain :release]))
 
 (defn find-point [param control-points]
   (helpers/find-where #(= (:param %) param) control-points))
@@ -69,18 +76,52 @@
 (defn get-positions [control-points]
   (map (partial get-position control-points) control-points))
 
+(defn select [at-position control-point]
+  (assoc control-point
+    :selected? true
+    :selection-point at-position))
+
+(defn select-on-click [user-input all-points control-point]
+  (let [position (get-position all-points control-point)]
+    (if (input/just-selected? position (:size control-point) user-input)
+      (select (:mouse-pos user-input) control-point)
+      control-point)))
+
+(defn drag-if-selected [user-input control-point]
+  (if-let [selection-point (:selection-point control-point)]
+    (let [[level-min level-max] ((:param control-point) coordinate-ranges)
+          control-axis (:control-axis control-point)
+          mouse-value-on-axis (control-axis (:mouse-pos user-input))
+          mouse-ratio-in-range (helpers/relative mouse-value-on-axis level-min level-max)
+          new-level (helpers/clamp mouse-ratio-in-range 0 1)]
+      (assoc control-point :level new-level))
+    control-point))
+
+(defn deselect-on-mouse-release [user-input control-point]
+  (if (and (:selected? control-point) (:mouse-up? user-input))
+    (assoc control-point :selected? false :selection-point nil)
+    control-point))
+
 (defn update [user-input elapsed-time control-points]
-  (for [point control-points]
-    point))
+  (for [control-point control-points]
+    (->> control-point
+         (select-on-click user-input control-points)
+         (drag-if-selected user-input)
+         (deselect-on-mouse-release user-input))))
 
 (defn draw [control-points]
-  (let [point-positions (get-positions control-points)
-        [attack-pos decay-pos sustain-pos release-pos] point-positions]
-    (doseq [position (get-positions control-points)]
-      (q/ellipse (:x position) (:y position) 25 25))
+  (let [[attack-pos decay-pos sustain-pos release-pos] (get-positions control-points)]
+    (doseq [control-point control-points]
+      (let [position (get-position control-points control-point)
+            size (:size control-point)]
+        (if (:selected? control-point)
+          (q/fill 125)
+          (q/fill 255))
+        (q/ellipse (:x position) (:y position) (:x size) (:y size))))
 
     (q/stroke-weight 5)
     (q/stroke 255)
+
     (q/line 0 (:release opposite-axis-offsets) (:x attack-pos) (:y attack-pos))
     (q/line (:x attack-pos) (:y attack-pos) (:x decay-pos) (:y decay-pos))
     (q/line (:x decay-pos) (:y decay-pos) (* QUARTER_WINDOW_WIDTH 3) (:y sustain-pos))

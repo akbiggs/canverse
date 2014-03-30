@@ -1,5 +1,11 @@
 (ns canverse.helpers)
 
+(defn lerp [a b t]
+  (+ a (* t (- b a))))
+
+(defn clamped-lerp [a b t]
+  (clamp (lerp a b t) a b))
+
 (defn clamp [n min-value max-value]
   (min max-value (max min-value n)))
 
