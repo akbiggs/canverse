@@ -13,6 +13,7 @@
             [quil.core :as q]
             [overtone.core :as o])
   (:gen-class :main true))
+
 (o/stop)
 (def WINDOW_WIDTH 352)
 
@@ -82,10 +83,7 @@
   (def current-nodes @(q/state :nodes))
 
   (update-state! :grid (:active current-nodes))
-  (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes))
-  (if (= 30 @frame-counter)
-    (do (reset! frame-counter 0) (synths/update @synth-definition))
-    (swap! frame-counter inc)))
+  (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes)))
 
 (defn draw []
   ; Quil has no update function that we can pass into
