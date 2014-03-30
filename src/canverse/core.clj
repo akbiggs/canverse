@@ -8,8 +8,8 @@
             [canverse.time :as time]
             [canverse.synths :as synths]
             [canverse.helpers :as helpers]
-            [canverse.instrumentwindow.keycapture :as key-capture]
-            [canverse.instrumentwindow.envelopeinput :as envelope-input]
+            [canverse.inst.keycapture :as key-capture]
+            [canverse.inst.envelopeinput :as envelope-input]
 
             [quil.core :as q]
             [overtone.core :as o])
@@ -33,6 +33,33 @@
     (swap-state! state (apply partial partial-args))
     @(q/state state)))
 
+(defn setup-instrument-window []
+  (q/smooth)
+  (q/no-stroke)
+  (q/frame-rate 30)
+
+  (q/set-state! :message (atom "Value")
+                :time (atom (time/create (o/now)))
+                :input (atom (input/create))))
+
+(defn update-instrument! []
+  (swap-state! :time (partial time/update (o/now)))
+  (def elapsed-time (:elapsed-time @(q/state :time)))
+
+  (swap-state! :input (partial input/update elapsed-time))
+  (def user-input @(q/state :input))
+
+  (swap! envelope-input/instance (partial envelope-input/update user-input elapsed-time)))
+
+(defn draw-instrument []
+  ; Quil has no update function that we can pass into
+  ; the sketch, so we have to do it at the top of the
+  ; draw call.
+  (update-instrument!)
+
+  (q/background 0)
+  (envelope-input/draw @envelope-input/instance))
+
 (defn setup []
   (q/smooth)
   (q/frame-rate 30)
@@ -45,27 +72,6 @@
                 :time (atom (time/create (o/now)))
                 :input (atom (input/create))))
 
-(defn setup-instrument-window []
-  (q/smooth)
-  (q/no-stroke)
-  (q/frame-rate 30)
-
-
-  (q/set-state! :message (atom "Value")
-                :envelope-input (atom (envelope-input/create 7))
-                :time (atom (time/create (o/now)))
-                :input (atom (input/create))))
-
-(defn draw-instrument []
-  ; Quil has no update function that we can pass into
-  ; the sketch, so we have to do it at the top of the
-  ; draw call.
-  (update-state! :input 20)
-
-  (q/background 0)
-  (envelope-input/draw @(q/state :envelope-input) @(q/state :input))
-  (reset! synth-definition (map #(:value %) (:params @(q/state :envelope-input)))))
-
 (defn update! []
   (update-state! :time (o/now))
   (def elapsed-time (:elapsed-time @(q/state :time)))
@@ -73,7 +79,7 @@
   (update-state! :input elapsed-time)
   (def user-input @(q/state :input))
 
-  (update-state! :nodes elapsed-time user-input @(q/state :grid) @(q/state :timeline))
+  (update-state! :nodes elapsed-time user-input @(q/state :grid) @(q/state :timeline) @envelope-input/instance)
   (def current-nodes @(q/state :nodes))
 
   (update-state! :grid (:active current-nodes))
@@ -93,16 +99,15 @@
   (timeline/draw @(q/state :timeline)))
 
 (defn -main [& args]
-  (q/defsketch groovy
-               :title "Canverse"
-               :setup setup
-               :draw draw
-               :size [WINDOW_WIDTH 400])
-  (q/defsketch instrgroovy
-               :title "Canverse Instrument"
-               :setup setup-instrument-window
-               :draw draw-instrument
-               :size [WINDOW_WIDTH 300]))
+  (q/sketch :title "Canverse"
+            :setup setup
+            :draw draw
+            :size [WINDOW_WIDTH 400])
+
+  (q/sketch :title "Canverse Instrument"
+            :setup setup-instrument-window
+            :draw draw-instrument
+            :size [400 400]))
 
 (-main)
 

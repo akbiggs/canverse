@@ -2,6 +2,8 @@
   (:require [canverse.synths :as synths]
             [canverse.helpers :as helpers]
             [canverse.point :as point]
+            [canverse.inst.envelopeinput :as envelope-input]
+
             [overtone.core :as o]
             [quil.core :as q]))
 
@@ -51,15 +53,15 @@
       (* 100 (o/node-get-control (:node (first actives)) :amp))
       (helpers/push-towards (:alpha square) 0 2))))
 
-(defn play [square]
+(defn play [envelope square]
   ;(helpers/dbg (:synth square))
   (let [synth (:synth square)
         col (:col square)
         row (:row square)
         freq (nth scale col)
-        node (synth :freq freq :amp 0.01)]
+        synth-args (conj {:freq freq :amp 0.01} (envelope-input/get-params envelope))
+        node (helpers/apply-hash synth synth-args)]
     node))
-
 
 (defn update [actives square]
   (update-alpha actives square))

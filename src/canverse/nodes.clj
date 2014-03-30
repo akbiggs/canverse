@@ -31,11 +31,11 @@
 (defn get-all [nodes]
   (concat (get-active-nodes nodes) (:releasing nodes)))
 
-(defn activate-at [position grid nodes]
+(defn activate-at [position grid envelope nodes]
   (if-not (grid/in-bounds? position grid)
     nodes
     (let [square (grid/get-square-for position grid)
-          node (square/play square)
+          node (square/play envelope square)
 
           initial-freq (o/node-get-control node :freq)
 
@@ -61,11 +61,11 @@
          (conj % (loop/create history-to-loop))))
     nodes))
 
-(defn update-with-input [user-input grid nodes]
+(defn update-with-input [user-input grid envelope nodes]
   (if (grid/in-bounds? (:mouse-pos user-input) grid)
     (cond->> nodes
              (:mouse-tapped? user-input)
-             (activate-at (:mouse-pos user-input) grid)
+             (activate-at (:mouse-pos user-input) grid envelope)
 
              (:mouse-just-released? user-input)
              (release-active)
@@ -134,10 +134,10 @@
     :loops
     (doall (map #(loop/update! elapsed-time %) (:loops nodes)))))
 
-(defn update [elapsed-time user-input grid timeline nodes]
+(defn update [elapsed-time user-input grid timeline envelope nodes]
   (->> nodes
        (create-loop-when-ready timeline)
-       (update-with-input user-input grid)
+       (update-with-input user-input grid envelope)
        (update-all-active elapsed-time user-input)
        (update-releasing elapsed-time)
        (update-loops elapsed-time)))

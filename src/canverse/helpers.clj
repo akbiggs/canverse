@@ -1,5 +1,11 @@
 (ns canverse.helpers)
 
+(defn lerp [a b t]
+  (+ a (* t (- b a))))
+
+(defn clamped-lerp [a b t]
+  (clamp (lerp a b t) a b))
+
 (defn clamp [n min-value max-value]
   (min max-value (max min-value n)))
 
@@ -8,7 +14,8 @@
     (min target (+ n amount))
     (max target (- n amount))))
 
-(push-towards 100 0 0.5)
+(defn midpoint [min max]
+  (+ min (/ (- max min) 2)))
 
 (defn relative [n min max]
   "Get a value from 0 to 1 indicating the position of
@@ -34,6 +41,9 @@
 
 (defn in-range? [n min max]
   (and (<= min n) (>= max n)))
+
+(defn apply-hash [fn hash]
+  (apply fn (interleave (keys hash) (vals hash))))
 
 ;;debugging parts of expressions
 (defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
