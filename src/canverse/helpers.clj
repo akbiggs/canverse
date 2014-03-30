@@ -17,8 +17,6 @@
 (defn midpoint [min max]
   (+ min (/ (- max min) 2)))
 
-(push-towards 100 0 0.5)
-
 (defn relative [n min max]
   "Get a value from 0 to 1 indicating the position of
   n relative to the min and max."
@@ -43,6 +41,9 @@
 
 (defn in-range? [n min max]
   (and (<= min n) (>= max n)))
+
+(defn apply-hash [fn hash]
+  (apply fn (interleave (keys hash) (vals hash))))
 
 ;;debugging parts of expressions
 (defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))

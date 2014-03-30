@@ -39,7 +39,6 @@
   (q/frame-rate 30)
 
   (q/set-state! :message (atom "Value")
-                :envelope-input (atom (envelope-input/create))
                 :time (atom (time/create (o/now)))
                 :input (atom (input/create))))
 
@@ -50,7 +49,7 @@
   (swap-state! :input (partial input/update elapsed-time))
   (def user-input @(q/state :input))
 
-  (swap-state! :envelope-input (partial envelope-input/update user-input elapsed-time)))
+  (swap! envelope-input/instance (partial envelope-input/update user-input elapsed-time)))
 
 (defn draw-instrument []
   ; Quil has no update function that we can pass into
@@ -59,8 +58,7 @@
   (update-instrument!)
 
   (q/background 0)
-  (envelope-input/draw @(q/state :envelope-input)))
-  ;(reset! synth-definition (map :value (:params @(q/state :envelope-input)))))
+  (envelope-input/draw @envelope-input/instance))
 
 (defn setup []
   (q/smooth)
@@ -81,7 +79,7 @@
   (update-state! :input elapsed-time)
   (def user-input @(q/state :input))
 
-  (update-state! :nodes elapsed-time user-input @(q/state :grid) @(q/state :timeline))
+  (update-state! :nodes elapsed-time user-input @(q/state :grid) @(q/state :timeline) @envelope-input/instance)
   (def current-nodes @(q/state :nodes))
 
   (update-state! :grid (:active current-nodes))

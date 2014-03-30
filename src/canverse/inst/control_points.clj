@@ -8,11 +8,6 @@
 (def QUARTER_WINDOW_WIDTH (/ WINDOW_WIDTH 4))
 (def WINDOW_HEIGHT 400)
 
-(def coordinate-ranges
-  {:attack [0 QUARTER_WINDOW_WIDTH]
-   :decay [QUARTER_WINDOW_WIDTH (* QUARTER_WINDOW_WIDTH 2)]
-   :sustain [WINDOW_HEIGHT 0]
-   :release [(* QUARTER_WINDOW_WIDTH 3) (* QUARTER_WINDOW_WIDTH 4)]})
 
 (def opposite-axis-offsets
   {:attack 50
@@ -20,6 +15,12 @@
    ; decay and sustain node offsets are reliant on
    ; each other's values
    })
+
+(def coordinate-ranges
+  {:attack [0 QUARTER_WINDOW_WIDTH]
+   :decay [QUARTER_WINDOW_WIDTH (* QUARTER_WINDOW_WIDTH 2)]
+   :sustain [(:release opposite-axis-offsets) (:attack opposite-axis-offsets)]
+   :release [(* QUARTER_WINDOW_WIDTH 3) (* QUARTER_WINDOW_WIDTH 4)]})
 
 (defn create-point [level param]
   {:param param
@@ -61,6 +62,7 @@
           (= param :decay)
           (get-value-on-control-axis (find-point :sustain all-points))
 
+          ; place sustain between decay and start of release slope
           (= param :sustain)
           (helpers/midpoint
            (get-value-on-control-axis (find-point :decay all-points))
@@ -82,8 +84,13 @@
     :selection-point at-position))
 
 (defn select-on-click [user-input all-points control-point]
-  (let [position (get-position all-points control-point)]
-    (if (input/just-selected? position (:size control-point) user-input)
+  (let [position (get-position all-points control-point)
+        ; circle is centered, hitbox starts at top-left corner,
+        ; so need to offset by half of circle's size
+        position-with-offset
+        (point/minus position (point/scalar-divide (:size control-point) 2))]
+
+    (if (input/just-selected? position-with-offset (:size control-point) user-input)
       (select (:mouse-pos user-input) control-point)
       control-point)))
 
