@@ -8,8 +8,8 @@
             [canverse.time :as time]
             [canverse.synths :as synths]
             [canverse.helpers :as helpers]
-            [canverse.instrumentwindow.keycapture :as key-capture]
-            [canverse.instrumentwindow.envelopeinput :as envelope-input]
+            [canverse.inst.keycapture :as key-capture]
+            [canverse.inst.envelopeinput :as envelope-input]
 
             [quil.core :as q]
             [overtone.core :as o])
@@ -50,21 +50,29 @@
   (q/no-stroke)
   (q/frame-rate 30)
 
-
   (q/set-state! :message (atom "Value")
-                :envelope-input (atom (envelope-input/create 7))
+                :envelope-input (atom (envelope-input/create))
                 :time (atom (time/create (o/now)))
                 :input (atom (input/create))))
+
+(defn update-instrument! []
+  (swap-state! :time (partial time/update (o/now)))
+  (def elapsed-time (:elapsed-time @(q/state :time)))
+
+  (swap-state! :input (partial input/update elapsed-time))
+  (def user-input @(q/state :input))
+
+  (swap-state! :envelope-input (partial envelope-input/update user-input elapsed-time)))
 
 (defn draw-instrument []
   ; Quil has no update function that we can pass into
   ; the sketch, so we have to do it at the top of the
   ; draw call.
-  (update-state! :input 20)
+  (update-instrument!)
 
   (q/background 0)
-  (envelope-input/draw @(q/state :envelope-input) @(q/state :input))
-  (reset! synth-definition (map #(:value %) (:params @(q/state :envelope-input)))))
+  (envelope-input/draw @(q/state :envelope-input)))
+  ;(reset! synth-definition (map :value (:params @(q/state :envelope-input)))))
 
 (defn update! []
   (update-state! :time (o/now))
@@ -93,16 +101,15 @@
   (timeline/draw @(q/state :timeline)))
 
 (defn -main [& args]
-  (q/defsketch groovy
-               :title "Canverse"
-               :setup setup
-               :draw draw
-               :size [WINDOW_WIDTH 400])
-  (q/defsketch instrgroovy
-               :title "Canverse Instrument"
-               :setup setup-instrument-window
-               :draw draw-instrument
-               :size [WINDOW_WIDTH 300]))
+  (q/sketch :title "Canverse"
+            :setup setup
+            :draw draw
+            :size [WINDOW_WIDTH 400])
+
+  (q/sketch :title "Canverse Instrument"
+            :setup setup-instrument-window
+            :draw draw-instrument
+            :size [400 400]))
 
 (-main)
 

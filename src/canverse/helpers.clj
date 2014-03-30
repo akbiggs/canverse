@@ -8,6 +8,9 @@
     (min target (+ n amount))
     (max target (- n amount))))
 
+(defn midpoint [min max]
+  (+ min (/ (- max min) 2)))
+
 (push-towards 100 0 0.5)
 
 (defn relative [n min max]

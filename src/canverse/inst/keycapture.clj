@@ -1,4 +1,4 @@
-(ns canverse.instrumentwindow.keycapture
+(ns canverse.inst.keycapture
   (:require [canverse.point :as point]
             [canverse.helpers :as helpers])
    (:use quil.core))
@@ -36,17 +36,6 @@
   (assoc envelope-inputs :params
     (for [input (:params envelope-inputs)]
       (if (= (:input input) index) (assoc input :value (- key-entered 48)) input))))
-
-;(for [x [1 2 3]]
-;  (+ x 5))
-
-;(assoc {:input 0 :value 0} :value 5)
-
-;(def test-params [{:input 0 :value 0} {:input 1 :value 0} {:input 2 :value 0}])
-;(def _raw-key 1)
-;(def index 2)
-;(for [input test-params]
-;  (if (= (:input input) index) (assoc input :value raw-key) input))
 
 (defn draw [input user-input]
   ;(background-float (params :background-color))
@@ -106,10 +95,6 @@
 	(let [big-text-size (params :big-text-size)]
 	(if (< @current-text-size big-text-size) (reset! current-text-size big-text-size))
 	(reset! (state :message) (raw-key))))
-
-
-
-
 
 ;(defsketch key-listener
  ; :title "Keyboard listener example"

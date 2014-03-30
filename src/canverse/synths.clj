@@ -78,12 +78,12 @@
 
           ; Set up a normal amplitude and amp envelope.
           amp-env (env-gen
-                   (apply adsr (map #(/ % 9) (list attack decay sustain release level curve bias)))
+                   (apply adsr (list attack decay sustain release level curve bias))
                    gate :action FREE)
 
           ; Get three frequencies (primary freq and detunes at 40 and 22 cents higher)
           freq (midicps freq)
-          dfreq1 (* freq (Math/pow curve (* 0.040 (/ decay 9))))
+          dfreq1 (* freq (Math/pow curve (* 0.040 decay 9)))
           dfreq2 (* freq (Math/pow curve (* 0.022 (/ decay 9))))
 
           ; Set up delay oscillator from zero to a quarter period away
