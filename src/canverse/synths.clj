@@ -124,7 +124,6 @@
 (def a (apply generic-player [1 2 3 4 5 6 7]))
 (a :freq 60)
 (update-instrument (apply generic-player [9 9 9 9 9 9 9]))
- (update-instrument (create-synth [1 1 1 1 1 1 1]))
 (stop)
 
 (defn create-synth [input]

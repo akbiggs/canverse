@@ -8,13 +8,12 @@
             [canverse.time :as time]
             [canverse.synths :as synths]
             [canverse.helpers :as helpers]
-            [canverse.inst.keycapture :as key-capture]
             [canverse.inst.envelopeinput :as envelope-input]
 
             [quil.core :as q]
             [overtone.core :as o])
   (:gen-class :main true))
-
+(o/stop)
 (def WINDOW_WIDTH 352)
 
 (def synth-definition (atom nil))

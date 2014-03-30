@@ -8,7 +8,6 @@
 (def QUARTER_WINDOW_WIDTH (/ WINDOW_WIDTH 4))
 (def WINDOW_HEIGHT 400)
 
-
 (def opposite-axis-offsets
   {:attack 50
    :release 380
