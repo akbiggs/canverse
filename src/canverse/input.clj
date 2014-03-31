@@ -40,3 +40,6 @@
 (defn just-selected? [hitbox-start hitbox-size input]
   (and (:mouse-tapped? input)
        (helpers/is-point-in-rect? (:mouse-pos input) hitbox-start hitbox-size)))
+
+(defn left-mouse-click? []
+  (and (q/mouse-state) (= (q/mouse-button) :left)))
