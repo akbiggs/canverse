@@ -107,6 +107,12 @@
   (metro :bpm 180)
   (stop)
 
+  (defn phat-beats2 [] (phat-beats metro (metro)))
+
+  (phat-beats2)
+  (stop)
+
+
 ;; and combining ideas from sounds.clj with the rhythm ideas here:
 
 ;; first we bring back the dubstep inst
@@ -147,7 +153,7 @@
 
 (stop)
 
-(def current-drum-loop (atom phat-beats))
+(def current-drum-loop (atom phat-beats2))
 
 (defn update! [drum-loop]
   (reset! current-drum-loop drum-loop))
