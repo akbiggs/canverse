@@ -121,11 +121,6 @@
 ;  (dbg instrument)
   (reset! current-instrument instrument))
 
-(def a (apply generic-player [1 2 3 4 5 6 7]))
-(a :freq 60)
-(update-instrument (apply generic-player [9 9 9 9 9 9 9]))
-(stop)
-
 (defn create-synth [input]
   (if (not (nil? input))
     (apply generic-player input)
