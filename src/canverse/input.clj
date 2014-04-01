@@ -34,16 +34,20 @@
        0)
 
      :last-key-pressed
-     (if (q/key-pressed?) (q/raw-key) (:last-key-pressed previous-input))
-
-     :last-keycode-pressed
-     (if (q/key-pressed?) (q/key-code) (:last-keycode-pressed previous-input))
-
-     :last-key-tapped
      (if (q/key-pressed?) (q/raw-key) nil)
 
+     :last-keycode-pressed
+     (if (q/key-pressed?) (q/key-code) nil)
+
+     :last-key-tapped
+     (if (and (q/key-pressed?) (nil? (:last-key-pressed previous-input)))
+       (q/raw-key)
+       nil)
+
      :last-keycode-tapped
-     (if (q/key-pressed?) (q/key-code) nil)}))
+     (if (and (q/key-pressed?) (nil? (:last-keycode-pressed previous-input)))
+       (q/key-code)
+       nil)}))
 
 (defn just-selected? [hitbox-start hitbox-size input]
   (and (:mouse-tapped? input)
