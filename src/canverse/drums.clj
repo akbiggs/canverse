@@ -70,7 +70,7 @@
 (defn metro-beats [m beat-num]
   (at (m (+ 0 beat-num)) (kick))
   (at (m (+ 1 beat-num)) (hat))
-  (at (m (+ 2 beat-num)) (kick))
+  (at (m (+ 2.5 beat-num)) (kick))
   (at (m (+ 2.5 beat-num)) (kick))
   (at (m (+ 3 beat-num)) (hat))
   (apply-at (m (+ 4 beat-num)) metro-beats m (+ 4 beat-num) []))
@@ -90,7 +90,7 @@
   (hat 0.3))
 
 
- (defn phat-beats [m beat-num]
+(defn phat-beats [m beat-num]
   (at (m (+ 0 beat-num)) (kick) (weak-hat))
   (at (m (+ 0.5 beat-num)) (kick))
   (at (m (+ 1 beat-num))        (hat))
@@ -103,14 +103,16 @@
   (apply-at (m (+ 4 beat-num)) phat-beats m (+ 4 beat-num) []))
 
 
-  (phat-beats metro (metro))
-  (metro :bpm 180)
-  (stop)
+(phat-beats metro (metro))
+(metro :bpm  180)
+(stop)
 
-  (defn phat-beats2 [] (phat-beats metro (metro)))
+(defn phat-beats2 [] (phat-beats metro (metro)))
 
-  (phat-beats2)
-  (stop)
+(defn metro-beats2 [] (metro-beats metro (metro)))
+(phat-beats2)
+;(kill 1)
+(stop)
 
 
 ;; and combining ideas from sounds.clj with the rhythm ideas here:
@@ -135,6 +137,8 @@
   (at (m num)
       (ctl dubstep :freq (first notes)))
   (apply-at (m (inc num)) bass m (inc num) (next notes) []))
+
+(bass metro (metro) (cycle notes))
 
 ;; wobble changes the wobble factor randomly every 4th beat
 

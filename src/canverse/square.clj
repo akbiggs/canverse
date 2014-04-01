@@ -66,21 +66,18 @@
   ; else:
   ;    play current drum track at current col/rows
   (if (input/left-mouse-click?)
-    (comment let [drums (:drums square)
-          col (:col square)
-          row (:row square)
-          freq (nth scale col)
-          drum-args {:tempo freq}
-          node (helpers/apply-hash drums drums-args)]
-      node)
     (let [synth (:synth square)
           col (:col square)
           row (:row square)
           freq (nth scale col)
           synth-args (conj {:freq freq :amp 0.01} (envelope-input/get-params envelope))
           node (helpers/apply-hash synth synth-args)]
-      (comment helpers/dbg node)
-      node)))
+      node)
+    (let [drums (:drums square)
+          row (:row square)]
+      (if (= row 1)
+        (drums/phat-beats2)
+        (drums/metro-beats2)))))
 
 (defn update [actives square]
   (update-alpha actives square))
