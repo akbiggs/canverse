@@ -10,7 +10,9 @@
    :mouse-tapped? false
    :mouse-just-released? false
    :last-key-pressed nil
-   :last-key-tapped nil})
+   :last-keycode-pressed nil
+   :last-key-tapped nil
+   :last-keycode-tapped nil})
 
 (defn update [elapsed-time previous-input]
   (let [mouse-down? (q/mouse-state)
@@ -34,8 +36,14 @@
      :last-key-pressed
      (if (q/key-pressed?) (q/raw-key) (:last-key-pressed previous-input))
 
+     :last-keycode-pressed
+     (if (q/key-pressed?) (q/key-code) (:last-keycode-pressed previous-input))
+
      :last-key-tapped
-     (if (q/key-pressed?) (q/raw-key) nil)}))
+     (if (q/key-pressed?) (q/raw-key) nil)
+
+     :last-keycode-tapped
+     (if (q/key-pressed?) (q/key-code) nil)}))
 
 (defn just-selected? [hitbox-start hitbox-size input]
   (and (:mouse-tapped? input)
