@@ -2,7 +2,9 @@
   (:require [canverse.synths :as synths]
             [canverse.helpers :as helpers]
             [canverse.point :as point]
+            [canverse.input :as input]
             [canverse.inst.envelopeinput :as envelope-input]
+            [canverse.drums :as drums]
 
             [overtone.core :as o]
             [quil.core :as q]))
@@ -21,7 +23,11 @@
 (def scale (concat (o/scale :Cb4 :minor) (o/scale :Ab4 :minor)))
 
 (defn create [row col]
-  {:row row :col col :synth @synths/current-instrument :alpha 0})
+  {:row row
+   :col col
+   :synth @synths/current-instrument
+   :drums @drums/current-drum-loop
+   :alpha 0})
 
 (defn get-x [square]
   (* SQUARE_SIZE (:col square)))
@@ -55,13 +61,26 @@
 
 (defn play [envelope square]
   ;(helpers/dbg (:synth square))
-  (let [synth (:synth square)
-        col (:col square)
-        row (:row square)
-        freq (nth scale col)
-        synth-args (conj {:freq freq :amp 0.01} (envelope-input/get-params envelope))
-        node (helpers/apply-hash synth synth-args)]
-    node))
+  ; if left-mouse-clicked:
+  ;    play current synth << envelope-input
+  ; else:
+  ;    play current drum track at current col/rows
+  (if (input/right-mouse-click?)
+    (let [drums (:drums square)
+          row (:row square)
+          col (:col square)
+          drum-key (keyword (str row))
+          drum-loop (drum-key @drums/drums-hash)]
+      ;TODO: kill previous drum on this row before replaying new drum loop
+      (drum-loop)
+      (comment drums/metro :bpm  col)))
+    (let [synth (:synth square)
+          col (:col square)
+          row (:row square)
+          freq (nth scale col)
+          synth-args (conj {:freq freq :amp 0.01} (envelope-input/get-params envelope))
+          node (helpers/apply-hash synth synth-args)]
+      node))
 
 (defn update [actives square]
   (update-alpha actives square))
