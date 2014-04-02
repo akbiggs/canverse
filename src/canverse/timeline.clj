@@ -145,7 +145,7 @@
        :time-before-start end-offset
 
        ; TODO: Don't hardcode instrument
-       :instrument synths/oksaw})
+       :instrument @synths/current-instrument})
     nil))
 
 (defn select-loop-on-request [user-input timeline]

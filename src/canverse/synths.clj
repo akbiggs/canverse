@@ -347,11 +347,6 @@
 
 ; DEFINING FLUTE
 
-(defn- registered-samples
-  "Fetch flute samples from the asset store if they have been manually
-  registered"
-  []
-  (registered-assets ::TransverseFluteTenutoVibrato))
 
 (def FREESOUND-VIBRATO-FLUTE-SAMPLES
   "Freesound ids for all samples in the Vibrato Transverse Flute pack"
@@ -392,11 +387,12 @@
     buf))
 
 (definst sampled-flute-vibrato
-  [freq 60 amp 1 rate 1 loop? 0
-   attack 0 decay 1 sustain 1 release 0.1 curve -4 gate 1]
+  [freq 60 amp 1 rate 1
+   attack 0 decay 1 sustain 10 release 0.1 curve -4 gate 1]
   (let [buf (index:kr (:id index-buffer) freq)
         env (env-gen (adsr attack decay sustain release amp curve)
                      :gate gate
                      :action FREE)]
-    (* env (scaled-play-buf 2 buf :level amp :loop loop? :action FREE))))
+    (* env (scaled-play-buf 2 buf :level amp :loop 0 :action FREE))))
+
 (stop)

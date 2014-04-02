@@ -4,7 +4,7 @@
             [overtone.core :as o]))
 
 (defn initialize-node [instrument]
-  (instrument :amp 0))
+  (@synths/current-instrument :amp 0))
 
 (defn create [history]
   (let [{:keys [notes start-time end-time instrument time-before-start]} history]
@@ -18,11 +18,11 @@
      :notes (map #(assoc % :relative-time (- (+ (:relative-time %) time-before-start) start-time)) notes)
      :end-time (- end-time start-time)
      :last-start-time end-time
-     :node (initialize-node instrument)
+     :node (initialize-node @synths/current-instrument)
      :current-time 0
      :time-before-start time-before-start
 
-     :instrument instrument}))
+     :instrument @synths/current-instrument}))
 
 (defn get-length [loop]
   (:end-time loop))
