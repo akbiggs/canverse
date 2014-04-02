@@ -67,10 +67,25 @@
 ;; if we rewrite loop-beats using a metronome, it would look like
 ;; this:
 
+(defn kick-beat [m beat-num]
+  (at (m (+ 0 beat-num)) (kick))
+  (at (m (+ 0.5 beat-num)) (kick))
+  (at (m (+ 1.0 beat-num)) (kick))
+  (apply-at (m (+ 2 beat-num)) kick-beat m (+ 2 beat-num) []))
+
+
+(defn hat-beat [m beat-num]
+  (at (m (+ 0 beat-num)) (hat))
+  (at (m (+ 0.25 beat-num)) (hat))
+  (at (m (+ 0.5 beat-num)) (hat))
+  (apply-at (m (+ 1 beat-num)) hat-beat m (+ 1 beat-num) []))
+
+(hat-beat metro (metro))
+(stop)
+
 (defn metro-beats [m beat-num]
   (at (m (+ 0 beat-num)) (kick))
   (at (m (+ 1 beat-num)) (hat))
-  (at (m (+ 2.5 beat-num)) (kick))
   (at (m (+ 2.5 beat-num)) (kick))
   (at (m (+ 3 beat-num)) (hat))
   (apply-at (m (+ 4 beat-num)) metro-beats m (+ 4 beat-num) []))
@@ -110,7 +125,10 @@
 (defn phat-beats2 [] (phat-beats metro (metro)))
 
 (defn metro-beats2 [] (metro-beats metro (metro)))
-(phat-beats2)
+
+(defn hat-beat2 [] (hat-beat metro (metro)))
+
+(defn kick-beat2 [] (kick-beat metro (metro)))
 ;(kill 1)
 (stop)
 
@@ -156,6 +174,14 @@
   (wobble metro (metro)))
 
 (stop)
+
+(def drums-hash (atom {:0 kick-beat2
+                       :1 hat-beat2
+                       :2 metro-beats2
+                       :3 phat-beats2
+                       :4 phat-beats2
+                       :5 phat-beats2
+                       :6 phat-beats2}))
 
 (def current-drum-loop (atom phat-beats2))
 
