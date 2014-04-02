@@ -47,3 +47,8 @@
 
 ;;debugging parts of expressions
 (defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
+
+(rand-int 3)
+
+(defn update-print [x]
+  (if (= (rand-int 3) 0) (dbg x)))

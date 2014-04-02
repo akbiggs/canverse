@@ -5,6 +5,7 @@
             [clojure.string :as str]))
 
 (boot-external-server)
+
 (definst plucked-string [freq 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
   (let [freq (midicps freq)
         noize (* 0.8 ( white-noise))
@@ -15,6 +16,40 @@
         clp (clip2 filt 0.8)
         reverb (free-verb clp 0.4 0.8 0.2)]
     (* amp (env-gen (perc 0.0001 dur) FREE) reverb)))
+
+;piano instrument
+(definst piano [note 60
+                gate 1
+                vel 100
+                decay 0.8
+                release 0.8
+                hard 0.8
+                velhard 0.8
+                muffle 0.8
+                velmuff 0.8
+                velcurve 0.8
+                stereo 0.2
+                tune 0.5
+                random 0.1
+                stretch 0.1
+                sustain 0.1]
+  (let [snd (mda-piano {:freq (midicps note)
+                        :gate gate
+                        :vel vel
+                        :decay decay
+                        :release release
+                        :hard hard
+                        :velhard velhard
+                        :muffle muffle
+                        :velmuff velmuff
+                        :velcurve velcurve
+                        :stereo stereo
+                        :tune tune
+                        :random random
+                        :stretch stretch
+                        :sustain sustain})]
+    (detect-silence snd 0.005 :action FREE)
+    (* 1 snd)))
 
 ; climb is a hack parameter that isn't used here, but is instead
 ; controlled in the main update loop based on the mouse movement

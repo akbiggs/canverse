@@ -9,6 +9,7 @@
             [canverse.synths :as synths]
             [canverse.helpers :as helpers]
             [canverse.inst.envelopeinput :as envelope-input]
+            [canverse.changeinst :as changeinst]
 
             [quil.core :as q]
             [overtone.core :as o])
@@ -93,7 +94,8 @@
 
   (q/background 0)
   (grid/draw @(q/state :grid))
-  (timeline/draw @(q/state :timeline)))
+  (timeline/draw @(q/state :timeline))
+  (changeinst/draw @(q/state :input)))
 
 (defn -main [& args]
   (q/sketch :title "Canverse"
