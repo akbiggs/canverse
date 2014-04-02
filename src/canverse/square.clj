@@ -69,10 +69,11 @@
     (let [drums (:drums square)
           row (:row square)
           col (:col square)
-          drum-key (keyword (str row))]
-      ;kill previous drum on this row before replaying new drum loop
-      ((drum-key @drums/drums-hash))
-      (drums/metro :bpm  col)))
+          drum-key (keyword (str row))
+          drum-loop (drum-key @drums/drums-hash)]
+      ;TODO: kill previous drum on this row before replaying new drum loop
+      (drum-loop)
+      (comment drums/metro :bpm  col)))
     (let [synth (:synth square)
           col (:col square)
           row (:row square)
