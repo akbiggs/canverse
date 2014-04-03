@@ -26,7 +26,7 @@
    :loops nil})
 
 (defn get-active-nodes [nodes]
-  (map #(:node %) (:active nodes)))
+  (map :node (:active nodes)))
 
 (defn get-all [nodes]
   (concat (get-active-nodes nodes) (:releasing nodes)))
