@@ -30,5 +30,5 @@
         (synths/update-instrument synths/dark-sea-horns)
         (= @index 3)
         (synths/update-instrument synths/plucked-string)
-        (= @index 4)
-        (synths/update-instrument synths/piano)))
+        (or (= @index 5) (= @index 4))
+        (synths/update-instrument synths/oksaw)))
