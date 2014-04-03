@@ -6,4 +6,4 @@
   :main ^{:skip-aot true} canverse.core
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [overtone "0.9.1"]
-                 [quil "1.6.0"]])
+                 [quil "2.0.0-SNAPSHOT"]])
