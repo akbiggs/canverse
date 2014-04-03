@@ -21,7 +21,7 @@
                                        (timeline/progress-history 2500)
                                        (timeline/add-note 55 0.25 55)
                                        (timeline/select-node 55)))
-(def test-loop (loop/create (timeline/get-history-to-loop nil with-bunch-of-notes-selected)))
+(def test-loop (loop/create 0 (timeline/get-history-to-loop nil with-bunch-of-notes-selected)))
 (def with-another-note-selected (->> with-bunch-of-notes-selected
                                      (timeline/clear)
                                      (timeline/progress-history 1250)
@@ -29,6 +29,15 @@
                                      (timeline/progress-history 50)
                                      (timeline/add-note 52 0.6 56)
                                      (timeline/select-node 56)))
+(def much-later-note-selected (->> with-another-note-selected
+                                   (timeline/clear)
+                                   (timeline/progress-history 2000100)
+                                   (timeline/add-note 50 0.5 58)
+                                   (timeline/progress-history 4000)
+                                   (timeline/select-node 58)))
+
+much-later-note-selected
+(timeline/get-history-to-loop [test-loop] much-later-note-selected)
 (def test-loop-progressed (loop/progress 1250 test-loop))
 
 (deftest adding-note
@@ -67,8 +76,8 @@
        loop/next-end-time 32500))
 
 (deftest create-loop-relative-to-another
-  (let [relative-loop (loop/create (timeline/get-history-to-loop [test-loop-progressed] with-another-note-selected))
-        after-some-progress (loop/update! 500 relative-loop)]
+  (let [relative-loop (loop/create 1 (timeline/get-history-to-loop [test-loop-progressed] with-another-note-selected))
+        after-some-progress (loop/update! 500 {:last-key-tapped nil} relative-loop)]
     (is (= (:time-before-start relative-loop) 1250))
     (is (= (:time-before-start after-some-progress) 750))
     (is (= (:last-start-time relative-loop) 31250))))
