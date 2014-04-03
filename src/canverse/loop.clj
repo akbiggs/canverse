@@ -4,7 +4,7 @@
             [overtone.core :as o]))
 
 (defn initialize-node [instrument]
-  (@synths/current-instrument :amp 0))
+  (instrument :amp 0))
 
 (defn create [history]
   (let [{:keys [notes start-time end-time instrument time-before-start]} history]
@@ -34,7 +34,7 @@
   (<= (:time-before-start loop) 0))
 
 (defn restart [time-past-end loop]
-  (when-not (nil? (:node loop))
+  (when (and (not (nil? (:node loop))) (o/node-live? (:node loop)))
     (o/kill (:node loop)))
 
   (assoc loop
