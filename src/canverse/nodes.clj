@@ -49,6 +49,7 @@
           new-active-node {:node node :base base-props}]
       (update-in nodes [:active] #(conj % new-active-node)))))
 
+
 (defn release-active [nodes]
   (assoc nodes
     :active nil
@@ -58,7 +59,7 @@
   (if (:loop-selected? timeline)
     (update-in nodes [:loops]
       #(let [history-to-loop (timeline/get-history-to-loop % timeline)]
-         (conj % (loop/create history-to-loop))))
+         (conj % (loop/create (count (:loops nodes)) history-to-loop))))
     nodes))
 
 (defn update-with-input [user-input grid envelope nodes]
@@ -129,10 +130,10 @@
 
     (assoc nodes :releasing surviving-nodes)))
 
-(defn update-loops [elapsed-time nodes]
+(defn update-loops [elapsed-time user-input nodes]
   (assoc nodes
     :loops
-    (doall (map #(loop/update! elapsed-time %) (:loops nodes)))))
+    (doall (map #(loop/update! elapsed-time user-input %) (:loops nodes)))))
 
 (defn update [elapsed-time user-input grid timeline envelope nodes]
   (->> nodes
@@ -140,4 +141,4 @@
        (update-with-input user-input grid envelope)
        (update-all-active elapsed-time user-input)
        (update-releasing elapsed-time)
-       (update-loops elapsed-time)))
+       (update-loops elapsed-time user-input)))
