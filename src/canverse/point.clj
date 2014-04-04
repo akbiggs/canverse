@@ -19,3 +19,4 @@
 
 (def scalar-divide (make-scalar-operation /))
 (def scalar-times (make-scalar-operation *))
+(def neg #(scalar-times % -1))
