@@ -11,13 +11,14 @@
             [canverse.screen :as screen]
             [canverse.inst.envelopeinput :as envelope-input]
             [canverse.changeinst :as changeinst]
+            [canverse.loop-toggles :as loop-toggles]
 
             [quil.core :as q]
             [overtone.core :as o])
   (:gen-class :main true))
 
 (o/stop)
-(def WINDOW_WIDTH 352)
+(def WINDOW_WIDTH 400)
 
 (def synth-definition (atom nil))
 (def frame-counter (atom 0))
@@ -73,6 +74,8 @@
                                                  30000))
                 :nodes (atom (nodes/create))
                 :time (atom (time/create (o/now)))
+                :loop-toggles (atom (loop-toggles/create (point/create (- WINDOW_WIDTH 50) 0)
+                                                         (point/create 50 400)))
                 :input (atom (input/create))))
 
 
@@ -83,8 +86,13 @@
   (update-state! :input elapsed-time)
   (def user-input @(q/state :input))
 
-  (update-state! :nodes elapsed-time user-input @(q/state :grid) @(q/state :timeline) @envelope-input/instance)
+  (def previous-update-toggles @(q/state :loop-toggles))
+  (update-state! :nodes elapsed-time user-input
+                 @(q/state :grid) @(q/state :timeline) previous-update-toggles
+                 @envelope-input/instance)
   (def current-nodes @(q/state :nodes))
+
+  (update-state! :loop-toggles user-input (:loops current-nodes))
 
   (update-state! :grid (:active current-nodes))
   (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes))
@@ -98,11 +106,14 @@
   (update!)
 
   (q/background 0)
-  (q/with-graphics (:graphics @screen/instance)
+  (q/with-graphics
+   (:graphics @screen/instance)
+
    (q/background 255 0)
    (grid/draw @(q/state :grid))
-   (timeline/draw @(q/state :timeline))
-   (changeinst/draw @(q/state :input)))
+   (changeinst/draw @(q/state :input))
+   (loop-toggles/draw @(q/state :loop-toggles))
+   (timeline/draw @(q/state :timeline)))
 
   (screen/draw @screen/instance))
 
