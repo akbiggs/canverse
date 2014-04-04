@@ -1,21 +1,23 @@
 (ns canverse.drums
+  (:require [canverse.screen :as screen])
   (:use [overtone.core]))
 
 (boot-external-server)
 
-(definst hat [volume 1.0]
-  (let [src (white-noise)
-        env (env-gen (perc 0.001 0.3) :action FREE)]
-    (* volume 1 src env)))
+(def hat( sample (freesound-path 802)))
+;; (definst hat [volume 1.0]
+;;   (let [src (white-noise)
+;;         env (env-gen (perc 0.001 0.3) :action FREE)]
+;;     (* volume 1 src env)))
 
-(comment (hat))
+(comment (render-hat))
 
-(definst hat2 [volume 1.0]
-  (let [src (white-noise)
-        env (env-gen (perc 0.002 0.5) :action FREE)]
-    (* volume 1 src env)))
+;; (definst hat2 [volume 1.0]
+;;   (let [src (white-noise)
+;;         env (env-gen (perc 0.002 0.5) :action FREE)]
+;;     (* volume 1 src env)))
 
-(comment (hat))
+(comment (render-hat))
 
 ;; sampled kick drum
 ;; from http://www.freesound.org/people/opm/sounds/2086/
@@ -23,31 +25,48 @@
 ;; by id (2086 in this case)
 
 (def kick (sample (freesound-path 2086)))
+(def snare (sample (freesound-path 26903)))
 
-(comment (kick))
+(defn render-kick []
+  (kick)
+  (reset! screen/instance (screen/activate-alpha-fade 0 @screen/instance)))
+
+(defn render-hat []
+  (hat :amp (rand-nth [0.2 0.4 0.75 1])))
+  ;(reset! screen/instance (screen/activate-alpha-fade 1 @screen/instance)))
+
+(defn render-snare []
+  (snare :amp (rand-nth [0.65 0.75 0.85 1]))
+  (reset! screen/instance (screen/activate-alpha-fade 2 @screen/instance)))
+
+(defn render-hat-and-kick []
+  (render-hat)
+  (render-kick))
+
+(comment (render-kick))
 
 ;; we can schedule beats for the future with the at macro:
 
-(comment (at (+ 1000 (now)) (kick)))
+(comment (at (+ 1000 (now)) (render-kick)))
 
 ;; ...and chain multiple beats together with a do form:
 
 (comment
   (let
     [time (now)]
-    (at (+    0 time) (kick) )
-    (at (+  400 time) (hat)  )
-    (at (+  800 time) (kick) )
-    (at (+ 1200 time) (hat)  )))
+    (at (+    0 time) (render-kick) )
+    (at (+  400 time) (render-hat)  )
+    (at (+  800 time) (render-kick) )
+    (at (+ 1200 time) (render-hat)  )))
 
 ;; to repeat, we use the apply-at macro to schedule a recursive call
 ;; for the future
 
 (defn loop-beats [time]
-  (at (+    0 time) (kick) )
-  (at (+  400 time) (hat)  )
-  (at (+  800 time) (kick) )
-  (at (+ 1200 time) (hat)  )
+  (apply-at (+    0 time) #'render-kick )
+  (apply-at (+  400 time) #'render-hat)
+  (apply-at (+  800 time) #'render-kick)
+  (apply-at (+ 1200 time) #'render-hat)
   (apply-at (+ 1600 time) loop-beats (+ 1600 time) []))
 
 (comment (loop-beats (now)))
@@ -68,29 +87,28 @@
 ;; this:
 
 (defn kick-beat [m beat-num]
-  (at (m (+ 0 beat-num)) (kick))
-  (at (m (+ 0.5 beat-num)) (kick))
-  (at (m (+ 1.0 beat-num)) (kick))
+  (apply-at (m (+ 0 beat-num)) #'render-kick)
+  (apply-at (m (+ 0.5 beat-num)) #'render-kick)
+  (apply-at (m (+ 1.0 beat-num)) #'render-kick)
   (apply-at (m (+ 2 beat-num)) kick-beat m (+ 2 beat-num) []))
 
-
 (defn hat-beat [m beat-num]
-  (at (m (+ 0 beat-num)) (hat))
-  (at (m (+ 0.25 beat-num)) (hat))
-  (at (m (+ 0.5 beat-num)) (hat))
+  (apply-at (m (+ 0 beat-num)) #'render-hat)
+  (apply-at (m (+ 0.25 beat-num)) #'render-hat)
+  (apply-at (m (+ 0.5 beat-num)) #'render-hat)
   (apply-at (m (+ 1 beat-num)) hat-beat m (+ 1 beat-num) []))
 
-(hat-beat metro (metro))
+(comment (hat-beat metro (metro)))
 (stop)
 
 (defn metro-beats [m beat-num]
-  (at (m (+ 0 beat-num)) (kick))
-  (at (m (+ 1 beat-num)) (hat))
-  (at (m (+ 2.5 beat-num)) (kick))
-  (at (m (+ 3 beat-num)) (hat))
+  (apply-at (m (+ 0 beat-num)) #'render-kick)
+  (apply-at (m (+ 1 beat-num)) #'render-hat)
+  (apply-at (m (+ 2.5 beat-num)) #'render-kick)
+  (apply-at (m (+ 3 beat-num)) #'render-hat)
   (apply-at (m (+ 4 beat-num)) metro-beats m (+ 4 beat-num) []))
 
-(metro-beats metro (metro))
+(comment (metro-beats metro (metro)))
 (stop)
 
 ;; because we're using a metronome, we can change the speed:
@@ -104,21 +122,78 @@
 (defn weak-hat []
   (hat 0.3))
 
-
 (defn phat-beats [m beat-num]
-  (at (m (+ 0 beat-num)) (kick) (weak-hat))
-  (at (m (+ 0.5 beat-num)) (kick))
-  (at (m (+ 1 beat-num))        (hat))
-  (at (m (+ 1.5 beat-num)) (kick) (weak-hat))
-  (at (m (+ 2 beat-num)) (kick) (weak-hat))
-  (at (m (+ 2.25 beat-num)) (kick) (weak-hat))
-  (at (m (+ 2.5 beat-num)) (kick))
-  (at (m (+ 3 beat-num)) (kick) (hat2) )
-  (at (m (+ 3.5 beat-num))        (weak-hat) )
+  (apply-at (m (+ 0 beat-num))    #'render-hat-and-kick)
+  (apply-at (m (+ 0.5 beat-num))  #'render-kick)
+  (apply-at (m (+ 1 beat-num))    #'render-hat)
+  (apply-at (m (+ 1.5 beat-num))  #'render-hat-and-kick)
+  (apply-at (m (+ 2 beat-num))    #'render-hat-and-kick)
+  (apply-at (m (+ 2.25 beat-num)) #'render-hat-and-kick)
+  (apply-at (m (+ 2.5 beat-num))  #'render-kick)
+  (apply-at (m (+ 3 beat-num))    #'render-kick)
+  (apply-at (m (+ 3.5 beat-num))  #'render-hat)
   (apply-at (m (+ 4 beat-num)) phat-beats m (+ 4 beat-num) []))
 
+(defn disco [m beat-num]
+  (apply-at (m (+ 0 beat-num)) #'render-kick)
+  (apply-at (m (+ 0 beat-num)) #'render-hat)
+  (apply-at (m (+ 0.125 beat-num)) #'render-hat)
+  (apply-at (m (+ 0.25 beat-num)) #'render-hat)
+  (apply-at (m (+ 0.375 beat-num)) #'render-hat)
+  (apply-at (m (+ 0.5 beat-num)) #'render-hat)
+  (apply-at (m (+ 0.5 beat-num)) #'render-snare)
+  (apply-at (m (+ 0.625 beat-num)) #'render-hat)
+  (apply-at (m (+ 0.75 beat-num)) #'render-hat)
+  ;(apply-at (m (+ 0.75 beat-num)) #'render-kick)
+  (apply-at (m (+ 0.875 beat-num)) #'render-hat)
+  (apply-at (m (+ 1 beat-num)) #'render-hat)
+  (apply-at (m (+ 1 beat-num)) #'render-kick)
 
-(phat-beats metro (metro))
+  (apply-at (m (+ 1.125 beat-num)) #'render-hat)
+  (apply-at (m (+ 1.25 beat-num)) #'render-hat)
+  (apply-at (m (+ 1.25 beat-num)) #'render-kick)
+  (apply-at (m (+ 1.375 beat-num)) #'render-hat)
+  (apply-at (m (+ 1.5 beat-num)) #'render-hat)
+  (apply-at (m (+ 1.5 beat-num)) #'render-snare)
+  (apply-at (m (+ 1.625 beat-num)) #'render-hat)
+  (apply-at (m (+ 1.75 beat-num)) #'render-hat)
+  (apply-at (m (+ 1.75 beat-num)) #'render-snare)
+  (apply-at (m (+ 1.875 beat-num)) #'render-hat)
+  (apply-at (m (+ 2 beat-num)) #'render-hat)
+  (apply-at (m (+ 2 beat-num)) #'render-kick)
+
+  (apply-at (m (+ 2.125 beat-num)) #'render-hat)
+  (apply-at (m (+ 2.25 beat-num)) #'render-hat)
+  (apply-at (m (+ 2.375 beat-num)) #'render-hat)
+  (apply-at (m (+ 2.5 beat-num)) #'render-hat)
+  ;(apply-at (m (+ 2.5625 beat-num)) #'render-snare)
+  (apply-at (m (+ 2.625 beat-num)) #'render-hat)
+  ;(apply-at (m (+ 2.6875 beat-num)) #'render-snare)
+  (apply-at (m (+ 2.75 beat-num)) #'render-hat)
+  (apply-at (m (+ 2.75 beat-num)) #'render-kick)
+  ;(apply-at (m (+ 2.8125 beat-num)) #'render-snare)
+  (apply-at (m (+ 2.875 beat-num)) #'render-hat)
+  (apply-at (m (+ 2.875 beat-num)) #'render-kick)
+  ;(apply-at (m (+ 2.9375 beat-num)) #'render-snare)
+  (apply-at (m (+ 3 beat-num)) #'render-hat)
+  (apply-at (m (+ 3 beat-num)) #'render-snare)
+
+  (apply-at (m (+ 3.125 beat-num)) #'render-hat)
+  (apply-at (m (+ 3.125 beat-num)) #'render-kick)
+  (apply-at (m (+ 3.25 beat-num)) #'render-hat)
+  (apply-at (m (+ 3.375 beat-num)) #'render-hat)
+  (apply-at (m (+ 3.375 beat-num)) #'render-kick)
+  (apply-at (m (+ 3.5 beat-num)) #'render-hat)
+  (apply-at (m (+ 3.625 beat-num)) #'render-hat)
+  (apply-at (m (+ 3.625 beat-num)) #'render-kick)
+  (apply-at (m (+ 3.75 beat-num)) #'render-hat)
+  (apply-at (m (+ 3.875 beat-num)) #'render-hat)
+  (apply-at (m (+ 3.875 beat-num)) #'render-kick)
+
+  (apply-at (m (+ 4 beat-num)) disco m (+ 4 beat-num) []))
+
+(disco metro (metro))
+(comment (phat-beats metro (metro)))
 (metro :bpm  180)
 (stop)
 
@@ -129,6 +204,7 @@
 (defn hat-beat2 [] (hat-beat metro (metro)))
 
 (defn kick-beat2 [] (kick-beat metro (metro)))
+(defn disco2 [] (disco metro (metro)))
 ;(kill 1)
 (stop)
 
@@ -179,7 +255,7 @@
                        :1 hat-beat2
                        :2 metro-beats2
                        :3 phat-beats2
-                       :4 phat-beats2
+                       :4 disco2
                        :5 phat-beats2
                        :6 phat-beats2}))
 
@@ -187,3 +263,4 @@
 
 (defn update! [drum-loop]
   (reset! current-drum-loop drum-loop))
+

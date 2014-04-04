@@ -8,6 +8,7 @@
             [canverse.time :as time]
             [canverse.synths :as synths]
             [canverse.helpers :as helpers]
+            [canverse.screen :as screen]
             [canverse.inst.envelopeinput :as envelope-input]
             [canverse.changeinst :as changeinst]
 
@@ -65,6 +66,7 @@
   (q/smooth)
   (q/frame-rate 30)
 
+  (screen/initialize WINDOW_WIDTH 400)
   (q/set-state! :grid (atom (grid/create 7 7))
                 :timeline (atom (timeline/create (point/create 0 350)
                                                  (point/create WINDOW_WIDTH 45)
@@ -72,6 +74,7 @@
                 :nodes (atom (nodes/create))
                 :time (atom (time/create (o/now)))
                 :input (atom (input/create))))
+
 
 (defn update! []
   (update-state! :time (o/now))
@@ -84,7 +87,9 @@
   (def current-nodes @(q/state :nodes))
 
   (update-state! :grid (:active current-nodes))
-  (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes)))
+  (update-state! :timeline user-input elapsed-time (nodes/get-all current-nodes))
+
+  (reset! screen/instance (screen/update elapsed-time @screen/instance)))
 
 (defn draw []
   ; Quil has no update function that we can pass into
@@ -93,9 +98,13 @@
   (update!)
 
   (q/background 0)
-  (grid/draw @(q/state :grid))
-  (timeline/draw @(q/state :timeline))
-  (changeinst/draw @(q/state :input)))
+  (q/with-graphics (:graphics @screen/instance)
+   (q/background 255 0)
+   (grid/draw @(q/state :grid))
+   (timeline/draw @(q/state :timeline))
+   (changeinst/draw @(q/state :input)))
+
+  (screen/draw @screen/instance))
 
 (defn -main [& args]
   (q/sketch :title "Canverse"
