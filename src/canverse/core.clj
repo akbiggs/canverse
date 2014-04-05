@@ -111,10 +111,10 @@
 
    (q/background 255 0)
    (grid/draw @(q/state :grid))
-   (changeinst/draw @(q/state :input))
-   (loop-toggles/draw @(q/state :loop-toggles))
-   (timeline/draw @(q/state :timeline)))
+   (changeinst/draw @(q/state :input)))
 
+  (loop-toggles/draw @(q/state :loop-toggles))
+  (timeline/draw @(q/state :timeline))
   (screen/draw @screen/instance))
 
 (defn -main [& args]
