@@ -55,6 +55,9 @@
     :active nil
     :releasing (concat (:releasing nodes) (get-active-nodes nodes))))
 
+(defn take-toggled-loops [loop-toggles nodes]
+  (assoc nodes :loops (:loops loop-toggles)))
+
 (defn create-loop-when-ready [timeline nodes]
   (if (:loop-selected? timeline)
     (update-in nodes [:loops]
@@ -135,8 +138,9 @@
     :loops
     (doall (map #(loop/update! elapsed-time user-input %) (:loops nodes)))))
 
-(defn update [elapsed-time user-input grid timeline envelope nodes]
+(defn update [elapsed-time user-input grid timeline loop-toggles envelope nodes]
   (->> nodes
+       (take-toggled-loops loop-toggles)
        (create-loop-when-ready timeline)
        (update-with-input user-input grid envelope)
        (update-all-active elapsed-time user-input)
