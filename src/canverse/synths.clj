@@ -1,6 +1,7 @@
 (ns canverse.synths
   (:use [overtone.core]
-        [canverse.helpers])
+        [canverse.helpers]
+        [canverse.piano :only [index-piano-buffer]])
   (:require [quil.core :as q]
             [clojure.string :as str]))
 
@@ -70,6 +71,16 @@
                         :sustain sustain})]
     (detect-silence snd 0.005 :action FREE)
     (* 1 snd)))
+
+(definst sampled-piano
+  [freq 60 amp 1 level 1 rate 1 loop? 0
+   attack 0 decay 1 sustain 1 release 0.1 curve -4 gate 1]
+  (let [buf (index:kr (:id index-piano-buffer) freq)
+        env (env-gen (adsr attack decay sustain release level curve)
+                     :gate gate
+                     :action FREE)]
+    (* env amp (scaled-play-buf 2 buf :rate rate :level level :loop loop? :action FREE))))
+
 
 ; climb is a hack parameter that isn't used here, but is instead
 ; controlled in the main update loop based on the mouse movement
@@ -398,7 +409,7 @@
 ;; Silent buffer used to fill in the gaps.
 (defonce ^:private silent-buffer (buffer 0))
 
-(defonce index-buffer
+(defonce index-flute-buffer
   (let [tab (note-index flute-samples)
         buf (buffer 128)]
     (buffer-fill! buf (:id silent-buffer))
@@ -409,7 +420,7 @@
 (definst sampled-flute-vibrato
   [freq 60 amp 1 rate 1
    attack 0 decay 1 sustain 10 release 0.1 curve -4 gate 1]
-  (let [buf (index:kr (:id index-buffer) freq)
+  (let [buf (index:kr (:id index-flute-buffer) freq)
         env (env-gen (adsr attack decay sustain release :amp amp :curve curve)
                      :gate gate
                      :action FREE)]
