@@ -31,7 +31,7 @@
         (= @index 3)
         (synths/update-instrument synths/plucked-string)
         (= @index 4)
-        (synths/update-instrument synths/space-reverb)
+        (synths/update-instrument synths/sampled-piano)
         (= @index 5)
         (synths/update-instrument synths/sampled-flute-vibrato)))
 
