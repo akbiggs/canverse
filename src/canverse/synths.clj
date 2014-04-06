@@ -17,6 +17,26 @@
         reverb (free-verb clp 0.4 0.8 0.2)]
     (* amp (env-gen (perc 0.0001 dur) FREE) reverb)))
 
+(demo (saw (midicps (* 400 (distort (pink-noise))))))
+(odoc rlpf)
+(demo
+ (let [freq 60 attack 0.5 decay 0.5 sustain 0.8 release 1 gate 0.5
+       snd (pulse (midicps freq) 0.5)
+       ;snd (rlpf snd 2000)
+
+       env (env-gen (adsr attack decay sustain release) gate :action FREE)
+       ]
+   (* snd env)))
+
+(definst test [freq 60]
+  (let [snd (saw (midicps freq))
+        noise (* 0.5 (pink-noise))
+        env (env-gen (perc) :action FREE)]
+    (* env snd)))
+
+(test 40)
+(stop)
+
 ;piano instrument
 (definst piano [note 60
                 gate 1
