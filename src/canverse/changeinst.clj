@@ -29,9 +29,9 @@
         (= @index 2)
         (synths/update-instrument synths/dark-sea-horns)
         (= @index 3)
-        (synths/update-instrument synths/plucked-string)
+        (synths/update-instrument synths/awesome)
         (= @index 4)
-        (synths/update-instrument synths/space-reverb)
+        (synths/update-instrument synths/pulse-synth)
         (= @index 5)
         (synths/update-instrument synths/sampled-flute-vibrato)))
 

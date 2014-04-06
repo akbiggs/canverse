@@ -415,4 +415,21 @@
                      :action FREE)]
     (* 1.2 env (scaled-play-buf 2 buf :level amp :loop 0 :action FREE))))
 
+(def awesome-buffer (load-sample "samples/massive2.wav"))
+(demo (play-buf 2 awesome-buffer))
+
+(defsynth pulse-synth [freq 60 amp 0.8]
+  (let [snd (pulse (midicps freq))]
+    (out 0 (* amp snd))))
+
+(pulse-synth 60)
+(stop)
+(defsynth awesome [freq 60 amp 0.8]
+  (let [samp (play-buf 2 awesome-buffer :loop 1)
+        snd (* amp samp)
+        snd (lpf snd (midicps (* 5 (+ 8 (- freq 65)))))
+        snd (* 1.5 snd)]
+        ;snd (* snd (saw (midicps freq)))]
+    (out 0 snd)))
+
 (stop)
