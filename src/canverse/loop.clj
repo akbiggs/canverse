@@ -8,9 +8,6 @@
 
 (defn create [index history]
   (let [{:keys [notes start-time end-time instrument time-before-start]} history]
-    (prn "Relative note times "(map :relative-time notes))
-    (prn "Start time" start-time)
-    (prn "time before start " time-before-start)
     {
      ; since we no longer care about the time when the loop started, just
      ; the relative offsets of the notes from the start, subtract
@@ -62,13 +59,16 @@
   (filter #(<= (:relative-time %) (:current-time loop))
           (:notes loop)))
 
-(defn turn-off-when-toggled [user-input loop]
+(defn toggle [loop]
+  (assoc loop :active? (not (:active? loop))))
+
+(defn toggle-when-number-pressed [user-input loop]
   (let [last-key-tapped (str (:last-key-tapped user-input))]
     (if (and (not (empty? last-key-tapped))
              (helpers/in-range? (int (:last-key-tapped user-input)) (int \1) (int \9))
              (number? (read-string last-key-tapped))
              (= (dec (read-string last-key-tapped)) (:index loop)))
-      (assoc loop :active? (not (:active? loop)))
+      (toggle loop)
       loop)))
 
 (defn get-current-note [loop]
@@ -86,7 +86,7 @@
 (defn update! [elapsed-time user-input loop]
   (->> loop
        (progress elapsed-time)
-       (turn-off-when-toggled user-input)
+       (toggle-when-number-pressed user-input)
        (play-current-note!)))
 
 ; TESTING

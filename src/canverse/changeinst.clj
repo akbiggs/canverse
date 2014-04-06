@@ -30,5 +30,8 @@
         (synths/update-instrument synths/dark-sea-horns)
         (= @index 3)
         (synths/update-instrument synths/plucked-string)
-        (or (= @index 5) (= @index 4))
-        (synths/update-instrument synths/oksaw)))
+        (= @index 4)
+        (synths/update-instrument synths/space-reverb)
+        (= @index 5)
+        (synths/update-instrument synths/sampled-flute-vibrato)))
+

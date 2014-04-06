@@ -6,16 +6,16 @@
 
 (boot-external-server)
 
-(definst plucked-string [freq 60 amp 0.8 dur 2 decay 30 coef 0.3 gate 1]
+(definst plucked-string [freq 60 amp 0.8 dur 2 attack 0.5 decay 30 sustain 0.5 release 0.5 coef 0.3 gate 1]
   (let [freq (midicps freq)
         noize (* 0.8 ( white-noise))
         dly (/ 1.0 freq)
-        plk (pluck noize gate dly dly decay coef)
-        dist (distort plk)
-        filt (rlpf dist (* 12 freq) 0.6)
-        clp (clip2 filt 0.8)
-        reverb (free-verb clp 0.4 0.8 0.2)]
-    (* amp (env-gen (perc 0.0001 dur) FREE) reverb)))
+        ;plk (pluck noize gate dly dly decay coef)
+        ;dist (distort plk)
+        ;filt (rlpf dist (* 12 freq) 0.6)
+        ;clp (clip2 filt 0.8)
+        reverb (free-verb noize 0.4 0.8 0.2)]
+    (* amp (env-gen (adsr attack decay sustain release) :action FREE) reverb)))
 
 (demo (saw (midicps (* 400 (distort (pink-noise))))))
 (odoc rlpf)
