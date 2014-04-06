@@ -410,9 +410,9 @@
   [freq 60 amp 1 rate 1
    attack 0 decay 1 sustain 10 release 0.1 curve -4 gate 1]
   (let [buf (index:kr (:id index-buffer) freq)
-        env (env-gen (adsr attack decay sustain release amp curve)
+        env (env-gen (adsr attack decay sustain release :amp amp :curve curve)
                      :gate gate
                      :action FREE)]
-    (* env (scaled-play-buf 2 buf :level amp :loop 0 :action FREE))))
+    (* 1.2 env (scaled-play-buf 2 buf :level amp :loop 0 :action FREE))))
 
 (stop)
