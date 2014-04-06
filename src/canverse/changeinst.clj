@@ -29,6 +29,6 @@
         (= @index 2)
         (synths/update-instrument synths/dark-sea-horns)
         (= @index 3)
-        (synths/update-instrument synths/plucked-string)
+        (synths/update-instrument synths/sampled-flute-vibrato)
         (or (= @index 5) (= @index 4))
         (synths/update-instrument synths/oksaw)))
