@@ -125,24 +125,11 @@
   (if (is-loop-selected? timeline)
     (let [loop-notes (:loop-notes timeline)
 
-          first-loop-start-time (if-not (empty? loops) (:last-start-time (first loops)) 0)
-          first-loop-end-time (if-not (empty? loops) (loop/next-end-time (first loops)) 0)
-
-          first-loop-length (if-not (empty? loops) (loop/get-length (first loops)) 0)
-
           first-note-relative-time (helpers/dbg (:relative-time (first loop-notes)))
-          last-note-relative-time (helpers/dbg (:relative-time (last loop-notes)))
-
-          start-offset (if-not (empty? loops) (- first-note-relative-time first-loop-start-time) 0)
-          end-offset (if-not (empty? loops) (- first-loop-end-time last-note-relative-time) 0)
-
-          time-before-start end-offset
-          start-loop-time (+ time-before-start (- first-note-relative-time start-offset))
-          end-loop-time (+ time-before-start end-offset last-note-relative-time)]
-      {:start-time start-loop-time
+          last-note-relative-time (helpers/dbg (:relative-time (last loop-notes)))]
+      {:start-time first-note-relative-time
        :notes (:loop-notes timeline)
-       :end-time end-loop-time
-       :time-before-start end-offset
+       :end-time last-note-relative-time
 
        ; TODO: Don't hardcode instrument
        :instrument @synths/current-instrument})
