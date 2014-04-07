@@ -72,15 +72,7 @@ much-later-note-selected
 
 (deftest create-loop
   (are [x y] (= (x test-loop) y)
-       loop/get-length 2500
-       loop/next-end-time 32500))
-
-(deftest create-loop-relative-to-another
-  (let [relative-loop (loop/create 1 (timeline/get-history-to-loop [test-loop-progressed] with-another-note-selected))
-        after-some-progress (loop/update! 500 {:last-key-tapped nil} relative-loop)]
-    (is (= (:time-before-start relative-loop) 1250))
-    (is (= (:time-before-start after-some-progress) 750))
-    (is (= (:last-start-time relative-loop) 31250))))
+       loop/get-length 2500))
 
 (run-all-tests #"canverse.test.timeline-test")
 
