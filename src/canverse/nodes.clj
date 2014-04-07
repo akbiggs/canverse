@@ -5,6 +5,7 @@
             [canverse.helpers :as helpers]
             [canverse.timeline :as timeline]
             [canverse.loop :as loop]
+            [canverse.input :as input]
 
             [overtone.core :as o]
             [quil.core :as q]))
@@ -62,13 +63,13 @@
   (if (:loop-selected? timeline)
     (update-in nodes [:loops]
       #(let [history-to-loop (timeline/get-history-to-loop % timeline)]
-         (conj % (loop/create (count (:loops nodes)) history-to-loop))))
+         (reverse (conj % (loop/create (count (:loops nodes)) history-to-loop)))))
     nodes))
 
 (defn update-with-input [user-input grid envelope nodes]
   (if (grid/in-bounds? (:mouse-pos user-input) grid)
     (cond->> nodes
-             (:mouse-tapped? user-input)
+             (input/just-selected? (point/create 0 0) (point/create 352 352) user-input)
              (activate-at (:mouse-pos user-input) grid envelope)
 
              (:mouse-just-released? user-input)
@@ -88,12 +89,15 @@
         ; to keep the transition smooth but the note still sounding nice,
         ; as the user's mouse moves push the current frequency towards the nearest
         ; note of the scale we're working on
-        target-freq (nth square/scale (/ (:x mouse-pos) square/SQUARE_SIZE))
-        freq-climb 0.5
+        freq-index (/ (:x mouse-pos) square/SQUARE_SIZE)
         current-freq (o/node-get-control node :freq)
+        target-freq (if-not (or (< freq-index 0) (>= freq-index (count square/scale)))
+                      (nth square/scale freq-index)
+                      current-freq)
+        freq-climb 0.5
         next-freq (helpers/push-towards current-freq target-freq freq-climb)
 
-        amp-climb 0.05
+        amp-climb 0.3
         next-amp (+ (o/node-get-control node :amp) amp-climb)
 
         ; divide y-deviation by a sufficiently large number to get
