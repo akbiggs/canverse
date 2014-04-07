@@ -432,7 +432,12 @@
 
 (defmacro create-from-sample [synth-name sample-name]
   `(let [buffer# (load-sample ~(str "samples/" sample-name))]
-     (defsynth ~(symbol synth-name) [~'freq 60 ~'amp 0.8]
+     (defsynth ~(symbol synth-name) [~'freq 60
+                                     ~'amp 0.8
+                                     ~'attack 0.5
+                                     ~'decay 0.5
+                                     ~'sustain 0.5
+                                     ~'release 0.5]
        (let [samp# (play-buf 2 buffer# :loop 1)
              snd# (~'* ~'amp samp#)
              snd# (lpf snd# (midicps
