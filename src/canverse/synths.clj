@@ -430,14 +430,24 @@
   (let [snd (pulse (midicps freq))]
     (out 0 (* amp snd))))
 
-(def awesome-buffer (load-sample "samples/massive3.wav"))
+(defmacro create-from-sample [synth-name sample-name]
+  `(let [buffer# (load-sample ~(str "samples/" sample-name))]
+     (defsynth ~(symbol synth-name) [~'freq 60 ~'amp 0.8]
+       (let [samp# (play-buf 2 buffer# :loop 1)
+             snd# (~'* ~'amp samp#)
+             snd# (lpf snd# (midicps
+                             (~'* 5 (~'+ 8 (~'- ~'freq 65)))))
+             snd# (~'* 1.5 snd#)]
+         (out 0 snd#)))))
 
-(defsynth awesome [freq 60 amp 0.8]
-  (let [samp (play-buf 2 awesome-buffer :loop 1)
-        snd (* amp samp)
-        snd (lpf snd (midicps (* 5 (+ 8 (- freq 65)))))
-        snd (* 1.5 snd)]
-        ;snd (* snd (saw (midicps freq)))]
-    (out 0 snd)))
+(create-from-sample "awesome" "massive3.wav")
+(create-from-sample "deus" "deus2.wav")
+(create-from-sample "weird" "garage2.wav")
+(create-from-sample "vector" "nirvana1b.wav")
+(create-from-sample "chase" "nirvana2b.wav")
+(create-from-sample "fight" "nirvana3b.wav")
+(create-from-sample "fight-downtime" "nirvana3c.wav")
+(create-from-sample "climax" "climax2.wav")
+(create-from-sample "resonant" "resonant2.wav")
 
 (stop)

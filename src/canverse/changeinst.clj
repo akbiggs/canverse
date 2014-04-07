@@ -6,6 +6,18 @@
 
 (def index (atom 1))
 
+(def insts
+  [synths/awesome
+   synths/resonant
+   synths/deus
+   synths/vector
+   synths/chase
+   synths/fight
+   synths/fight-downtime
+   synths/climax
+   synths/chase
+   synths/weird])
+
 (defn draw [user-input]
   (def last-key-pressed (:last-keycode-tapped user-input))
   (if (and (key-pressed?)
@@ -13,7 +25,7 @@
            (or (= last-key-pressed 40)
                (= last-key-pressed 38)))
     (cond (= last-key-pressed 40)
-          (if (< @index 5)
+          (if (< @index (count insts))
               (do
                 (reset! index (inc @index))
                 (helpers/dbg @index))
@@ -23,15 +35,9 @@
           (= last-key-pressed 38)
           (if (> @index 1)
               (reset! index (dec @index))
-              (reset! index 5))))
-  (cond (= @index 1)
-        (synths/update-instrument synths/awesome)
-        (= @index 2)
-        (synths/update-instrument synths/dark-sea-horns)
-        (= @index 3)
-        (synths/update-instrument synths/pulse-synth)
-        (= @index 4)
-        (synths/update-instrument synths/sampled-piano)
-        (= @index 5)
-        (synths/update-instrument synths/sampled-flute-vibrato)))
+              (reset! index (count insts)))))
+
+  (doseq [i (range 1 (+ (count insts) 1))]
+    (when (= @index i)
+      (synths/update-instrument (nth insts (dec i))))))
 
