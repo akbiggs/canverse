@@ -6,6 +6,16 @@
 
             [quil.core :as q]))
 
+(def colors [
+             [128 0 128]
+             [0 0 255]
+             [0 255 255]
+             [0 255 0]
+             [255 255 0]
+             [255 165 0]
+             [255 0 0]
+             ])
+
 (defn create [position size]
   {
    :loops nil
@@ -40,6 +50,10 @@
           loop-current-note (loop/get-current-note loop)
           alpha (if (nil? loop-current-note)
                   0
-                  (* (:amp loop-current-note) 255))]
-      (q/fill 125 alpha)
+                  (* (:amp loop-current-note) 255))
+          fill-color (if (:active? loop)
+                       (nth colors i)
+                       [125])
+          fill (conj fill-color alpha)]
+      (apply q/fill fill)
       (q/rect (:x toggle-start) (:y toggle-start) (:x toggle-size) (:y toggle-size)))))
