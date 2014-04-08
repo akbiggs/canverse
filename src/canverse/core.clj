@@ -60,7 +60,6 @@
   ; the sketch, so we have to do it at the top of the
   ; draw call.
   (update-instrument!)
-
   (q/background 0)
   (envelope-input/draw @envelope-input/instance))
 

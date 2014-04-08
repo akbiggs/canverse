@@ -3,7 +3,7 @@
             [overtone.at-at :as a])
   (:use [overtone.core]))
 
-(boot-external-server)
+;(boot-external-server)
 
 (def hat( sample (freesound-path 802)))
 ;; (definst hat [volume 1.0]
@@ -239,7 +239,6 @@
   (bass metro (metro) (cycle notes))
   (wobble metro (metro)))
 
-(metro :bpm 40)
 ;TODO: Build this hash programatically
 (def drums-hash (atom {:0 {:drum-loop kick-beat2 :job nil}
                        :1 {:drum-loop hat-beat2 :job nil}
@@ -248,6 +247,12 @@
                        :4 {:drum-loop disco2 :job nil}
                        :5 {:drum-loop phat-beats2 :job nil}
                        :6 {:drum-loop phat-beats2 :job nil}}))
+(defn update-drums! [index job]
+  (let [drums @drums-hash
+        current-drums (drums index)]
+    (reset! drums-hash
+            (assoc drums index
+              (assoc current-drums :job job)))))
 
 (defn play-drum-at [index]
   (let [drums @drums-hash
@@ -258,13 +263,6 @@
       (do (a/kill (current-drum :job))
           (update-drums! index nil))
       (update-drums! index (drum-loop)))))
-
-(defn update-drums! [index job]
-  (let [drums @drums-hash
-        current-drums (drums index)]
-    (reset! drums-hash
-            (assoc drums index
-              (assoc current-drums :job job)))))
 
 (def current-drum-loop (atom phat-beats2))
 

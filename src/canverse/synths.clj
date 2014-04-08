@@ -5,7 +5,7 @@
   (:require [quil.core :as q]
             [clojure.string :as str]))
 
-(boot-external-server)
+;(boot-external-server)
 
 (definst plucked-string [freq 60 amp 0.8 dur 2 attack 0.5 decay 30 sustain 0.5 release 0.5 coef 0.3 gate 1]
   (let [freq (midicps freq)
