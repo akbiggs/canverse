@@ -5,6 +5,22 @@
   (:use quil.core))
 
 (def index (atom 1))
+(def text-alpha (atom 0))
+(def fading-in? (atom false))
+
+(def inst-names
+  [
+   "Awe"
+   "Resonant"
+   "Deus"
+   "Vector"
+   "Endgame"
+   "Fight"
+   "Downtime"
+   "Finish Them!"
+   "Chase"
+   "Weird"
+   ])
 
 (def insts
   [synths/awesome
@@ -18,8 +34,14 @@
    synths/chase
    synths/weird])
 
-(defn draw [user-input]
+(defn change-index! [new-index]
+  (reset! index new-index)
+  (prn "LAWL")
+  (reset! fading-in? true))
+
+(defn draw [elapsed-time user-input]
   (def last-key-pressed (:last-keycode-tapped user-input))
+
   (if (and (key-pressed?)
            (not (nil? last-key-pressed))
            (or (= last-key-pressed 40)
@@ -27,17 +49,33 @@
     (cond (= last-key-pressed 40)
           (if (< @index (count insts))
               (do
-                (reset! index (inc @index))
+                (change-index! (inc @index))
                 (helpers/dbg @index))
               (do
-                (reset! index 1)
+                (change-index! 1)
                 (helpers/dbg @index)))
           (= last-key-pressed 38)
           (if (> @index 1)
-              (reset! index (dec @index))
-              (reset! index (count insts)))))
+              (change-index! index (dec @index))
+              (change-index! index (count insts)))))
+
+  (if @fading-in?
+    (reset! text-alpha (helpers/dbg (+ @text-alpha (/ elapsed-time 3))))
+    (reset! text-alpha (- @text-alpha (/ elapsed-time 3))))
+
+  (reset! text-alpha (helpers/clamp @text-alpha 0 255))
+
+  (when (= @text-alpha 255)
+    (reset! fading-in? false))
+
+  (text-size 36)
+  (let [inst-name (nth inst-names (- @index 1))
+        width (text-width inst-name)
+        half-screen-height 180
+        text-start (- 200 (/ width 2))]
+    (fill 255 @text-alpha)
+    (text inst-name text-start half-screen-height))
 
   (doseq [i (range 1 (+ (count insts) 1))]
     (when (= @index i)
       (synths/update-instrument (nth insts (dec i))))))
-
