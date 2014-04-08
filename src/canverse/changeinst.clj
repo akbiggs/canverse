@@ -11,7 +11,7 @@
    synths/resonant
    synths/deus
    synths/vector
-   synths/chase
+   synths/poseidon
    synths/fight
    synths/fight-downtime
    synths/climax
