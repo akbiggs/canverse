@@ -7,6 +7,7 @@
             [canverse.drums :as drums]
 
             [overtone.core :as o]
+            [overtone.at-at :as a]
             [quil.core :as q]))
 
 (def SQUARE_SIZE 50)
@@ -61,20 +62,9 @@
       (helpers/push-towards (:alpha square) 0 2))))
 
 (defn play [envelope square]
-  ;(helpers/dbg (:synth square))
-  ; if left-mouse-clicked:
-  ;    play current synth << envelope-input
-  ; else:
-  ;    play current drum track at current col/rows
   (if (input/right-mouse-click?)
-    (let [drums (:drums square)
-          row (:row square)
-          col (:col square)
-          drum-key (keyword (str row))
-          drum-loop (drum-key @drums/drums-hash)]
-      ;TODO: kill previous drum on this row before replaying new drum loop
-      (drum-loop)
-      (comment drums/metro :bpm  col)))
+    (let [row (keyword (str (:row square)))]
+      (drums/play-drum-at row)))
     (let [synth (:synth square)
           col (:col square)
           row (:row square)

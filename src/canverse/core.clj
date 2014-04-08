@@ -7,6 +7,7 @@
             [canverse.nodes :as nodes]
             [canverse.time :as time]
             [canverse.synths :as synths]
+            [canverse.drums :as drums]
             [canverse.helpers :as helpers]
             [canverse.screen :as screen]
             [canverse.inst.envelopeinput :as envelope-input]
@@ -59,7 +60,6 @@
   ; the sketch, so we have to do it at the top of the
   ; draw call.
   (update-instrument!)
-
   (q/background 0)
   (envelope-input/draw @envelope-input/instance))
 
@@ -99,6 +99,12 @@
 
   (reset! screen/instance (screen/update elapsed-time @screen/instance)))
 
+(defn mouse-wheel [rotation]
+    (helpers/dbg (drums/metro :bpm))
+    (drums/metro :bpm (mod (+ 10 (drums/metro :bpm)) 80)))
+
+(drums/metro :bpm 80)
+
 (defn draw []
   ; Quil has no update function that we can pass into
   ; the sketch, so we have to do it at the top of the
@@ -121,7 +127,8 @@
   (q/sketch :title "Canverse"
             :setup setup
             :draw draw
-            :size [WINDOW_WIDTH 400])
+            :size [WINDOW_WIDTH 400]
+            :mouse-wheel mouse-wheel)
 
   (q/sketch :title "Canverse Instrument"
             :setup setup-instrument-window
@@ -131,3 +138,4 @@
 (-main)
 
 (o/stop)
+
