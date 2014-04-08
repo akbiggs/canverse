@@ -56,5 +56,8 @@
 (defn left-mouse-click? []
   (and (q/mouse-state) (= (q/mouse-button) :left)))
 
+(defn middle-mouse-click? []
+  (and (q/mouse-state) (= (q/mouse-button) :left)))
+
 (defn right-mouse-click? []
   (and (q/mouse-state) (= (q/mouse-button) :right)))
