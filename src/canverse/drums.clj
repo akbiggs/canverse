@@ -3,7 +3,7 @@
             [overtone.at-at :as a])
   (:use [overtone.core]))
 
-;(boot-external-server)
+(boot-external-server)
 
 (def hat( sample (freesound-path 802)))
 ;; (definst hat [volume 1.0]
