@@ -65,7 +65,7 @@
 (defn toggle-on-double-click [user-input toggles]
   (update-in toggles [:loops]
    #(for [i (range (count %))]
-      (let [{:keys [position size]} (get-loop-rect i)
+      (let [{:keys [position size]} (get-loop-rect i toggles)
             loop (nth % i)]
         (if (input/just-double-clicked? position size user-input)
           (loop/toggle loop)
