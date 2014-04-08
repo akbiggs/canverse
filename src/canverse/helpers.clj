@@ -20,7 +20,7 @@
 (defn relative [n min max]
   "Get a value from 0 to 1 indicating the position of
   n relative to the min and max."
-  (/ (- n min) (- max min)))
+  (clamp (/ (- n min) (- max min)) 0 1))
 
 (defn relative-in-scale [note scale]
   (relative note (first scale) (last scale)))
@@ -36,6 +36,15 @@
      (>= pos-x start-x) (>= pos-y start-y)
      (<= pos-x end-x) (<= pos-y end-y))))
 
+(defn update-at [index function coll]
+  (for [i (range (count coll))]
+    (if (= i index)
+      (function (nth coll i))
+      (nth coll i))))
+
+(defn replace-at [index value coll]
+  (update-at index (fn [_] value) coll))
+
 (defn find-where [pred coll]
   (first (filter pred coll)))
 
@@ -45,10 +54,16 @@
 (defn apply-hash [fn hash]
   (apply fn (interleave (keys hash) (vals hash))))
 
+(defn indices-of [f coll]
+  (keep-indexed #(if (f %2) %1 nil) coll))
+
+(defn first-index-of [f coll]
+  (first (indices-of f coll)))
+
+(defn find-thing [value coll]
+  (first-index-of #(= % value) coll))
 ;;debugging parts of expressions
 (defmacro dbg [x] `(let [x# ~x] (println "dbg:" '~x "=" x#) x#))
-
-(rand-int 3)
 
 (defn update-print [x]
   (if (= (rand-int 3) 0) (dbg x)))

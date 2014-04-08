@@ -18,6 +18,7 @@
      :node (initialize-node @synths/current-instrument)
      :current-time 0
      :active? true
+     :amp 1
 
      :instrument @synths/current-instrument}))
 
@@ -65,7 +66,7 @@
   (if (:active? loop)
     (let [current-note (get-current-note loop)]
       (when-not (nil? current-note)
-        (o/ctl (:node loop) :amp (:amp current-note) :freq (:freq current-note))))
+        (o/ctl (:node loop) :amp (* (:amp loop ) (:amp current-note)) :freq (:freq current-note))))
     (o/ctl (:node loop) :amp 0))
   loop)
 

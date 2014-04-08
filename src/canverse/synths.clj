@@ -454,5 +454,6 @@
 (create-from-sample "fight-downtime" "nirvana3c.wav")
 (create-from-sample "climax" "climax2.wav")
 (create-from-sample "resonant" "resonant2.wav")
+(create-from-sample "poseidon" "poseidon2.wav")
 
 (stop)

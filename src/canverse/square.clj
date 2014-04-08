@@ -56,7 +56,8 @@
   (assoc square
     :alpha
     (if (and (seq? actives) (is-selected? square))
-      (* 100 (o/node-get-control (:node (first actives)) :amp))
+      (let [node (:node (first actives))]
+        (* 100 (if-not (nil? node) (o/node-get-control node :amp) 1)))
       (helpers/push-towards (:alpha square) 0 2))))
 
 (defn play [envelope square]
@@ -89,11 +90,9 @@
   (assoc square :synth @synths/current-instrument))
 
 (defn draw [square]
-  (q/push-style)
   (q/stroke 125 25)
   (q/stroke-weight 2)
   (apply q/fill (conj (fill-color square) (:alpha square)))
   (let [x (get-x square)
         y (get-y square)]
-    (q/rect x y SQUARE_SIZE SQUARE_SIZE))
-  (q/pop-style))
+    (q/rect x y SQUARE_SIZE SQUARE_SIZE)))
