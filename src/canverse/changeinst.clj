@@ -19,7 +19,9 @@
    "Downtime"
    "Finish Them!"
    "Chase"
-   "Weird"
+   "Descent"
+   "Armistice"
+   "Moon"
    ])
 
 (def insts
@@ -32,11 +34,12 @@
    synths/fight-downtime
    synths/climax
    synths/chase
-   synths/weird])
+   synths/sad-fi
+   synths/tristesse
+   synths/moon])
 
 (defn change-index! [new-index]
   (reset! index new-index)
-  (prn "LAWL")
   (reset! fading-in? true))
 
 (defn draw [elapsed-time user-input]
@@ -48,19 +51,15 @@
                (= last-key-pressed 38)))
     (cond (= last-key-pressed 40)
           (if (< @index (count insts))
-              (do
-                (change-index! (inc @index))
-                (helpers/dbg @index))
-              (do
-                (change-index! 1)
-                (helpers/dbg @index)))
+            (change-index! (inc @index))
+            (change-index! 1))
           (= last-key-pressed 38)
           (if (> @index 1)
-              (change-index! index (dec @index))
-              (change-index! index (count insts)))))
+              (change-index! (dec @index))
+              (change-index! (count insts)))))
 
   (if @fading-in?
-    (reset! text-alpha (helpers/dbg (+ @text-alpha (/ elapsed-time 3))))
+    (reset! text-alpha (+ @text-alpha (/ elapsed-time 3)))
     (reset! text-alpha (- @text-alpha (/ elapsed-time 3))))
 
   (reset! text-alpha (helpers/clamp @text-alpha 0 255))

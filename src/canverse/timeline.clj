@@ -125,8 +125,8 @@
   (if (is-loop-selected? timeline)
     (let [loop-notes (:loop-notes timeline)
 
-          first-note-relative-time (helpers/dbg (:relative-time (first loop-notes)))
-          last-note-relative-time (helpers/dbg (:relative-time (last loop-notes)))]
+          first-note-relative-time (:relative-time (first loop-notes))
+          last-note-relative-time (:relative-time (last loop-notes))]
       {:start-time first-note-relative-time
        :notes (:loop-notes timeline)
        :end-time last-note-relative-time

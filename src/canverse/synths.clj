@@ -455,5 +455,8 @@
 (create-from-sample "climax" "climax2.wav")
 (create-from-sample "resonant" "resonant2.wav")
 (create-from-sample "poseidon" "poseidon2.wav")
+(create-from-sample "moon" "moon2.wav")
+(create-from-sample "tristesse" "tristesse2.wav")
+(create-from-sample "sad-fi" "sad-fi2.wav")
 
 (stop)
