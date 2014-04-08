@@ -1,5 +1,6 @@
 (ns canverse.drums
-  (:require [canverse.screen :as screen])
+  (:require [canverse.screen :as screen]
+            [overtone.at-at :as a])
   (:use [overtone.core]))
 
 (boot-external-server)
@@ -113,10 +114,6 @@
 
 ;; because we're using a metronome, we can change the speed:
 
-(metro :bpm 180) ;slower
-(metro :bpm 500) ;faster
-(stop)
-
 ;; a more complex rhythm
 
 (defn weak-hat []
@@ -132,7 +129,7 @@
   (apply-at (m (+ 2.5 beat-num))  #'render-kick)
   (apply-at (m (+ 3 beat-num))    #'render-kick)
   (apply-at (m (+ 3.5 beat-num))  #'render-hat)
-  (apply-at (m (+ 4 beat-num)) phat-beats m (+ 4 beat-num) []))
+  (apply-at (m (+ 4 beat-num)) #'phat-beats [m (+ 4 beat-num)]))
 
 (defn disco [m beat-num]
   (apply-at (m (+ 0 beat-num)) #'render-kick)
@@ -190,12 +187,7 @@
   (apply-at (m (+ 3.875 beat-num)) #'render-hat)
   (apply-at (m (+ 3.875 beat-num)) #'render-kick)
 
-  (apply-at (m (+ 4 beat-num)) disco m (+ 4 beat-num) []))
-
-(disco metro (metro))
-(comment (phat-beats metro (metro)))
-(metro :bpm  180)
-(stop)
+  (apply-at (m (+ 4 beat-num)) #'disco [m (+ 4 beat-num)]))
 
 (defn phat-beats2 [] (phat-beats metro (metro)))
 
@@ -204,10 +196,8 @@
 (defn hat-beat2 [] (hat-beat metro (metro)))
 
 (defn kick-beat2 [] (kick-beat metro (metro)))
-(defn disco2 [] (disco metro (metro)))
-;(kill 1)
-(stop)
 
+(defn disco2 [] (disco metro (metro)))
 
 ;; and combining ideas from sounds.clj with the rhythm ideas here:
 
@@ -243,24 +233,43 @@
   (apply-at (m (+ 4 num)) wobble m (+ 4 num) []))
 
 ;; put it all together
-(do
+(comment do
   (metro :bpm 40)
   (dubstep) ;; start the synth, so that bass and wobble can change it
   (bass metro (metro) (cycle notes))
   (wobble metro (metro)))
 
-(stop)
+(metro :bpm 40)
+;TODO: Build this hash programatically
+(def drums-hash (atom {:0 {:drum-loop kick-beat2 :job nil}
+                       :1 {:drum-loop hat-beat2 :job nil}
+                       :2 {:drum-loop metro-beats2 :job nil}
+                       :3 {:drum-loop phat-beats2 :job nil}
+                       :4 {:drum-loop disco2 :job nil}
+                       :5 {:drum-loop phat-beats2 :job nil}
+                       :6 {:drum-loop phat-beats2 :job nil}}))
 
-(def drums-hash (atom {:0 kick-beat2
-                       :1 hat-beat2
-                       :2 metro-beats2
-                       :3 phat-beats2
-                       :4 disco2
-                       :5 phat-beats2
-                       :6 phat-beats2}))
+(defn play-drum-at [index]
+  (let [drums @drums-hash
+        current-drum (drums index)
+        drum-loop (current-drum :drum-loop)
+        playing? (not (nil? (current-drum :job)))]
+    (if playing?
+      (do (a/kill (current-drum :job))
+          (update-drums! index nil))
+      (update-drums! index (drum-loop)))))
+
+(defn update-drums! [index job]
+  (let [drums @drums-hash
+        current-drums (drums index)]
+    (reset! drums-hash
+            (assoc drums index
+              (assoc current-drums :job job)))))
 
 (def current-drum-loop (atom phat-beats2))
 
 (defn update! [drum-loop]
   (reset! current-drum-loop drum-loop))
+
+(stop)
 
