@@ -7,8 +7,25 @@
 
 (def sched-jobs (atom {}))
 
-(defn update-sched-jobs! [index job]
-  (reset! sched-jobs (assoc @sched-jobs index job)))
+(defn allocate-sched-job-entry! [index]
+  (reset! sched-jobs
+          (assoc @sched-jobs index
+            {:current nil :next nil})))
+
+(defn deallocate-sched-job-entry! [index]
+  (reset! sched-jobs
+          (assoc @sched-jobs index nil)))
+
+(defn update-sched-jobs! [index job-key job]
+  ; Allocate entry to avoid NPE
+  (when (nil? (@sched-jobs index))
+    (allocate-sched-job-entry! index))
+
+  (let [new-job-info
+        (assoc (@sched-jobs index) job-key job)]
+    (reset! sched-jobs
+            (assoc @sched-jobs index new-job-info))))
+
 
 (def hat( sample (freesound-path 802)))
 ;; (definst hat [volume 1.0]
@@ -96,13 +113,13 @@
   (apply-at (m (+ 0 beat-num)) #'render-kick)
   (apply-at (m (+ 0.5 beat-num)) #'render-kick)
   (apply-at (m (+ 1.0 beat-num)) #'render-kick)
-  (update-sched-jobs! :0 (apply-at (m (+ 2 beat-num)) kick-beat m (+ 2 beat-num) [])))
+  (update-sched-jobs! :0 :next (apply-at (m (+ 2 beat-num)) kick-beat m (+ 2 beat-num) [])))
 
 (defn hat-beat [m beat-num]
   (apply-at (m (+ 0 beat-num)) #'render-hat)
   (apply-at (m (+ 0.25 beat-num)) #'render-hat)
   (apply-at (m (+ 0.5 beat-num)) #'render-hat)
-  (update-sched-jobs! :1 (apply-at (m (+ 1 beat-num)) hat-beat m (+ 1 beat-num) [])))
+  (update-sched-jobs! :1 :next (apply-at (m (+ 1 beat-num)) hat-beat m (+ 1 beat-num) [])))
 
 (comment (hat-beat metro (metro)))
 (stop)
@@ -112,7 +129,7 @@
   (apply-at (m (+ 1 beat-num)) #'render-hat)
   (apply-at (m (+ 2.5 beat-num)) #'render-kick)
   (apply-at (m (+ 3 beat-num)) #'render-hat)
-  (update-sched-jobs! :2 (apply-at (m (+ 4 beat-num)) metro-beats m (+ 4 beat-num) [])))
+  (update-sched-jobs! :2 :next (apply-at (m (+ 4 beat-num)) metro-beats m (+ 4 beat-num) [])))
 
 (comment (metro-beats metro (metro)))
 (stop)
@@ -134,7 +151,7 @@
   (apply-at (m (+ 2.5 beat-num))  #'render-kick)
   (apply-at (m (+ 3 beat-num))    #'render-kick)
   (apply-at (m (+ 3.5 beat-num))  #'render-hat)
-  (update-sched-jobs! :3 ((apply-at (m (+ 4 beat-num)) #'phat-beats [m (+ 4 beat-num)]))))
+  (update-sched-jobs! :3 :next (apply-at (m (+ 4 beat-num)) #'phat-beats [m (+ 4 beat-num)])))
 
 (defn disco [m beat-num]
   (apply-at (m (+ 0 beat-num)) #'render-kick)
@@ -192,7 +209,7 @@
   (apply-at (m (+ 3.875 beat-num)) #'render-hat)
   (apply-at (m (+ 3.875 beat-num)) #'render-kick)
 
-  (update-sched-jobs! :4 (apply-at (m (+ 4 beat-num)) #'disco [m (+ 4 beat-num)])))
+  (update-sched-jobs! :4 :next (apply-at (m (+ 4 beat-num)) #'disco [m (+ 4 beat-num)])))
 
 (defn phat-beats2 [] (phat-beats metro (metro)))
 
@@ -258,9 +275,11 @@
         current-drum (drums index)
         playing? (not (nil? (@sched-jobs index)))]
     (if playing?
-      (do (a/kill (@sched-jobs index))
-          (update-sched-jobs! index nil))
-      (current-drum))))
+      (do
+        (a/kill ((@sched-jobs index) :current))
+        (a/kill ((@sched-jobs index) :next))
+        (deallocate-sched-job-entry! index))
+      (update-sched-jobs! :current (current-drum)))))
 
 (def current-drum-loop (atom phat-beats2))
 
