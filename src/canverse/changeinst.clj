@@ -26,6 +26,7 @@
    "Descent"
    "Armistice"
    "Moon"
+   "Sagan"
    ])
 
 (def insts
@@ -44,7 +45,8 @@
    synths/chase
    synths/sad-fi
    synths/tristesse
-   synths/moon])
+   synths/moon
+   synths/sagan])
 
 (defn change-index! [new-index]
   (reset! index new-index)
