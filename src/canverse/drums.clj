@@ -279,7 +279,7 @@
         (a/kill ((@sched-jobs index) :current))
         (a/kill ((@sched-jobs index) :next))
         (deallocate-sched-job-entry! index))
-      (update-sched-jobs! :current (current-drum)))))
+      (update-sched-jobs! index :current (current-drum)))))
 
 (def current-drum-loop (atom phat-beats2))
 
