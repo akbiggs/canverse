@@ -461,5 +461,5 @@
 (create-from-sample "sad-fi" "sad-fi2.wav")
 (create-from-sample "sagan" "delusion.wav")
 (create-from-sample "woods" "woods.wav")
-(create-from-sample "streets" "streets.wav")
+(create-from-sample "streets" "streets2.wav")
 (stop)
