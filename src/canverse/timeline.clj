@@ -16,7 +16,8 @@
    :history nil
    :history-length history-length
    :loop-notes nil
-   :loop-selected? false})
+   :loop-selected? false
+   :ticks-since-last-poll 0})
 
 (defn get-width [timeline]
   (get-in timeline [:size :x]))
@@ -62,8 +63,11 @@
     (add-note freq amp (o/to-sc-id node) timeline)))
 
 (defn add-notes-from-nodes [nodes timeline]
-  (reduce #(add-note-from-node %2 %1) timeline
-          (filter o/node-live? nodes)))
+  (if (>= (:ticks-since-last-poll timeline) 0)
+    (reduce #(add-note-from-node %2 %1)
+            (assoc timeline :ticks-since-last-poll 0)
+            (filter o/node-live? nodes))
+    (update-in timeline [:ticks-since-last-poll] inc)))
 
 (defn should-be-frozen? [timeline]
   (seq? (:loop-notes timeline)))
@@ -122,22 +126,21 @@
   (some #(= (:node-id note) (:node-id %)) (:loop-notes timeline)))
 
 (defn get-history-to-loop [loops timeline]
-  (if (is-loop-selected? timeline)
-    (let [loop-notes (:loop-notes timeline)
-
-          first-note-relative-time (:relative-time (first loop-notes))
-          last-note-relative-time (:relative-time (last loop-notes))]
+  (let [timeline-with-notes-selected (if (is-loop-selected? timeline)
+                                       timeline
+                                       (select-node (:node-id (last (:history timeline))) timeline))
+        loop-notes (:loop-notes timeline-with-notes-selected)
+        first-note-relative-time (:relative-time (first loop-notes))
+        last-note-relative-time (:relative-time (last loop-notes))]
       {:start-time first-note-relative-time
-       :notes (:loop-notes timeline)
+       :notes (:loop-notes timeline-with-notes-selected)
        :end-time last-note-relative-time
 
        ; TODO: Don't hardcode instrument
-       :instrument @synths/current-instrument})
-    nil))
+       :instrument @synths/current-instrument}))
 
 (defn select-loop-on-request [user-input timeline]
-  (assoc timeline :loop-selected? (and (= \space (:last-key-tapped user-input))
-                                       (is-loop-selected? timeline))))
+  (assoc timeline :loop-selected? (and (= \space (:last-key-tapped user-input)))))
 
 (defn update [user-input elapsed-time nodes timeline]
   (->> timeline
