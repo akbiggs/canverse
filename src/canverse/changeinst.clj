@@ -10,6 +10,10 @@
 
 (def inst-names
   [
+   "80s Saw"
+   "Flute"
+   "Piano"
+   "Dark Sea Horns"
    "Awe"
    "Resonant"
    "Deus"
@@ -25,10 +29,14 @@
    ])
 
 (def insts
-  [synths/awesome
+  [synths/oksaw
+   synths/sampled-flute-vibrato
+   synths/sampled-piano
+   synths/dark-sea-horns
+   synths/awesome
    synths/resonant
    synths/deus
-   synths/vector
+   synths/vectorman
    synths/poseidon
    synths/fight
    synths/fight-downtime

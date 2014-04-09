@@ -100,8 +100,8 @@
   (reset! screen/instance (screen/update elapsed-time @screen/instance)))
 
 (defn mouse-wheel [rotation]
-    (helpers/dbg (drums/metro :bpm))
-    (drums/metro :bpm (mod (+ 10 (drums/metro :bpm)) 80)))
+  (helpers/dbg (drums/metro :bpm))
+  (drums/metro :bpm (helpers/clamp (mod (+ 10 (drums/metro :bpm)) 80) 10 70)))
 
 (drums/metro :bpm 80)
 
@@ -128,12 +128,7 @@
             :setup setup
             :draw draw
             :size [WINDOW_WIDTH 400]
-            :mouse-wheel mouse-wheel)
-
-  (q/sketch :title "Canverse Instrument"
-            :setup setup-instrument-window
-            :draw draw-instrument
-            :size [400 400]))
+            :mouse-wheel mouse-wheel))
 
 (-main)
 

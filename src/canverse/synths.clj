@@ -441,14 +441,15 @@
        (let [samp# (play-buf 2 buffer# :loop 1)
              snd# (~'* ~'amp samp#)
              snd# (lpf snd# (midicps
-                             (~'* 5 (~'+ 8 (~'- ~'freq 65)))))
+                             (~'* (~'+ ~'attack 4.5)
+                                  (~'+ (~'- 8 ~'decay) (~'- ~'freq 65)))))
              snd# (~'* 1.5 snd#)]
          (out 0 snd#)))))
 
 (create-from-sample "awesome" "massive3.wav")
 (create-from-sample "deus" "deus2.wav")
 (create-from-sample "weird" "garage2.wav")
-(create-from-sample "vector" "nirvana1b.wav")
+(create-from-sample "vectorman" "nirvana1b.wav")
 (create-from-sample "chase" "nirvana2b.wav")
 (create-from-sample "fight" "nirvana3b.wav")
 (create-from-sample "fight-downtime" "nirvana3c.wav")
@@ -458,5 +459,5 @@
 (create-from-sample "moon" "moon2.wav")
 (create-from-sample "tristesse" "tristesse2.wav")
 (create-from-sample "sad-fi" "sad-fi2.wav")
-
+(create-from-sample "sagan" "delusion.wav")
 (stop)
