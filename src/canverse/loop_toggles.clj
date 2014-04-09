@@ -27,7 +27,7 @@
    })
 
 (defn update-loops [loops toggles]
-  (assoc toggles :loops loops))
+  (assoc toggles :loops (take-last (count colors) loops)))
 
 (defn get-loop-rect [index toggles]
   {:position (point/create (:x (:position toggles)) (* index 50))
