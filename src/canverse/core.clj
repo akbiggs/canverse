@@ -100,10 +100,7 @@
   (reset! screen/instance (screen/update elapsed-time @screen/instance)))
 
 (defn mouse-wheel [rotation]
-  (helpers/dbg (drums/metro :bpm))
-  (drums/metro :bpm (helpers/clamp (mod (+ 10 (drums/metro :bpm)) 80) 10 70)))
-
-(drums/metro :bpm 80)
+  (comment 'TODO (switch-instrument rotation)))
 
 (defn draw []
   ; Quil has no update function that we can pass into

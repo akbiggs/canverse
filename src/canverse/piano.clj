@@ -1,6 +1,8 @@
 (ns canverse.piano
   (:use [overtone.core]))
 
+(boot-external-server)
+
 
 (defn- registered-samples
   "Fetch piano samples from the asset store if they have been manually
