@@ -76,16 +76,16 @@
               (change-index! (count insts)))
           (= last-key-pressed 39)
           (do
-            (helpers/dbg (drums/metro :bpm))
+            (comment helpers/dbg (drums/metro :bpm))
             (drums/metro :bpm
                        (helpers/clamp
                         (mod (+ 10 (drums/metro :bpm)) 80) 10 70)))
           (= last-key-pressed 37)
           (do
-            (helpers/dbg (drums/metro :bpm))
+            (comment helpers/dbg (drums/metro :bpm))
             (drums/metro :bpm
                        (helpers/clamp
-                        (mod (- 10 (drums/metro :bpm)) 80) 10 70)))))
+                        (mod (- (drums/metro :bpm) 10) 80) 10 70)))))
 
   (if @fading-in?
     (reset! text-alpha (+ @text-alpha (/ elapsed-time 3)))
