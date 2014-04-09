@@ -65,7 +65,7 @@
 (defn play-current-note! [loop]
   (if (:active? loop)
     (let [current-note (get-current-note loop)]
-      (when-not (nil? current-note)
+      (when-not (or (nil? current-note) (not (o/node-live? (:node loop))))
         (o/ctl (:node loop) :amp (* (:amp loop ) (:amp current-note)) :freq (:freq current-note))))
     (o/ctl (:node loop) :amp 0))
   loop)
