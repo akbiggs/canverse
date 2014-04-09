@@ -5,6 +5,11 @@
 
 (boot-external-server)
 
+(def sched-jobs (atom {}))
+
+(defn update-sched-jobs! [index job]
+  (reset! sched-jobs (assoc @sched-jobs index job)))
+
 (def hat( sample (freesound-path 802)))
 ;; (definst hat [volume 1.0]
 ;;   (let [src (white-noise)
@@ -91,13 +96,13 @@
   (apply-at (m (+ 0 beat-num)) #'render-kick)
   (apply-at (m (+ 0.5 beat-num)) #'render-kick)
   (apply-at (m (+ 1.0 beat-num)) #'render-kick)
-  (apply-at (m (+ 2 beat-num)) kick-beat m (+ 2 beat-num) []))
+  (update-sched-jobs! :0 (apply-at (m (+ 2 beat-num)) kick-beat m (+ 2 beat-num) [])))
 
 (defn hat-beat [m beat-num]
   (apply-at (m (+ 0 beat-num)) #'render-hat)
   (apply-at (m (+ 0.25 beat-num)) #'render-hat)
   (apply-at (m (+ 0.5 beat-num)) #'render-hat)
-  (apply-at (m (+ 1 beat-num)) hat-beat m (+ 1 beat-num) []))
+  (update-sched-jobs! :1 (apply-at (m (+ 1 beat-num)) hat-beat m (+ 1 beat-num) [])))
 
 (comment (hat-beat metro (metro)))
 (stop)
@@ -107,7 +112,7 @@
   (apply-at (m (+ 1 beat-num)) #'render-hat)
   (apply-at (m (+ 2.5 beat-num)) #'render-kick)
   (apply-at (m (+ 3 beat-num)) #'render-hat)
-  (apply-at (m (+ 4 beat-num)) metro-beats m (+ 4 beat-num) []))
+  (update-sched-jobs! :2 (apply-at (m (+ 4 beat-num)) metro-beats m (+ 4 beat-num) [])))
 
 (comment (metro-beats metro (metro)))
 (stop)
@@ -129,7 +134,7 @@
   (apply-at (m (+ 2.5 beat-num))  #'render-kick)
   (apply-at (m (+ 3 beat-num))    #'render-kick)
   (apply-at (m (+ 3.5 beat-num))  #'render-hat)
-  (apply-at (m (+ 4 beat-num)) #'phat-beats [m (+ 4 beat-num)]))
+  (update-sched-jobs! :3 ((apply-at (m (+ 4 beat-num)) #'phat-beats [m (+ 4 beat-num)]))))
 
 (defn disco [m beat-num]
   (apply-at (m (+ 0 beat-num)) #'render-kick)
@@ -187,7 +192,7 @@
   (apply-at (m (+ 3.875 beat-num)) #'render-hat)
   (apply-at (m (+ 3.875 beat-num)) #'render-kick)
 
-  (apply-at (m (+ 4 beat-num)) #'disco [m (+ 4 beat-num)]))
+  (update-sched-jobs! :4 (apply-at (m (+ 4 beat-num)) #'disco [m (+ 4 beat-num)])))
 
 (defn phat-beats2 [] (phat-beats metro (metro)))
 
@@ -240,29 +245,22 @@
   (wobble metro (metro)))
 
 ;TODO: Build this hash programatically
-(def drums-hash (atom {:0 {:drum-loop kick-beat2 :job nil}
-                       :1 {:drum-loop hat-beat2 :job nil}
-                       :2 {:drum-loop metro-beats2 :job nil}
-                       :3 {:drum-loop phat-beats2 :job nil}
-                       :4 {:drum-loop disco2 :job nil}
-                       :5 {:drum-loop phat-beats2 :job nil}
-                       :6 {:drum-loop phat-beats2 :job nil}}))
-(defn update-drums! [index job]
-  (let [drums @drums-hash
-        current-drums (drums index)]
-    (reset! drums-hash
-            (assoc drums index
-              (assoc current-drums :job job)))))
+(def drums-hash (atom {:0  kick-beat2
+                       :1  hat-beat2
+                       :2  metro-beats2
+                       :3  phat-beats2
+                       :4  disco2
+                       :5  phat-beats2
+                       :6  phat-beats2}))
 
 (defn play-drum-at [index]
   (let [drums @drums-hash
         current-drum (drums index)
-        drum-loop (current-drum :drum-loop)
-        playing? (not (nil? (current-drum :job)))]
+        playing? (not (nil? (@sched-jobs index)))]
     (if playing?
-      (do (a/kill (current-drum :job))
-          (update-drums! index nil))
-      (update-drums! index (drum-loop)))))
+      (do (a/kill (@sched-jobs index))
+          (update-sched-jobs! index nil))
+      (current-drum))))
 
 (def current-drum-loop (atom phat-beats2))
 
