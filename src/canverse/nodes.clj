@@ -63,7 +63,7 @@
   (if (:loop-selected? timeline)
     (update-in nodes [:loops]
       #(let [history-to-loop (timeline/get-history-to-loop % timeline)]
-         (reverse (conj % (loop/create (count (:loops nodes)) history-to-loop)))))
+         (conj % (loop/create (count (:loops nodes)) history-to-loop))))
     nodes))
 
 (defn update-with-input [user-input grid envelope nodes]

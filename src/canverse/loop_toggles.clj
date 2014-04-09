@@ -27,7 +27,7 @@
    })
 
 (defn update-loops [loops toggles]
-  (assoc toggles :loops (take-last (count colors) loops)))
+  (assoc toggles :loops (take (count colors) loops)))
 
 (defn get-loop-rect [index toggles]
   {:position (point/create (:x (:position toggles)) (* index 50))
@@ -95,7 +95,7 @@
                   0
                   (* (:amp loop-current-note) 255))
           fill-color (if (:active? loop)
-                       (nth colors i)
+                       (nth colors (min (dec (count colors)) (- (count (:loops toggles)) i)))
                        [125])
           fill (conj fill-color alpha)
 
