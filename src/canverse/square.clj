@@ -81,7 +81,15 @@
 
 (defn draw [square]
   (q/stroke 125 25)
-  (q/stroke-weight 2)
+
+  (if (nil? (get @drums/sched-jobs (keyword (str (:row square)))))
+    (do
+      (q/stroke 125 25)
+      (q/stroke-weight 2))
+    (do
+      (apply q/stroke (conj (nth COLUMN_COLORS (:row square)) 25))
+      (q/stroke-weight 5)))
+
   (apply q/fill (conj (fill-color square) (:alpha square)))
   (let [x (get-x square)
         y (get-y square)]
