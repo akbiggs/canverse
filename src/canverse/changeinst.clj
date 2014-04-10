@@ -11,8 +11,6 @@
 (def inst-names
   [
    "80s Saw"
-   "Flute"
-   "Piano"
    "Dark Sea Horns"
    "Awe"
    "Resonant"
@@ -33,8 +31,6 @@
 
 (def insts
   [synths/oksaw
-   synths/sampled-flute-vibrato
-   synths/sampled-piano
    synths/dark-sea-horns
    synths/awesome
    synths/resonant

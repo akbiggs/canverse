@@ -140,7 +140,8 @@
        :instrument @synths/current-instrument}))
 
 (defn select-loop-on-request [user-input timeline]
-  (assoc timeline :loop-selected? (and (= \space (:last-key-tapped user-input)))))
+  (assoc timeline :loop-selected? (and (seq (:history timeline))
+                                       (= \space (:last-key-tapped user-input)))))
 
 (defn update [user-input elapsed-time nodes timeline]
   (->> timeline
