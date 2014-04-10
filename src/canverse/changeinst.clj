@@ -1,7 +1,8 @@
 (ns canverse.changeinst
   (:require [canverse.input :as input]
             [canverse.synths :as synths]
-            [canverse.helpers :as helpers])
+            [canverse.helpers :as helpers]
+            [canverse.drums :as drums])
   (:use quil.core))
 
 (def index (atom 1))
@@ -58,7 +59,9 @@
   (if (and (key-pressed?)
            (not (nil? last-key-pressed))
            (or (= last-key-pressed 40)
-               (= last-key-pressed 38)))
+               (= last-key-pressed 38)
+               (= last-key-pressed 37)
+               (= last-key-pressed 39)))
     (cond (= last-key-pressed 40)
           (if (< @index (count insts))
             (change-index! (inc @index))
@@ -66,7 +69,19 @@
           (= last-key-pressed 38)
           (if (> @index 1)
               (change-index! (dec @index))
-              (change-index! (count insts)))))
+              (change-index! (count insts)))
+          (= last-key-pressed 39)
+          (do
+            (comment helpers/dbg (drums/metro :bpm))
+            (drums/metro :bpm
+                       (helpers/clamp
+                        (mod (+ 10 (drums/metro :bpm)) 80) 10 70)))
+          (= last-key-pressed 37)
+          (do
+            (comment helpers/dbg (drums/metro :bpm))
+            (drums/metro :bpm
+                       (helpers/clamp
+                        (mod (- (drums/metro :bpm) 10) 80) 10 70)))))
 
   (if @fading-in?
     (reset! text-alpha (+ @text-alpha (/ elapsed-time 3)))

@@ -33,6 +33,8 @@
 ;;         env (env-gen (perc 0.001 0.3) :action FREE)]
 ;;     (* volume 1 src env)))
 
+(def open-hat (sample (freesound-path 803)))
+
 (comment (render-hat))
 
 ;; (definst hat2 [volume 1.0]
@@ -47,8 +49,8 @@
 ;; the overtone freesound API allows you to download freesounds samples
 ;; by id (2086 in this case)
 
-(def kick (sample (freesound-path 2086)))
-(def snare (sample (freesound-path 26903)))
+(def kick (sample (freesound-path 2085)))
+(def snare (sample (freesound-path 26902)))
 
 (defn render-kick []
   (kick)
@@ -59,8 +61,10 @@
   ;(reset! screen/instance (screen/activate-alpha-fade 1 @screen/instance)))
 
 (defn render-snare []
-  (snare :amp (rand-nth [0.65 0.75 0.85 1]))
-  (reset! screen/instance (screen/activate-alpha-fade 2 @screen/instance)))
+  (snare :amp 0.3))
+
+(defn render-open-hat []
+  (open-hat :amp 0.4))
 
 (defn render-hat-and-kick []
   (render-hat)
@@ -86,13 +90,10 @@
 ;; for the future
 
 (defn loop-beats [time]
-  (apply-at (+    0 time) #'render-kick )
   (apply-at (+  400 time) #'render-hat)
-  (apply-at (+  800 time) #'render-kick)
   (apply-at (+ 1200 time) #'render-hat)
   (apply-at (+ 1600 time) loop-beats (+ 1600 time) []))
 
-(comment (loop-beats (now)))
 (stop)
 ;; rather than thinking in terms of milliseconds, it's useful to think
 ;; in terms of beats. We can create a metronome to help with this. A
@@ -113,23 +114,30 @@
   (apply-at (m (+ 0 beat-num)) #'render-kick)
   (apply-at (m (+ 0.5 beat-num)) #'render-kick)
   (apply-at (m (+ 1.0 beat-num)) #'render-kick)
-  (update-sched-jobs! :0 :next (apply-at (m (+ 2 beat-num)) kick-beat m (+ 2 beat-num) [])))
+  (update-sched-jobs! :0 :next (apply-at (m (+ 1.5 beat-num)) kick-beat m (+ 1.5 beat-num) [])))
 
 (defn hat-beat [m beat-num]
   (apply-at (m (+ 0 beat-num)) #'render-hat)
   (apply-at (m (+ 0.25 beat-num)) #'render-hat)
   (apply-at (m (+ 0.5 beat-num)) #'render-hat)
-  (update-sched-jobs! :1 :next (apply-at (m (+ 1 beat-num)) hat-beat m (+ 1 beat-num) [])))
+  (update-sched-jobs! :1 :next (apply-at (m (+ 0.75 beat-num)) hat-beat m (+ 0.75 beat-num) [])))
 
-(comment (hat-beat metro (metro)))
-(stop)
+(defn open-hat-beat [m beat-num]
+  (apply-at (m (+ 0 beat-num)) #'render-open-hat)
+  (apply-at (m (+ 0.25 beat-num)) #'render-open-hat)
+  (apply-at (m (+ 0.5 beat-num)) #'render-open-hat)
+  (update-sched-jobs! :6 :next (apply-at (m (+ 0.75 beat-num)) open-hat-beat m (+ 0.75 beat-num) [])))
+
+(defn snare-beat [m beat-num]
+  (apply-at (m (+ 0.5 beat-num)) #'render-snare)
+  (update-sched-jobs! :2 :next (apply-at (m (+ 1 beat-num)) snare-beat m (+ 1 beat-num) [])))
 
 (defn metro-beats [m beat-num]
   (apply-at (m (+ 0 beat-num)) #'render-kick)
   (apply-at (m (+ 1 beat-num)) #'render-hat)
   (apply-at (m (+ 2.5 beat-num)) #'render-kick)
   (apply-at (m (+ 3 beat-num)) #'render-hat)
-  (update-sched-jobs! :2 :next (apply-at (m (+ 4 beat-num)) metro-beats m (+ 4 beat-num) [])))
+  (update-sched-jobs! :3 :next (apply-at (m (+ 4 beat-num)) metro-beats m (+ 4 beat-num) [])))
 
 (comment (metro-beats metro (metro)))
 (stop)
@@ -151,7 +159,7 @@
   (apply-at (m (+ 2.5 beat-num))  #'render-kick)
   (apply-at (m (+ 3 beat-num))    #'render-kick)
   (apply-at (m (+ 3.5 beat-num))  #'render-hat)
-  (update-sched-jobs! :3 :next (apply-at (m (+ 4 beat-num)) #'phat-beats [m (+ 4 beat-num)])))
+  (update-sched-jobs! :4 :next (apply-at (m (+ 4 beat-num)) #'phat-beats [m (+ 4 beat-num)])))
 
 (defn disco [m beat-num]
   (apply-at (m (+ 0 beat-num)) #'render-kick)
@@ -209,7 +217,7 @@
   (apply-at (m (+ 3.875 beat-num)) #'render-hat)
   (apply-at (m (+ 3.875 beat-num)) #'render-kick)
 
-  (update-sched-jobs! :4 :next (apply-at (m (+ 4 beat-num)) #'disco [m (+ 4 beat-num)])))
+  (update-sched-jobs! :5 :next (apply-at (m (+ 4 beat-num)) #'disco [m (+ 4 beat-num)])))
 
 (defn phat-beats2 [] (phat-beats metro (metro)))
 
@@ -217,7 +225,11 @@
 
 (defn hat-beat2 [] (hat-beat metro (metro)))
 
+(defn open-hat-beat2 [] (open-hat-beat metro (metro)))
+
 (defn kick-beat2 [] (kick-beat metro (metro)))
+
+(defn snare-beat2 [] (snare-beat metro (metro)))
 
 (defn disco2 [] (disco metro (metro)))
 
@@ -229,6 +241,10 @@
   (let [sweep (lin-exp (lf-saw wobble-freq) -1 1 40 5000)
         son   (mix (saw (* freq [0.99 1 1.01])))]
     (lpf son sweep)))
+
+(dubstep)
+(metro)
+(stop)
 
 ;; define a vector of frequencies from a tune
 ;; later, we use (cycle notes) to repeat the tune indefinitely
@@ -254,9 +270,10 @@
            (choose [4 6 8 16])))
   (apply-at (m (+ 4 num)) wobble m (+ 4 num) []))
 
+(stop)
+
 ;; put it all together
-(comment do
-  (metro :bpm 40)
+(do
   (dubstep) ;; start the synth, so that bass and wobble can change it
   (bass metro (metro) (cycle notes))
   (wobble metro (metro)))
@@ -264,11 +281,11 @@
 ;TODO: Build this hash programatically
 (def drums-hash (atom {:0  kick-beat2
                        :1  hat-beat2
-                       :2  metro-beats2
-                       :3  phat-beats2
-                       :4  disco2
-                       :5  phat-beats2
-                       :6  phat-beats2}))
+                       :2  snare-beat2
+                       :3  metro-beats2
+                       :4  phat-beats2
+                       :5  disco2
+                       :6  open-hat-beat2}))
 
 (defn play-drum-at [index]
   (let [drums @drums-hash
