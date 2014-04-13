@@ -1,0 +1,33 @@
+body{
+	background-color: F0F0F0;
+	margin: 0 0;
+}
+
+.main{
+	width: 100%;
+	height: 100%;
+}
+
+.content{
+	width: 80%;
+	margin: 0 auto 0 auto;
+}
+
+.header{
+	width: 100%;
+	height: 100px;
+}
+
+.logo{
+	float: left;
+}
+
+.menu{
+	height: 100px;
+}
+
+nav{
+	float: right;
+	padding-right: 40px;
+	line-height: 100%;
+}
