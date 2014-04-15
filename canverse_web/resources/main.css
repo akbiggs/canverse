@@ -22,8 +22,6 @@ h1 {
 }
 
 p {
-    margin-left: 150px;
-    margin-right: 150px;
     color: #FFF6DB;
 }
 
@@ -37,12 +35,9 @@ p {
     background-color: #192330;
 }
 
-nav {
-}
-
 nav a {
    display: inline-block;
-   width: 150px;
+   width: 165px;
    height: 80%;
    margin-top: 5px;
    margin-bottom: 5px;
@@ -55,18 +50,17 @@ nav a {
 nav a:hover {
     border-radius: 10px;
     background-color: rgba(77, 94, 94, 0.5);
-
 }
 
 .content_section {
     position: relative;
     width: 100%;
-    margin-bottom: 46px;
+    margin-bottom: 28px;
     background-color: #4D5E5E;
 }
 
 .content_section.problem {
-    height: 300px;
+    height: 600px;
 }
 
 .content_section.design {
@@ -90,14 +84,27 @@ nav a:hover {
     padding-top: 2px;
 }
 
-.content_section.design .section_header p {
-    text-align: right;
-    margin-right: 160px;
+.section_header p {
+    margin-left: 200px;
 }
 
-.content_section.evaluation .section_header p {
-    text-align: right;
-    margin-right: 160px;
+.section_content {
+    margin-left: 210px;
 }
 
-.content_section.
+.section_content p {
+    display: block;
+    width: 415px;
+    padding-bottom: 24px;
+}
+
+.content_section.right_justified .section_header p {
+    text-align: right;
+    margin-right: 200px;
+}
+
+.content_section.right_justified .section_content p {
+    float: right;
+    text-align: right;
+    margin-right: 210px;
+}
