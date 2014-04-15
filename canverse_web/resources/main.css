@@ -107,3 +107,8 @@ nav a:hover {
     text-align: right;
     margin-right: 210px;
 }
+
+.anchor {
+    position: relative;
+    top: -50px;
+}
