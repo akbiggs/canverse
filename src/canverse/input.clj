@@ -17,8 +17,10 @@
    :last-keycode-tapped nil
    })
 
+
 (defn update [elapsed-time previous-input]
-  (let [mouse-down? (q/mouse-state)
+  (let [mouse-down? (or (= (q/mouse-button) :left)
+                        (= (q/mouse-button) :right))
         previous-mouse-down? (:mouse-down? previous-input)
         old-down-duration (:mouse-down-duration previous-input)
 
@@ -75,10 +77,10 @@
   (just-evented-in-rect? (:mouse-tapped? input) hitbox-start hitbox-size input))
 
 (defn left-mouse-click? []
-  (and (q/mouse-state) (= (q/mouse-button) :left)))
+  (and (= (q/mouse-button) :left)))
 
 (defn middle-mouse-click? []
-  (and (q/mouse-state) (= (q/mouse-button) :left)))
+  (and (= (q/mouse-button) :left)))
 
 (defn right-mouse-click? []
-  (and (q/mouse-state) (= (q/mouse-button) :right)))
+  (and (= (q/mouse-button) :right)))
