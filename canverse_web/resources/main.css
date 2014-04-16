@@ -97,6 +97,11 @@ nav a:hover {
     padding-bottom: 24px;
 }
 
+.section_content p.subheader {
+    font-size: 1.4em;
+    margin-bottom: -30px;
+}
+
 .content_section.right_justified .section_header p {
     text-align: right;
     margin-right: 200px;
