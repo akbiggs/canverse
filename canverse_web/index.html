@@ -137,7 +137,7 @@
 
             <div class='content_section implementation'>
                 <div id='implementation' class='anchor'></div>
-                <div class='section_header'><p class='right_justified'>The Technology</p></div>
+                <div class='section_header'><p class='right_justified'>Implementation</p></div>
                 <div class='section_content'>
 
                     <p class='right_justified'>Innovation requires experimentation. 
@@ -159,6 +159,62 @@
                     environment for this project, we decided to use Quil, a Clojure wrapper
                     around the Processing environment, which is geared towards visual design
                     and greatly facilitates the creation of graphical interfaces.</p>
+
+                    <p class='subheader'>Synths</p>
+                    <p>
+                    At the core of our application we have synths, providing the audio 
+                    feedback needed to create the musical soundscapes which our project
+                    aims to produce. These synths are the core functionality that is 
+                    provided by Overtone, which exposes synth parameters that can be 
+                    dynamically updated. In Canverse, just like in Overtone, synths are 
+                    encapsulated by node objects which contain information about the synth 
+                    to be played and the specific parameters to be applied, including the 
+                    frequency and amplitude. Furthermore, Overtone provided the 
+                    functionality to bring into the application sampled audio data which 
+                    we were able to leverage in order to present the user with a 
+                    large variety of synths.
+                    </p>
+
+                    <p class='subheader right_justified'>Timeline</p>
+                    <p class='right_justified'>
+                    To implement the timeline functionality we keep track of the currently 
+                    playing nodes and record their frequency and amplitude after each update.
+                    This recorded information is then used to control how the timeline will 
+                    be drawn; frequency alters the vertical position and color of the 
+                    timeline while amplitude alters the opacity.
+                    </p>
+
+                    <p class='subheader'>Looping</p>
+                    <p>
+                    When creating a loop, we read the synth and the frequency and amp values
+                    off of each node selected. We use this to create another node whose 
+                    frequency and amplitude is controlled to match up with the values that
+                    should play at any given point, muting it during periods of silence. 
+                    When the loop finishes, its current playback time is reset back to zero,
+                     making it play again.
+                    </p>
+
+                    <p class='subheader right_justified'>Drums</p>
+
+                    <p class='right_justified'>
+                    There were two complications with implementing drums. One was keeping 
+                    separate drum loops from going off beat. Our solution was to keep an 
+                    internal metronome, provided by Overtone, which we used to keep all 
+                    drum loops in time. This allowed us to layer basic drum loops on top 
+                    of each other in order create more elaborate drum sequences. 
+                    Additionally, using a metronome allowed us to expose tempo to the user.
+                    </p>
+                    <p class='right_justified'>
+                    The second complication was with turning drum loops off. When a drum 
+                    loop is initially scheduled, it returns a job ID that can be used to 
+                    turn the loop off on request. However, since each drum loop we 
+                    implemented was recursive and would schedule itself again after four 
+                    beats had passed, the job ID of the loop in progress being kept would 
+                    become out of date after the first run, preventing us from cancelling it.
+                    This necessitated keeping a hash mapping drum loop names to current job
+                     IDs that would be updated each time a drum loop was run, so we could 
+                    keep track of the job IDs from the recursive calls.
+                    </p>
 
                 </div>
             </div>
