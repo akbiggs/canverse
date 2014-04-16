@@ -62,8 +62,27 @@ nav a:hover {
     height: 600px;
 }
 
+.texture {
+    position: absolute;
+}
+
+.content_section.problem .texture {
+    top: 20%;
+    left: 50%;
+    width: 600px;
+    height: 500px;
+}
+
 .content_section.design {
-    height: 350px;
+    height: 2150px;
+}
+
+.content_section.design .texture {
+    top: 0;
+    left: 11%;
+
+    width: 600px;
+    height: 500px;
 }
 
 .content_section.implementation {
@@ -85,6 +104,7 @@ nav a:hover {
 
 .section_header p {
     margin-left: 200px;
+    width: 250px;
 }
 
 .section_content {
@@ -94,20 +114,32 @@ nav a:hover {
 .section_content p {
     display: block;
     width: 415px;
-    padding-bottom: 24px;
+    padding-bottom: 12px;
 }
 
 .section_content p.subheader {
+    display: inline-block;
     font-size: 1.4em;
-    margin-bottom: -30px;
+    padding-bottom: 0px;
+    padding-right: 60%;
 }
 
-.content_section.right_justified .section_header p {
+.content_section p {
+    padding-right: 50%;
+}
+
+.content_section p.right_justified {
+    padding-left: 50%;
+    padding-right: 0px;
+}
+
+.content_section .section_header p.right_justified {
+    padding-left: 50%;
     text-align: right;
     margin-right: 200px;
 }
 
-.content_section.right_justified .section_content p {
+.content_section .section_content p.right_justified {
     float: right;
     text-align: right;
     margin-right: 210px;
