@@ -50,7 +50,7 @@
 (defn is-selected? [square]
   (let [mouse-pos {:x (q/mouse-x) :y (q/mouse-y)}]
     (and
-     (q/mouse-state)
+     (= (q/mouse-button) :left)
      (inside-bounds? square mouse-pos))))
 
 (defn update-alpha [actives square]

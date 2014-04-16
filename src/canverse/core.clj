@@ -127,7 +127,12 @@
             :size [WINDOW_WIDTH 400]
             :mouse-wheel mouse-wheel))
 
+(drums/metro :bpm 50)
+
 (-main)
+;(o/recording-start "~/alex1.wav")
+;(o/recording-stop)
 
 (o/stop)
+
 
