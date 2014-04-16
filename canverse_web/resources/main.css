@@ -149,3 +149,8 @@ nav a:hover {
     position: relative;
     top: -50px;
 }
+
+.content_constraints {
+    width: 1280px;
+    margin: 0 auto;
+}
