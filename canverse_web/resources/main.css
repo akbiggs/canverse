@@ -19,6 +19,7 @@ h1 {
     color: #FFF6DB;
     padding-top: 50px;
     font-size: 6em;
+    margin-bottom: 48px;
 }
 
 p {
@@ -67,10 +68,18 @@ nav a:hover {
 }
 
 .content_section.problem .texture {
-    top: 20%;
+    top: 18%;
     left: 50%;
     width: 600px;
     height: 500px;
+}
+
+.problem .texture.bad {
+    left: 59%;
+    top: 27%;
+    width: 375px;
+    height: 281px;
+    opacity: 0.5;
 }
 
 .content_section.design {
@@ -83,6 +92,42 @@ nav a:hover {
 
     width: 600px;
     height: 500px;
+}
+
+.content_section.design .synths_image {
+    position: absolute;
+    top: 22.5%;
+    left: 60%;
+
+    width: 200px;
+    height: 212px;
+}
+
+.content_section.design .canvas_image {
+    position: absolute;
+    top: 34%;
+    left: 60%;
+
+    width: 200px;
+    height: 212px;
+}
+
+.content_section.design .loop_image {
+    position: absolute;
+    top: 45.5%;
+    left: 20%;
+
+    width: 212px;
+    height: 224px;
+}
+
+.content_section.design .loop_toggle_image {
+    position: absolute;
+    top: 58%;
+    left: 20%;
+
+    width: 212px;
+    height: 224px;
 }
 
 .content_section.implementation {
