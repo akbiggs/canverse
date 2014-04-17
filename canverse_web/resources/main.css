@@ -19,7 +19,12 @@ h1 {
     color: #FFF6DB;
     padding-top: 50px;
     font-size: 6em;
-    margin-bottom: 48px;
+    margin-bottom: -22px;
+}
+
+h2 {
+    color: #FFF6DB;
+    margin-bottom: 20px;
 }
 
 p {
@@ -198,4 +203,29 @@ nav a:hover {
 .content_constraints {
     width: 1280px;
     margin: 0 auto;
+}
+
+.logo .texture {
+    width: 600px;
+    height: 500px;
+    left: 340px;
+    z-index: -5;
+}
+
+.synths_texture {
+    position: absolute;
+    left: 45%;
+    top: 22%;
+
+    width: 600px;
+    height: 500px;
+}
+
+.content_section.design .drums_image {
+    position: absolute;
+    top: 74.5%;
+    left: 55%;
+
+    width: 400px;
+    height: 421px;
 }
