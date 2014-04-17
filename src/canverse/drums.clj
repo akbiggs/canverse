@@ -3,8 +3,6 @@
             [overtone.at-at :as a])
   (:use [overtone.core]))
 
-(boot-external-server)
-
 (def sched-jobs (atom {}))
 
 (defn allocate-sched-job-entry! [index]
