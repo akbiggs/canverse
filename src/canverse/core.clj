@@ -129,7 +129,6 @@
 
 (drums/metro :bpm 50)
 
-(-main)
 ;(o/recording-start "~/alex1.wav")
 ;(o/recording-stop)
 
