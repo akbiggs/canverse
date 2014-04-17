@@ -136,15 +136,19 @@ nav a:hover {
 }
 
 .content_section.implementation {
-    height: 2300px;
+    height: 2380px;
 }
 
 .content_section.evaluation {
-    height: 300px;
+    height: 800px;
 }
 
+li {
+    width: 400px;
+    color: #FFF6DB;
+}
 .content_section.references {
-    height: 300px;
+    height: 260px;
 }
 
 .section_header {
@@ -205,10 +209,15 @@ nav a:hover {
     margin: 0 auto;
 }
 
+.logo {
+    width: 1280px;
+    margin: 0 auto;
+}
+
 .logo .texture {
     width: 600px;
     height: 500px;
-    left: 340px;
+    left: 26%;
     z-index: -5;
 }
 
@@ -267,7 +276,7 @@ nav a:hover {
 .timeline_image {
     position: absolute;
     left: 17%;
-    top: 53.5%;
+    top: 51.5%;
 
     width: 401px;
     height: 115px;
@@ -283,13 +292,37 @@ nav a:hover {
 .drum_texture {
     position: absolute;
     left: 20%;
-    top: 75%;
+    top: 73%;
     width: 300px;
 }
 
 .drum_code {
     position: absolute;
     left: 21%;
-    top: 86%;
+    top: 84%;
     width: 380px;
+}
+
+.references {
+    text-align: center;
+}
+
+.references p {
+    margin-left: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    width: inherit;
+}
+
+.evaluation .texture {
+    width: 600px;
+    height: 500px;
+
+    left: 50%;
+    top: 21%;
+}
+
+.footer {
+    text-align: center;
+    margin-bottom: 40px;
 }
