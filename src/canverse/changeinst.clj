@@ -11,12 +11,12 @@
 
 (def inst-names
   [
+   "Vector"
    "80s Saw"
    "Dark Sea Horns"
    "Awe"
    "Resonant"
    "Deus"
-   "Vector"
    "Endgame"
    "Fight"
    "Downtime"
@@ -31,12 +31,12 @@
    ])
 
 (def insts
-  [synths/oksaw
+  [synths/vectorman
+   synths/oksaw
    synths/dark-sea-horns
    synths/awesome
    synths/resonant
    synths/deus
-   synths/vectorman
    synths/poseidon
    synths/fight
    synths/fight-downtime
