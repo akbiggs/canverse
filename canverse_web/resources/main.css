@@ -80,7 +80,7 @@ nav a:hover {
 }
 
 .problem .texture.bad {
-    left: 59%;
+    left: 56%;
     top: 24%;
     width: 375px;
     height: 281px;
@@ -95,8 +95,8 @@ nav a:hover {
     top: 0;
     left: 11%;
 
-    width: 600px;
-    height: 500px;
+    width: 500px;
+    height: 460px;
 }
 
 .content_section.design .synths_image {
@@ -228,4 +228,68 @@ nav a:hover {
 
     width: 400px;
     height: 421px;
+}
+
+.overtone_logo {
+    position: absolute;
+    left: 26%;
+    top: 5%;
+
+    width: 140px;
+    height: 154px;
+}
+
+.clojure_logo {
+    position: absolute;
+    left: 27%;
+    top: 15.5%;
+
+    width: 100px;
+    height: 100px;
+}
+
+.processing_logo {
+    position: absolute;
+    left: 25.8%;
+    top: 23%;
+
+    width: 140px;
+    height: 140px;
+}
+
+.synth_code {
+    position: absolute;
+    left: 50%;
+    top: 34%;
+    width: 530px;
+}
+
+.timeline_image {
+    position: absolute;
+    left: 17%;
+    top: 53.5%;
+
+    width: 401px;
+    height: 115px;
+}
+
+.loop_code {
+    position: absolute;
+    left: 55%;
+    top: 62%;
+    width: 530px;
+}
+
+.drum_texture {
+    position: absolute;
+    left: 20%;
+    top: 75%;
+    width: 300px;
+}
+
+.drum_code {
+    position: absolute;
+    left: 21%;
+    top: 86%;
+    width: 380px;
 }
