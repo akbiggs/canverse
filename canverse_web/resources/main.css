@@ -15,6 +15,16 @@ body{
     text-align: center;
 }
 
+.anchor {
+    position: relative;
+    top: -50px;
+}
+
+li {
+    width: 400px;
+    color: #FFF6DB;
+}
+
 h1 {
     color: #FFF6DB;
     padding-top: 50px;
@@ -31,8 +41,27 @@ h2 a {
     color: beige;
 }
 
+a.main_links:hover{
+	color: #FFF6D8;
+	text-decoration: none;
+}
+
+a.main_links:link{
+	color: #FFF6D8;
+	text-decoration: underline;
+}
+
+a.main_links:visited{
+	color: #FFF6D8;
+
+}
+
 p {
     color: #FFF6DB;
+}
+
+p.subheader {
+    font-size: 1.4em;
 }
 
 .menu {
@@ -61,168 +90,187 @@ nav a:hover {
     background-color: rgba(77, 94, 94, 0.5);
 }
 
+/* Content Section */
+
 .content_section {
-    position: relative;
     width: 100%;
     margin-bottom: 28px;
     background-color: #4D5E5E;
 }
 
-.content_section.problem {
-    height: 600px;
+.content_constraints {
+	position: relative;
+    width: 920px;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.section_header {
+    font-size: x-large;
+}
+
+.section_header p {
+    width: 100%;
+}
+
+.section_content {
+	left-margin: auto;
+	right-margin: auto;
+	vertical-align: middle;
+}
+
+.content_section p {
+    display: block;
+    width: 415px;
+}
+
+.content_left{
+	width: 445px;
+	float: left;
+}
+
+.left{
+	text-align: left;
+	left: 0px;
+}
+
+.content_right{
+	width: 445px;
+	float: right;
+}
+
+.right {
+	text-align: right;
+	right: 0px;
+}
+
+
+
+/* Specific sections */
+
+/* Problem Section Divs */
+.problem {
+	height: 520px;
+}
+
+.problem_images_div{
+	top: 50px;
+	height: 480px;
+}
+
+/* Design section Divs */
+.design {
+	height: 1970px;
+}
+
+.design_texture_div {
+    height: 375px;
+}
+
+.synth_images_div{
+	height: 480px;
+}
+
+.loop_images_div{
+	height: 480px;
+}
+
+.drums_image_div{
+	height: 480px;
+}
+
+
+/* Implementation Section Divs */
+.implementation {
+	height: 2170px;
+}
+
+.logo_images_div{
+	height: 580px;
+}
+
+.synth_code_div{
+	height: 420px;
+}
+
+.timeline_image_div{
+	height: 250px;
+}
+
+.loop_code_div{
+	height: 300px;
+}
+
+drums_div{
+	height: 500px;
 }
 
 .texture {
     position: absolute;
 }
 
-.content_section.problem .texture {
-    top: 18%;
-    left: 50%;
-    width: 600px;
-    height: 500px;
+
+/* Evaluation Section Divs */
+.evaluation{
+	height: 810px;
 }
 
-.problem .texture.bad {
-    left: 56%;
-    top: 24%;
-    width: 375px;
-    height: 281px;
-    opacity: 1;
+.evaluation_image_div{
+	height: 810px;
 }
 
-.content_section.design {
-    height: 2150px;
+
+/* Reference Section Divs */
+.references {
+	height: 280px;
+	text-align: center;
 }
 
-.content_section.design .texture {
-    top: 0;
-    left: 11%;
-
-    width: 500px;
-    height: 460px;
-}
-
-.content_section.design .synths_image {
-    position: absolute;
-    top: 22.5%;
-    left: 60%;
-
-    width: 200px;
-    height: 212px;
-}
-
-.content_section.design .canvas_image {
-    position: absolute;
-    top: 34%;
-    left: 60%;
-
-    width: 200px;
-    height: 212px;
-}
-
-.content_section.design .loop_image {
-    position: absolute;
-    top: 45.5%;
-    left: 20%;
-
-    width: 212px;
-    height: 224px;
-}
-
-.content_section.design .loop_toggle_image {
-    position: absolute;
-    top: 58%;
-    left: 20%;
-
-    width: 212px;
-    height: 224px;
-}
-
-.content_section.implementation {
-    height: 2380px;
-}
-
-.content_section.evaluation {
-    height: 830px;
-}
-
-li {
-    width: 400px;
-    color: #FFF6DB;
-}
-.content_section.references {
-    height: 260px;
-}
-
-.section_header {
-    font-size: x-large;
-    padding-top: 2px;
-}
-
-.section_header p {
-    margin-left: 200px;
-    width: 250px;
-}
-
-.section_content {
-    margin-left: 210px;
-}
-
-.section_content p {
-    display: block;
-    width: 415px;
-    padding-bottom: 12px;
-}
-
-.section_content p.subheader {
-    display: inline-block;
-    font-size: 1.4em;
-    padding-bottom: 0px;
-    padding-right: 60%;
-}
-
-.content_section p {
-    padding-right: 50%;
-}
-
-.content_section p.right_justified {
-    padding-left: 50%;
+.references p {
+    margin-left: 0px;
+    padding-left: 0px;
     padding-right: 0px;
+    width: inherit;
 }
 
-.content_section .section_header p.right_justified {
-    padding-left: 50%;
-    text-align: right;
-    margin-right: 200px;
+/* Footer Section Div */
+
+.footer {
+    text-align: center;
+    margin-bottom: 40px;
 }
 
-.content_section .section_content p.right_justified {
-    float: right;
-    text-align: right;
-    margin-right: 210px;
-}
 
-.anchor {
-    position: relative;
-    top: -50px;
-}
+/* ====== IMAGES ====== */
 
-.content_constraints {
-    width: 1280px;
-    margin: 0 auto;
-}
 
-.logo {
-    width: 1280px;
-    margin: 0 auto;
-}
+/* Image CSS styles */
 
 .logo .texture {
     width: 600px;
     height: 500px;
     left: 26%;
     z-index: -5;
+}
+
+.audition_image{
+	position: relative;
+	top: 25%;
+	width: 375px;
+    height: 281px;
+    opacity: 1;
+}
+
+.synths_image {
+	position: relative;
+    vertical-align: middle;
+	top: 5%;
+	left: 25%;
+
+    width: 200px;
+    height: 212px;
 }
 
 .synths_texture {
@@ -234,18 +282,46 @@ li {
     height: 500px;
 }
 
-.content_section.design .drums_image {
-    position: absolute;
-    top: 74.5%;
-    left: 55%;
+.canvas_image {
+	position: relative;
+	vertical-align: middle;
+	top: 55%;
+	left: -20.75%;
+
+    width: 200px;
+    height: 212px;
+}
+
+.loop_image {
+    position: relative;
+    top: 5%;
+	left: 25%;
+
+    width: 212px;
+    height: 224px;
+}
+
+.loop_toggle_image {
+    position: relative;
+    top: 57%;
+	left: -23.50%;
+
+    width: 212px;
+    height: 224px;
+}
+
+.drums_image {
+    position: relative;
+	top: 20%;
+	left: -7%;
 
     width: 400px;
     height: 421px;
 }
 
 .overtone_logo {
-    position: absolute;
-    left: 26%;
+    position: relative;
+    left: 15%;
     top: 5%;
 
     width: 140px;
@@ -253,80 +329,63 @@ li {
 }
 
 .clojure_logo {
-    position: absolute;
-    left: 27%;
-    top: 15.5%;
+    position: relative;
+    left: -13%;
+    top: 32%;
 
     width: 100px;
     height: 100px;
 }
 
 .processing_logo {
-    position: absolute;
-    left: 25.8%;
-    top: 23%;
+    position: relative;
+    left: -42%;
+    top: 65%;
 
     width: 140px;
     height: 140px;
 }
 
 .synth_code {
-    position: absolute;
-    left: 50%;
-    top: 34%;
+    position: relative;
+    top: 15%;
     width: 530px;
 }
 
 .timeline_image {
-    position: absolute;
-    left: 17%;
-    top: 51.5%;
+    position: relative;
+    top: 35%;
 
     width: 401px;
     height: 115px;
 }
 
 .loop_code {
-    position: absolute;
-    left: 55%;
-    top: 62%;
+    position: relative;
     width: 530px;
 }
 
 .drum_texture {
-    position: absolute;
+    position: relative;
     left: 20%;
-    top: 73%;
+    top: 80%;
     width: 300px;
 }
 
 .drum_code {
-    position: absolute;
+    position: relative;
     left: 21%;
     top: 84%;
     width: 380px;
 }
 
-.references {
-    text-align: center;
-}
-
-.references p {
-    margin-left: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
-    width: inherit;
-}
-
 .evaluation .texture {
-    width: 600px;
+    position: relative;
+	width: 400px;
     height: 500px;
-
-    left: 50%;
     top: 21%;
 }
 
-.footer {
-    text-align: center;
-    margin-bottom: 40px;
-}
+
+/* ============================= */
+

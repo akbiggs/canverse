@@ -30,255 +30,283 @@
         </div>
 
         <div class="content">
-            <div class='content_section problem'>
-                <div class='content_constraints'>
+            
+			<div class='content_section'>
+                <div class='content_constraints problem'>
                     <div id='problem' class='anchor'></div>
-                    <div class='section_header'><p>The Problem</p></div>
-                    <div class='section_content'>
+                    <div class="content_left left">
+						<div class='section_header'><p>The Problem</p></div>
+						<p>Creating digital music today is far too complicated.  The
+							common software tools offered today are made with multiple
+							confusing widgets, dials and options that can make creating
+							music difficult for even an in-depth user.</p>
 
-                        <p>Creating digital music today is far too complicated.  The
-                        common software tools offered today are made with multiple
-                        confusing widgets, dials and options that can make creating
-                        music difficult for even an in-depth user.</p>
-                        
-                        <p>While creating original music is an artistic, creative and
-                        free flowing process, most modern software limits this by
-                        enforcing a rigid left to right timeline approach.  This is
-                        not well-suited for playing free form instruments such as
-                        synthesizers, and also disrupts the creation of a rhythmic
-                        beat, forcing the user to unnaturally reason about how to
-                        space out notes when they would rather just tap their beat
-                        out.</p>
+						<p>While creating original music is an artistic, creative and
+							free flowing process, most modern software limits this by
+							enforcing a rigid left to right timeline approach.  This is
+							not well-suited for playing free form instruments such as
+							synthesizers, and also disrupts the creation of a rhythmic
+							beat, forcing the user to unnaturally reason about how to
+							space out notes when they would rather just tap their beat
+							out.</p>
 
-                        <p>Our goal is to break the uniform structure of most musical
-                        software tools offered today and provide the freedom to make
-                        creating digital music natural and fun.</p>
-
-                        <img src='images/audition.jpg' class='texture bad' />
-                    </div>
-                </div>
+						<p>Our goal is to break the uniform structure of most musical
+							software tools offered today and provide the freedom to make
+							creating digital music natural and fun.</p>
+					</div>
+					<div class="content_right right">
+						<div class="problem_images_div">
+							<img class="audition_image" src="images/audition.jpg">
+						</div>
+					</div>
+				</div>
             </div>
 
-            <div class='content_section design'>
-                <div class='content_constraints'>
+            <div class='content_section'>
+                <div class='content_constraints design'>
                     <div id='design' class='anchor'></div>
-                    <div class='section_header'><p class='right_justified'>The Solution</p></div>
-                    <div class='section_content'>
+					<div class="content_left left design_texture_div">
+	                   	<img src='images/texture2.png' class='texture design_texture' />
+					</div>
+			 		
+					<div class="content_right right">
+						<div class='section_header right'><p>The Solution</p></div>
+						<p>The design of Canverse was very important to us.  We knew
+							that to successfully solve the problems found with most
+							music-making software we had to focus not just on creating a
+							minimalistic interface, but also one powerful enough to make
+							great music.</p>
 
-                        <p class='right_justified'>The design of Canverse was very important to us.  We knew
-                        that to successfully solve the problems found with most
-                        music-making software we had to focus not just on creating a
-                        minimalistic interface, but also one powerful enough to make
-                        great music.</p>
-
-                        <p class='right_justified'>The traditional timeline and
-                        cluttered interfaces are
-                        gone. Canverse presents in their place a simple canvas to
-                        play notes on, your gateway to a session full of fun and
-                        experimentation. We complement this with a display of both
-                        your session's history and the various loops repeating in
-                        the background, so you can keep track of what's being
-                        played.</p>
-
-                        <img src='images/texture2.png' class='texture' />
-
-                        <p class='subheader'>Synths</p>
+						<p>The traditional timeline and
+							cluttered interfaces are
+							gone. Canverse presents in their place a simple canvas to
+							play notes on, your gateway to a session full of fun and
+							experimentation. We complement this with a display of both
+							your session's history and the various loops repeating in
+							the background, so you can keep track of what's being
+							played.</p>
+					</div>
+					
+					<div class="content_left left">
+                    	<p class="subheader">Synths</p>
                         <p>Creating varied melodies necessitates the use of multiple
-                        synths to combine different sounds. To minimize the amount
-                        of interface clutter, Canverse controls changing synths
-                        using the up and down arrow keys.  This allows you to
-                        quickly and efficiently flip through over 15 available
-                        instruments, each with unique names to help you identify
-                        them.</p>
+                        	synths to combine different sounds. To minimize the amount
+                        	of interface clutter, Canverse controls changing synths
+                        	using the up and down arrow keys.  This allows you to
+                        	quickly and efficiently flip through over 15 available
+                        	instruments, each with unique names to help you identify
+                        	them.</p>
 
                         <p>In most modern-day software, controlling synth parameters
-                        requires digging around through piles of dials and sliders.
-                        Rather than bog you down with this, we isolated two
-                        essential parameters and incorporated them right into the
-                        canvas.  As you slide your mouse horizontally along the
-                        canvas, the frequency of the synth being played increases,
-                        while dragging the cursor vertically changes the amplitude.
-                        The canvas responds to your movements, showing darker to
-                        lighter colors as the frequency increases and fading in and
-                        out as the amplitude fluctuates.</p>
-
+                        	requires digging around through piles of dials and sliders.
+                        	Rather than bog you down with this, we isolated two
+                        	essential parameters and incorporated them right into the
+                        	canvas.  As you slide your mouse horizontally along the
+                        	canvas, the frequency of the synth being played increases,
+                        	while dragging the cursor vertically changes the amplitude.
+                        	The canvas responds to your movements, showing darker to
+                        	lighter colors as the frequency increases and fading in and
+                        	out as the amplitude fluctuates.</p>
+						
+					</div>
+					
+					<div class="content_right right synth_images_div">
                         <img src='images/app_images/synths.png' class='synths_image'>
-                        <img src='images/app_images/canvas.png'
-                        class='canvas_image'>
+                        <img src='images/app_images/canvas.png' class='canvas_image'>
+					</div>
 
-                        <p class='subheader right_justified'>Looping</p>
-                        <p class='right_justified'>A crucial component of any electronic musician's repertoire
-                        is the ability to layer sound after sound effortlessly and
-                        seamlessly, taking simple noises and combining them into
-                        something unexpected and fantastic. In Canverse, simply play
-                        a note and press the spacebar to immediately begin looping
-                        it back.  Multiple notes can be looped by selecting them in
-                        the timeline with your mouse before pressing space.</p>
+					<div class="content_right right">
+						<br/><br/><br/>
+                        <p class='subheader'>Looping</p>
+                        <p>A crucial component of any electronic musician's repertoire
+                        	is the ability to layer sound after sound effortlessly and
+                        	seamlessly, taking simple noises and combining them into
+                        	something unexpected and fantastic. In Canverse, simply play
+                        	a note and press the spacebar to immediately begin looping
+                        	it back.  Multiple notes can be looped by selecting them in
+                        	the timeline with your mouse before pressing space.</p>
 
-                        <p class='right_justified'>This creates a node on the rightmost column of the window
-                        flashing to the rhythm of the loop. This node controls your
-                        loop, allowing you to adjust its volume by dragging the node
-                        up or down and to toggle it on and off by double-clicking.
-                        This simple abstraction provides the flexibility and power
-                        necessary to progress your song the way you want.</p>
-
-                        <img src='images/app_images/looping.png'
-                        class='loop_image'/>
-                        <img src='images/app_images/loop-control.png'
-                        class='loop_toggle_image'/>
+                        <p>This creates a node on the rightmost column of the window
+                        	flashing to the rhythm of the loop. This node controls your
+                        	loop, allowing you to adjust its volume by dragging the node
+                        	up or down and to toggle it on and off by double-clicking.
+                        	This simple abstraction provides the flexibility and power
+                        	necessary to progress your song the way you want.</p>
+					
+					</div>
+						
+					<div class="content_left left loop_images_div">
+                        <img src='images/app_images/looping.png' class='loop_image'/>
+                        <img src='images/app_images/loop-control.png' class='loop_toggle_image'/>
+					</div>
                         
+					<div class="content_left left">
                         <p class='subheader'>Drums</p>
                         <p>Drums are the driving force behind every electronic
-                        masterpiece. Canverse recognizes that your beats and synths
-                        exist cohesively and keeps them grouped together rather than
-                        force you to awkwardly switch to a separate widget. A single
-                        click of your right mouse button on the canvas turns a drum
-                        loop on and off. Each row controls a different loop, and
-                        flashes a different color as the loop plays. In response to
-                        the beat, the canvas pulses, making your software come alive
-                        with your music.</p>
+                        	masterpiece. Canverse recognizes that your beats and synths
+                        	exist cohesively and keeps them grouped together rather than
+                        	force you to awkwardly switch to a separate widget. A single
+                        	click of your right mouse button on the canvas turns a drum
+                        	loop on and off. Each row controls a different loop, and
+                        	flashes a different color as the loop plays. In response to
+                        	the beat, the canvas pulses, making your software come alive
+                        	with your music.</p>
 
                         <p>Implementing this eliminated the need to introduce any new
-                        dials or toggles on the interface to control drums and
-                        allows the user to add both synths and drum loops without
-                        lifting their hands off the mouse.</p>
+                        	dials or toggles on the interface to control drums and
+                        	allows the user to add both synths and drum loops without
+                        	lifting their hands off the mouse.</p>
 
                         <p>Finally, to allow you to customize the tempo of your track
-                        as much as possible, you can increase and decrease the speed
-                        of the drum loop by pressing the left and right arrow keys
-                        on the keyboard.  As the tempo increases or decreases so
-                        does the amount of shaking on the grid to provide a
-                        visual confirmation of how fast or slow the tempo is
-                        playing.</p>
-
-                        <img src='images/app_images/drums.png'
-                        class='drums_image' />
-                    </div>
-                </div>
+                        	as much as possible, you can increase and decrease the speed
+                        	of the drum loop by pressing the left and right arrow keys
+                        	on the keyboard.  As the tempo increases or decreases so
+                        	does the amount of shaking on the grid to provide a
+                        	visual confirmation of how fast or slow the tempo is
+                        	playing.</p>
+					</div>
+						
+					<div class="content_right right drums_image_div">
+                        <img src='images/app_images/drums.png' class='drums_image' />
+					</div>
+				</div>
             </div>
 
-            <div class='content_section implementation'>
+			<div class='content_section implementation'>
                 <div class='content_constraints'>
                     <div id='implementation' class='anchor'></div>
-                    <div class='section_header'><p class='right_justified'>Implementation</p></div>
-                    <div class='section_content'>
-
-                        <p class='right_justified'>Innovation requires experimentation. 
-                        For this reason we chose to use the Overtone audio environment, 
-                        which is designed to facilitate the exploration of new musical 
-                        ideas with tools that allow for fine-grained synthesis and sampling.
-                        This allowed for fast prototyping of mock-ups which we heavily benefited
-                        from during the early stages of development, where fine-tuning audio 
-                        parameters could be done without having a fully-functioning graphical application.</p>
-
-                        <p class='right_justified'>One additional benefit to using Overtone
-                        is it combines the powerful SuperCollider audio engine with the 
-                        Clojure programming language which provides the interactivity and 
-                        efficiency needed for a project such as Canverse. This enabled us 
-                        to receive instant feedback from changes to the application throughout
-                        our development cycle.</p>
-
-                        <p class='right_justified'>After finalizing the audio and programming
-                        environment for this project, we decided to use Quil, a Clojure wrapper
-                        around the Processing environment, which is geared towards visual design
-                        and greatly facilitates the creation of graphical interfaces.</p>
-
+					
+					<div class="content_left left logo_images_div">
                         <img class='overtone_logo'
                         src='images/logos/overtone-logo.png' />
                         <img class='clojure_logo'
                         src='images/logos/clojure-logo.gif' />
                         <img class='processing_logo'
                         src='images/logos/processing-logo.png' />
+					</div>
+					
+					<div class="content_right right">
+						<div class='section_header'><p>Implementation</p></div>
+						<p> Innovation requires experimentation. 
+                        	For this reason we chose to use the Overtone audio environment, 
+                        	which is designed to facilitate the exploration of new musical 
+                        	ideas with tools that allow for fine-grained synthesis and sampling.
+                        	This allowed for fast prototyping of mock-ups which we heavily benefited
+                        	from during the early stages of development, where fine-tuning audio 
+                        	parameters could be done without having a fully-functioning graphical application.</p>
 
+                 		<p> One additional benefit to using Overtone
+                        	is it combines the powerful SuperCollider audio engine with the 
+                        	Clojure programming language which provides the interactivity and 
+                        	efficiency needed for a project such as Canverse. This enabled us 
+                        	to receive instant feedback from changes to the application throughout
+                        	our development cycle.</p>
+
+                        <p> After finalizing the audio and programming
+                        	environment for this project, we decided to use Quil, a Clojure wrapper
+                        	around the Processing environment, which is geared towards visual design
+                        	and greatly facilitates the creation of graphical interfaces.</p>
+
+					</div>
+					
+					<div class="content_left left">
                         <p class='subheader'>Synths</p>
-                        <p>
-                        At the core of our application we have synths, providing the audio 
-                        feedback needed to create the musical soundscapes which our project
-                        aims to produce. These synths are the core functionality that is 
-                        provided by Overtone, which exposes synth parameters that can be 
-                        dynamically updated. In Canverse, just like in Overtone, synths are 
-                        encapsulated by node objects which contain information about the synth 
-                        to be played and the specific parameters to be applied, including the 
-                        frequency and amplitude. Furthermore, Overtone provided the 
-                        functionality to bring into the application sampled audio data which 
-                        we were able to leverage in order to present the user with a 
-                        large variety of synths.
+                        <p> At the core of our application we have synths, providing the audio 
+                        	feedback needed to create the musical soundscapes which our project
+                        	aims to produce. These synths are the core functionality that is 
+                        	provided by Overtone, which exposes synth parameters that can be 
+                        	dynamically updated. In Canverse, just like in Overtone, synths are 
+                        	encapsulated by node objects which contain information about the synth 
+                        	to be played and the specific parameters to be applied, including the 
+                        	frequency and amplitude. Furthermore, Overtone provided the 
+                        	functionality to bring into the application sampled audio data which 
+                        	we were able to leverage in order to present the user with a 
+                        	large variety of synths.
                         </p>
-
+					</div>
+					
+					<div class="content_right right synth_code_div">
                         <img src='images/synth_code.png' class='synth_code' />
-
-                        <p class='subheader right_justified'>Timeline</p>
-                        <p class='right_justified'>
-                        To implement the timeline functionality we keep track of the currently 
-                        playing nodes and record their frequency and amplitude after each update.
-                        This recorded information is then used to control how the timeline will 
-                        be drawn; frequency alters the vertical position and color of the 
-                        timeline while amplitude alters the opacity.
-                        </p>
-
+					</div>
+					
+					<div class="content_left left timeline_image_div">
                         <img src='images/app_images/timeline.png'
                         class='timeline_image' />
-
-                        <p class='subheader'>Looping</p>
-                        <p>
-                        When creating a loop, we read the synth and the frequency and amp values
-                        off of each node selected. We use this to create another node whose 
-                        frequency and amplitude is controlled to match up with the values that
-                        should play at any given point, muting it during periods of silence. 
-                        When the loop finishes, its current playback time is reset back to zero,
-                         making it play again.
+					</div>
+					
+					<div class="content_right right">
+                        <p class='subheader'>Timeline</p>
+                        <p> To implement the timeline functionality we keep track of the currently 
+                        	playing nodes and record their frequency and amplitude after each update.
+                        	This recorded information is then used to control how the timeline will 
+                        	be drawn; frequency alters the vertical position and color of the 
+                        	timeline while amplitude alters the opacity.
                         </p>
-
+					</div>
+					
+                    <div class="content_left left">
+						<p class='subheader'>Looping</p>
+                        <p> When creating a loop, we read the synth and the frequency and amp values
+                        	off of each node selected. We use this to create another node whose 
+                        	frequency and amplitude is controlled to match up with the values that
+                        	should play at any given point, muting it during periods of silence. 
+                        	When the loop finishes, its current playback time is reset back to zero,
+                        	making it play again.
+                        </p>
+					</div>
+					
+					<div class="content_right right loop_code_div">
                         <img class='loop_code' src='images/loop_code.png' />
-
-                        <p class='subheader right_justified'>Drums</p>
-
-                        <p class='right_justified'>
-                        There were two complications with implementing drums. One was keeping 
-                        separate drum loops from going off beat. Our solution was to keep an 
-                        internal metronome, provided by Overtone, which we used to keep all 
-                        drum loops in time. This allowed us to layer basic drum loops on top 
-                        of each other in order create more elaborate drum sequences. 
-                        Additionally, using a metronome allowed us to expose tempo to the user.
-                        </p>
-                        <p class='right_justified'>
-                        The second complication was with turning drum loops off. When a drum 
-                        loop is initially scheduled, it returns a job ID that can be used to 
-                        turn the loop off on request. However, since each drum loop we 
-                        implemented was recursive and would schedule itself again after four 
-                        beats had passed, the job ID of the loop in progress being kept would 
-                        become out of date after the first run, preventing us from cancelling it.
-                        This necessitated keeping a hash mapping drum loop names to current job
-                         IDs that would be updated each time a drum loop was run, so we could 
-                        keep track of the job IDs from the recursive calls.
-                        </p>
-
+					</div>
+					
+					<div class="content_left left drums_div">
                         <img src='images/texture5.png' class='drum_texture' />
                         <img src='images/drum_code.png' class='drum_code' />
-                    </div>
-                </div>
-            </div>
+					</div>
+					
+					<div class="content_right right">
+                        <p class='subheader'>Drums</p>
+						<p> There were two complications with implementing drums. One was keeping 
+                        	separate drum loops from going off beat. Our solution was to keep an 
+                        	internal metronome, provided by Overtone, which we used to keep all 
+                        	drum loops in time. This allowed us to layer basic drum loops on top 
+                        	of each other in order create more elaborate drum sequences. 
+                        	Additionally, using a metronome allowed us to expose tempo to the user.
+                        </p>
+                        
+						<p> The second complication was with turning drum loops off. When a drum 
+                        	loop is initially scheduled, it returns a job ID that can be used to 
+                        	turn the loop off on request. However, since each drum loop we 
+                        	implemented was recursive and would schedule itself again after four 
+                        	beats had passed, the job ID of the loop in progress being kept would 
+                        	become out of date after the first run, preventing us from cancelling it.
+                        	This necessitated keeping a hash mapping drum loop names to current job
+                        	IDs that would be updated each time a drum loop was run, so we could 
+                        	keep track of the job IDs from the recursive calls.
+                        </p>
+					</div>
+				</div>
+			</div>
 
-            <div class='content_section evaluation right_justified'>
+            <div class='content_section evaluation'>
                 <div class='content_constraints'>
                     <div id='evaluation' class='anchor'></div>
-                    <div class='section_header'><p>Evaluation</p></div>
-                    <div class='section_content'>
+                    <div class="content_left left">	
+						<div class='section_header'><p>Evaluation</p></div>
+                        <p> While we did get off to a slower than desired start due to a steep learning
+                        	curve, we feel that we caught up quickly and ended up with a product that we
+                        	were both proud of and that solves the original problem.  
 
-                        <p>While we did get off to a slower than desired start due to a steep learning
-                        curve, we feel that we caught up quickly and ended up with a product that we
-                        were both proud of and that solves the original problem.  
+                        	The features that exist in the current version of Canverse allow for a quick and
+                        	fun way to produce a complete song without the complication of learning a large
+                        	and confusing piece of software. We were able to add visuals that provide good
+                        	feedback to the user while they are using the software in real time. Finally we
+                        	were able to create core functions such as looping, drum loops and volume
+                        	control without the requirement for additional windows, dials or other
+                        	interfacing tools.</p>
 
-                        The features that exist in the current version of Canverse allow for a quick and
-                        fun way to produce a complete song without the complication of learning a large
-                        and confusing piece of software. We were able to add visuals that provide good
-                        feedback to the user while they are using the software in real time. Finally we
-                        were able to create core functions such as looping, drum loops and volume
-                        control without the requirement for additional windows, dials or other
-                        interfacing tools.</p>
-
-                        <p>It was unfortunate that becoming more familiar with functional programming took
-                        longer than expected as we would have liked to add the following enhancements:</p>
+                        <p> It was unfortunate that becoming more familiar with functional programming took
+                        	longer than expected as we would have liked to add the following enhancements:</p>
 
                         <ul>
                             <li>Enable scrolling through synths with the mouse
@@ -290,10 +318,13 @@
                             more fine grained control of resulting synths.</li>
                         </ul>
 
-                        <p>In the end, our team has been able to produce a
-                        product that is very usable and provides a new and fun
-                        interface for creating great music.</p>
+                        <p> In the end, our team has been able to produce a
+                        	product that is very usable and provides a new and fun
+                        	interface for creating great music.</p>
 
+					</div>
+					
+					<div class="content_right right evaluation_image_div">
                         <img class='texture evaluation_texture'
                         src='images/texture6.png' />
                     </div>
@@ -304,16 +335,16 @@
                 <div class='content_constraints'>
                     <div class='anchor' id='references'></div>
                     <div class='section_header'><p>References</p></div>
-                    <p><a href='http://clojure.org'>Clojure</a></p>
-                    <p><a href='https://github.com/quil/quil'>Quil</a></p>
-                    <p><a href='http://overtone.github.io/'>Overtone</a></p>
-                    <p><a href='https://twitter.com/therealdjshine'>DJ Shine</a></p>
+                    <p><a class="main_links" href='http://clojure.org'>Clojure</a></p>
+                    <p><a class="main_links" href='https://github.com/quil/quil'>Quil</a></p>
+                    <p><a class="main_links" href='http://overtone.github.io/'>Overtone</a></p>
+                    <p><a class="main_links" href='https://twitter.com/therealdjshine'>DJ Shine</a></p>
                 </div>
             </div>
 
             <div class='footer'>
                 <p>Canverse is:</p>
-                <p>Alexander Biggs :: Camilo Bernal :: Marc Palermo</p>
+                <p><a class="main_links" href="http://www.akbiggs.net">Alexander Biggs</a> :: Camilo Bernal :: <a class="main_links"  href="http://www.marcpalermo.ca">Marc Palermo</a></p>
             </div>
 		</div>
 	</div>
